@@ -14,6 +14,7 @@ import { CartDrawer } from "@/components/rakhi/CartDrawer"
 import { AdminView } from "@/components/rakhi/AdminView"
 import { FloatingActions } from "@/components/rakhi/FloatingActions"
 import { BackButton, BrowserHistorySync } from "@/components/rakhi/BackButton"
+import { ThemeLoader } from "@/components/rakhi/ThemeLoader"
 import { useEffect } from "react"
 
 const pageTransitions = {
@@ -44,6 +45,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <BrowserHistorySync />
+      <ThemeLoader />
       <Header />
       <BackButton />
       <main className="flex-1">

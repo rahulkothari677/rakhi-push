@@ -7,13 +7,14 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   X, LayoutDashboard, Package, FolderTree, Image, FileText, Settings, ShoppingBag,
   Plus, Pencil, Trash2, Save, Upload, Loader2, LogOut, Sparkles, TrendingUp,
-  Users, AlertCircle, Phone, ChevronRight, Star,
+  Users, AlertCircle, Phone, ChevronRight, Star, Check,
 } from "lucide-react"
 import { cn, formatINR, slugify, generateSKU, parseJSON } from "@/lib/utils"
 import { thumbnailImage, categoryImage, heroImage, ctaImage } from "@/lib/images"
+import { PRESET_THEMES, FONT_OPTIONS } from "@/lib/themes"
 import { AdminLogin } from "./AdminLogin"
 
-type Tab = "dashboard" | "products" | "categories" | "hero" | "content" | "settings" | "orders"
+type Tab = "dashboard" | "products" | "categories" | "hero" | "content" | "settings" | "orders" | "themes"
 
 export function AdminView() {
   const { isAdminOpen, setAdminOpen } = useStore()
@@ -84,6 +85,7 @@ export function AdminView() {
                 { id: "hero", label: "Hero Slides", icon: Image },
                 { id: "content", label: "Site Content", icon: FileText },
                 { id: "orders", label: "Orders", icon: ShoppingBag },
+                { id: "themes", label: "Themes", icon: Sparkles },
                 { id: "settings", label: "Settings", icon: Settings },
               ].map((item) => (
                 <button
@@ -112,6 +114,7 @@ export function AdminView() {
             {tab === "content" && <ContentTab />}
             {tab === "orders" && <OrdersTab />}
             {tab === "settings" && <SettingsTab />}
+            {tab === "themes" && <ThemesTab />}
           </main>
         </div>
       )}
@@ -1533,6 +1536,258 @@ function OrdersTab() {
           ))}
         </div>
       )}
+    </div>
+  )
+}
+
+// ─── THEMES ──────────────────────────────────────────────────────────────────
+function ThemesTab() {
+  const [activeTheme, setActiveTheme] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    fetch("/api/site-content?section=theme")
+      .then((r) => r.json())
+      .then((d) => setActiveTheme(d.data || { presetId: "classic-burgundy" }))
+      .catch(() => setActiveTheme({ presetId: "classic-burgundy" }))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const applyPreset = async (presetId: string) => {
+    setSaving(true)
+    const themeData = { presetId }
+    setActiveTheme(themeData)
+    await fetch("/api/admin/site-content", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ section: "theme", data: themeData }),
+    })
+    setSaving(false)
+    // Reload page to apply theme
+    window.location.reload()
+  }
+
+  const applyCustomTheme = async (customTheme: any) => {
+    setSaving(true)
+    setActiveTheme(customTheme)
+    await fetch("/api/admin/site-content", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ section: "theme", data: customTheme }),
+    })
+    setSaving(false)
+    window.location.reload()
+  }
+
+  if (loading) {
+    return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-[#8B1E3E]" size={28} /></div>
+  }
+
+  return (
+    <div>
+      <h2 className="font-serif text-2xl font-bold text-[#2A0A0F] mb-1">Themes</h2>
+      <p className="text-sm text-[#6B5544] mb-6">Choose a preset theme or create a custom one. Changes apply instantly site-wide.</p>
+
+      {/* Preset Themes */}
+      <div className="mb-8">
+        <h3 className="text-sm tracking-elegant uppercase text-[#C9A24B] font-semibold mb-4">Preset Themes</h3>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {PRESET_THEMES.map((theme) => (
+            <button
+              key={theme.id}
+              onClick={() => applyPreset(theme.id)}
+              className={cn(
+                "relative p-4 rounded-xl border-2 transition-all text-left group",
+                activeTheme?.presetId === theme.id
+                  ? "border-[#8B1E3E] shadow-lg scale-105"
+                  : "border-[#E8D9B8] hover:border-[#C9A24B] hover:shadow-md"
+              )}
+            >
+              {/* Preview swatch */}
+              <div
+                className="h-24 rounded-lg mb-3 flex items-center justify-center relative overflow-hidden"
+                style={{ backgroundColor: theme.preview.bg }}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl font-serif font-bold" style={{ color: theme.preview.text }}>
+                    Aa
+                  </span>
+                  <span className="text-2xl" style={{ color: theme.preview.accent }}>❖</span>
+                </div>
+                {/* Color dots */}
+                <div className="absolute bottom-2 left-2 flex gap-1">
+                  <div className="w-4 h-4 rounded-full border border-white/50" style={{ backgroundColor: theme.colors.primary }} />
+                  <div className="w-4 h-4 rounded-full border border-white/50" style={{ backgroundColor: theme.colors.accent }} />
+                  <div className="w-4 h-4 rounded-full border border-white/50" style={{ backgroundColor: theme.colors.background }} />
+                </div>
+                {/* Active checkmark */}
+                {activeTheme?.presetId === theme.id && (
+                  <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#5C8C3E] text-white flex items-center justify-center">
+                    <Check size={14} />
+                  </div>
+                )}
+              </div>
+              <h4 className="font-serif text-base font-bold text-[#2A0A0F]">{theme.name}</h4>
+              <p className="text-xs text-[#6B5544] mt-1">{theme.description}</p>
+              <p className="text-[10px] text-[#C9A24B] mt-2 tracking-elegant uppercase font-semibold">
+                {theme.fonts.serif} + {theme.fonts.sans}
+              </p>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Custom Theme Builder */}
+      <CustomThemeBuilder
+        activeTheme={activeTheme}
+        onSave={applyCustomTheme}
+        saving={saving}
+      />
+
+      {/* Reset button */}
+      <div className="mt-6">
+        <button
+          onClick={() => applyPreset("classic-burgundy")}
+          className="px-4 py-2 text-xs text-[#B3324A] hover:bg-[#B3324A]/10 rounded-md transition-colors"
+        >
+          ↺ Reset to Default (Classic Burgundy)
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function CustomThemeBuilder({ activeTheme, onSave, saving }: {
+  activeTheme: any
+  onSave: (theme: any) => void
+  saving: boolean
+}) {
+  const [custom, setCustom] = useState({
+    colors: activeTheme?.colors || PRESET_THEMES[0].colors,
+    fonts: activeTheme?.fonts || PRESET_THEMES[0].fonts,
+  })
+
+  const updateColor = (key: string, value: string) => {
+    setCustom({
+      ...custom,
+      colors: { ...custom.colors, [key]: value },
+    })
+  }
+
+  const updateFont = (key: string, value: string) => {
+    setCustom({
+      ...custom,
+      fonts: { ...custom.fonts, [key]: value },
+    })
+  }
+
+  return (
+    <div className="bg-white rounded-xl border border-[#E8D9B8] p-6">
+      <h3 className="text-sm tracking-elegant uppercase text-[#C9A24B] font-semibold mb-4">Custom Theme Builder</h3>
+      <p className="text-xs text-[#6B5544] mb-4">Pick your own colors and fonts. Click &quot;Apply Custom Theme&quot; to save.</p>
+
+      {/* Color pickers */}
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {[
+          { key: "primary", label: "Primary Color" },
+          { key: "primaryDark", label: "Primary Dark" },
+          { key: "accent", label: "Accent (Gold)" },
+          { key: "accentDark", label: "Accent Dark" },
+          { key: "background", label: "Background" },
+          { key: "foreground", label: "Text Color" },
+          { key: "muted", label: "Muted Text" },
+          { key: "border", label: "Border" },
+        ].map((c) => (
+          <div key={c.key}>
+            <label className="text-xs text-[#6B5544] mb-1.5 block font-medium">{c.label}</label>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={(custom.colors as any)[c.key] || "#8B1E3E"}
+                onChange={(e) => updateColor(c.key, e.target.value)}
+                className="w-10 h-10 rounded border border-[#E8D9B8] cursor-pointer"
+              />
+              <input
+                type="text"
+                value={(custom.colors as any)[c.key] || ""}
+                onChange={(e) => updateColor(c.key, e.target.value)}
+                className="flex-1 px-2 py-1.5 text-xs border border-[#E8D9B8] rounded outline-none focus:border-[#C9A24B]"
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Font pickers */}
+      <div className="grid sm:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label className="text-xs text-[#6B5544] mb-1.5 block font-medium">Heading Font</label>
+          <select
+            value={custom.fonts.serif}
+            onChange={(e) => updateFont("serif", e.target.value)}
+            className="w-full px-3 py-2 text-sm border border-[#E8D9B8] rounded-md bg-[#FBF6EC] outline-none focus:border-[#C9A24B]"
+          >
+            {FONT_OPTIONS.serif.map((f) => (
+              <option key={f.value} value={f.value}>{f.name}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="text-xs text-[#6B5544] mb-1.5 block font-medium">Body Font</label>
+          <select
+            value={custom.fonts.sans}
+            onChange={(e) => updateFont("sans", e.target.value)}
+            className="w-full px-3 py-2 text-sm border border-[#E8D9B8] rounded-md bg-[#FBF6EC] outline-none focus:border-[#C9A24B]"
+          >
+            {FONT_OPTIONS.sans.map((f) => (
+              <option key={f.value} value={f.value}>{f.name}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Live preview */}
+      <div className="mb-4">
+        <label className="text-xs text-[#6B5544] mb-2 block font-medium">Live Preview</label>
+        <div
+          className="p-6 rounded-lg border"
+          style={{
+            backgroundColor: custom.colors.background,
+            borderColor: custom.colors.border,
+          }}
+        >
+          <h4 className="text-2xl font-bold mb-2" style={{ fontFamily: custom.fonts.serif, color: custom.colors.foreground }}>
+            House of <span style={{ color: custom.colors.primary }}>Neelam</span>
+          </h4>
+          <p className="text-sm mb-3" style={{ fontFamily: custom.fonts.sans, color: custom.colors.muted }}>
+            Premium handcrafted Rakhis for the eternal bond
+          </p>
+          <div className="flex gap-2">
+            <span
+              className="px-4 py-2 rounded-md text-xs font-semibold"
+              style={{ backgroundColor: custom.colors.primary, color: custom.colors.background }}
+            >
+              Add to Cart
+            </span>
+            <span
+              className="px-4 py-2 rounded-md text-xs font-semibold border-2"
+              style={{ borderColor: custom.colors.accent, color: custom.colors.accent }}
+            >
+              Buy Now
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <button
+        onClick={() => onSave(custom)}
+        disabled={saving}
+        className="px-6 py-2.5 bg-[#8B1E3E] text-[#FBF6EC] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[#6B0E2A] transition-colors flex items-center gap-2 disabled:opacity-50"
+      >
+        {saving ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+        Apply Custom Theme
+      </button>
     </div>
   )
 }
