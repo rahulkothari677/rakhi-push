@@ -43,13 +43,19 @@ export type InfoPageId =
   | "privacy"
   | "terms"
 
-type StoreState = {
-  // Navigation
+// Navigation state snapshot for history
+type NavState = {
   view: View
   selectedProductSlug: string | null
   selectedCategory: string | null
   searchQuery: string
   infoPageId: InfoPageId | null
+}
+
+type StoreState = NavState & {
+  // Navigation history
+  navHistory: NavState[]
+  canGoBack: boolean
 
   // Cart
   cart: CartItem[]
@@ -70,6 +76,8 @@ type StoreState = {
   setCategory: (cat: string | null) => void
   setSearchQuery: (q: string) => void
   openInfo: (id: InfoPageId) => void
+  goBack: () => void
+  goHome: () => void
 
   addToCart: (item: CartItem) => void
   removeFromCart: (productId: string) => void
@@ -85,6 +93,44 @@ type StoreState = {
   setMenuOpen: (open: boolean) => void
 }
 
+// Helper: get current nav state as snapshot
+function getNavState(state: StoreState): NavState {
+  return {
+    view: state.view,
+    selectedProductSlug: state.selectedProductSlug,
+    selectedCategory: state.selectedCategory,
+    searchQuery: state.searchQuery,
+    infoPageId: state.infoPageId,
+  }
+}
+
+// Helper: navigate to a new state (pushes current to history)
+function navigate(set: any, get: any, newState: Partial<NavState>) {
+  const current = getNavState(get())
+  // Don't push duplicate states (e.g. clicking same category twice)
+  const isSame =
+    current.view === newState.view &&
+    current.selectedProductSlug === (newState.selectedProductSlug ?? current.selectedProductSlug) &&
+    current.selectedCategory === (newState.selectedCategory ?? current.selectedCategory) &&
+    current.searchQuery === (newState.searchQuery ?? current.searchQuery) &&
+    current.infoPageId === (newState.infoPageId ?? current.infoPageId)
+  if (isSame) return
+
+  set({
+    ...newState,
+    navHistory: [...get().navHistory, current],
+    canGoBack: true,
+    isMenuOpen: false,
+  })
+  if (typeof window !== "undefined") {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+    // Push to browser history so browser back button works
+    try {
+      window.history.pushState({ nav: true }, "")
+    } catch {}
+  }
+}
+
 export const useStore = create<StoreState>()(
   persist(
     (set, get) => ({
@@ -94,6 +140,9 @@ export const useStore = create<StoreState>()(
       searchQuery: "",
       infoPageId: null,
 
+      navHistory: [],
+      canGoBack: false,
+
       cart: [],
       isCartOpen: false,
 
@@ -102,17 +151,48 @@ export const useStore = create<StoreState>()(
       isAdminOpen: false,
       isMenuOpen: false,
 
-      setView: (v) => {
-        set({ view: v, isMenuOpen: false })
-        if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" })
+      setView: (v) => navigate(set, get, { view: v }),
+      openProduct: (slug) => navigate(set, get, { view: "product", selectedProductSlug: slug }),
+      setCategory: (cat) => navigate(set, get, { view: "shop", selectedCategory: cat, searchQuery: "" }),
+      setSearchQuery: (q) => navigate(set, get, { view: q ? "search" : "shop", searchQuery: q }),
+      openInfo: (id) => navigate(set, get, { view: "info", infoPageId: id }),
+
+      goBack: () => {
+        const history = get().navHistory
+        if (history.length === 0) {
+          // Nothing to go back to — try browser back, or stay on home
+          if (typeof window !== "undefined" && window.history.length > 1) {
+            window.history.back()
+          }
+          return
+        }
+        const prev = history[history.length - 1]
+        set({
+          ...prev,
+          navHistory: history.slice(0, -1),
+          canGoBack: history.length > 1,
+          isMenuOpen: false,
+        })
+        if (typeof window !== "undefined") {
+          window.scrollTo({ top: 0, behavior: "smooth" })
+        }
       },
-      openProduct: (slug) => {
-        set({ selectedProductSlug: slug, view: "product", isMenuOpen: false })
-        if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" })
+
+      goHome: () => {
+        set({
+          view: "home",
+          selectedProductSlug: null,
+          selectedCategory: null,
+          searchQuery: "",
+          infoPageId: null,
+          navHistory: [],
+          canGoBack: false,
+          isMenuOpen: false,
+        })
+        if (typeof window !== "undefined") {
+          window.scrollTo({ top: 0, behavior: "smooth" })
+        }
       },
-      setCategory: (cat) => set({ selectedCategory: cat, view: "shop" }),
-      setSearchQuery: (q) => set({ searchQuery: q, view: q ? "search" : "shop" }),
-      openInfo: (id) => set({ infoPageId: id, view: "info" }),
 
       addToCart: (item) => {
         const existing = get().cart.find((c) => c.productId === item.productId)

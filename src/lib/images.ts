@@ -7,8 +7,8 @@ type ImageOpts = {
   width?: number
   // Target height in pixels
   height?: number
-  // Crop mode: 'fill' (cover), 'fit' (contain), 'limit' (only shrink), 'thumb' (with face detection)
-  crop?: "fill" | "fit" | "limit" | "thumb" | "scale"
+  // Crop mode: 'fill' (cover/crop), 'pad' (contain with background), 'limit' (only shrink), 'thumb' (with face detection)
+  crop?: "fill" | "pad" | "fit" | "limit" | "thumb" | "scale"
   // Gravity for cropping: 'auto' (smart object detection), 'face', 'center'
   gravity?: "auto" | "face" | "center" | "faces"
   // Quality (1-100 or 'auto')
@@ -17,6 +17,8 @@ type ImageOpts = {
   format?: "auto" | "webp" | "jpg" | "png"
   // Additional dpr (device pixel ratio) for retina displays
   dpr?: "auto" | number
+  // Background color for padding (hex without #, e.g. 'F4EAD5')
+  background?: string
 }
 
 /**
@@ -26,11 +28,8 @@ type ImageOpts = {
  * since we can't transform those on the fly.
  *
  * @example
- * // Get a 400x400 smart-cropped image
- * transformImage(url, { width: 400, height: 400, crop: 'fill', gravity: 'auto' })
- *
- * // Get a 800px wide image that maintains aspect ratio (no cropping)
- * transformImage(url, { width: 800, crop: 'fit' })
+ * // Get a 400x400 padded image (shows full image with cream background)
+ * transformImage(url, { width: 400, height: 400, crop: 'pad', background: 'F4EAD5' })
  */
 export function transformImage(url: string | undefined | null, opts: ImageOpts = {}): string {
   if (!url) return ""
@@ -44,15 +43,15 @@ export function transformImage(url: string | undefined | null, opts: ImageOpts =
   const {
     width,
     height,
-    crop = "fill",
+    crop = "pad",
     gravity = "auto",
     quality = "auto",
     format = "auto",
     dpr,
+    background,
   } = opts
 
   // Build the transformation string
-  // Cloudinary transformations are added between /upload/ and the rest of the path
   const transformations: string[] = []
 
   if (width) transformations.push(`w_${width}`)
@@ -62,30 +61,33 @@ export function transformImage(url: string | undefined | null, opts: ImageOpts =
   transformations.push(`q_${quality}`)
   transformations.push(`f_${format}`)
   if (dpr) transformations.push(`dpr_${dpr}`)
+  if (background && (crop === "pad" || crop === "fit")) transformations.push(`b_rgb:${background}`)
 
   const transformStr = transformations.join(",")
 
   // Insert the transformation into the URL
-  // Original: https://res.cloudinary.com/<cloud>/image/upload/v123/photo.jpg
-  // Transformed: https://res.cloudinary.com/<cloud>/image/upload/w_400,h_400,c_fill,g_auto,q_auto,f_auto/v123/photo.jpg
   return url.replace(
     "/image/upload/",
     `/image/upload/${transformStr}/`
   )
 }
 
+// Cream background color (matches the site's ivory/cream theme)
+const CREAM_BG = "F4EAD5"
+const IVORY_BG = "FBF6EC"
+
 // ─── Preset transformations for common use cases ────────────────────────────
 
 /**
- * Square product image (400x400) — smart crop with object detection
- * Perfect for product cards, product detail page main image, wishlist items
+ * Square product image (600x600) — PAD mode shows full image with cream background
+ * Perfect for product cards, wishlist items — NO CROPPING, full image always visible
  */
 export function productImage(url: string | undefined | null): string {
   return transformImage(url, {
     width: 600,
     height: 600,
-    crop: "fill",
-    gravity: "auto",
+    crop: "pad",
+    background: IVORY_BG,
     quality: "auto",
     format: "auto",
     dpr: "auto",
@@ -93,14 +95,14 @@ export function productImage(url: string | undefined | null): string {
 }
 
 /**
- * Large product image for the product detail page (800x800)
+ * Large product image for the product detail page (1000x1000) — PAD mode, no cropping
  */
 export function productImageLarge(url: string | undefined | null): string {
   return transformImage(url, {
     width: 1000,
     height: 1000,
-    crop: "fill",
-    gravity: "auto",
+    crop: "pad",
+    background: IVORY_BG,
     quality: "auto",
     format: "auto",
     dpr: "auto",
@@ -108,29 +110,29 @@ export function productImageLarge(url: string | undefined | null): string {
 }
 
 /**
- * Thumbnail for admin tables, cart items (100x100)
+ * Thumbnail for admin tables, cart items (120x120) — PAD mode, no cropping
  */
 export function thumbnailImage(url: string | undefined | null): string {
   return transformImage(url, {
     width: 120,
     height: 120,
-    crop: "fill",
-    gravity: "auto",
+    crop: "pad",
+    background: CREAM_BG,
     quality: "auto",
     format: "auto",
   })
 }
 
 /**
- * Category image — landscape 16:10 ratio (640x400) with smart crop
- * Perfect for category cards on home and admin
+ * Category image — landscape 16:10 ratio (640x400) — PAD mode shows full image
+ * Perfect for category cards on admin panel
  */
 export function categoryImage(url: string | undefined | null): string {
   return transformImage(url, {
     width: 640,
     height: 400,
-    crop: "fill",
-    gravity: "auto",
+    crop: "pad",
+    background: CREAM_BG,
     quality: "auto",
     format: "auto",
     dpr: "auto",
@@ -138,14 +140,14 @@ export function categoryImage(url: string | undefined | null): string {
 }
 
 /**
- * Category image — portrait 4:5 ratio (400x500) for homepage grid
+ * Category image — portrait 4:5 ratio (500x625) for homepage grid — PAD mode
  */
 export function categoryImagePortrait(url: string | undefined | null): string {
   return transformImage(url, {
     width: 500,
     height: 625,
-    crop: "fill",
-    gravity: "auto",
+    crop: "pad",
+    background: CREAM_BG,
     quality: "auto",
     format: "auto",
     dpr: "auto",
@@ -153,22 +155,22 @@ export function categoryImagePortrait(url: string | undefined | null): string {
 }
 
 /**
- * Category thumbnail for header mega menu, shop pills, sidebar (80x80)
+ * Category thumbnail for header mega menu, shop pills, sidebar (100x100) — PAD mode
  */
 export function categoryThumbnail(url: string | undefined | null): string {
   return transformImage(url, {
     width: 100,
     height: 100,
-    crop: "fill",
-    gravity: "auto",
+    crop: "pad",
+    background: CREAM_BG,
     quality: "auto",
     format: "auto",
   })
 }
 
 /**
- * Hero slide image — full width, fit mode (no cropping, maintains aspect ratio)
- * Landscape images will display perfectly without cropping
+ * Hero slide image — full width, LIMIT mode (no cropping, maintains aspect ratio)
+ * Landscape images display perfectly without cropping
  */
 export function heroImage(url: string | undefined | null): string {
   return transformImage(url, {
@@ -181,14 +183,14 @@ export function heroImage(url: string | undefined | null): string {
 }
 
 /**
- * Festive CTA image (Roli-Chawal Thali section) — square 600x600
+ * Festive CTA image (Roli-Chawal Thali section) — square 800x800 — PAD mode, no cropping
  */
 export function ctaImage(url: string | undefined | null): string {
   return transformImage(url, {
     width: 800,
     height: 800,
-    crop: "fill",
-    gravity: "auto",
+    crop: "pad",
+    background: IVORY_BG,
     quality: "auto",
     format: "auto",
     dpr: "auto",
@@ -196,14 +198,14 @@ export function ctaImage(url: string | undefined | null): string {
 }
 
 /**
- * Info page image — landscape 2:1 (1200x600) with smart crop
+ * Info page image — landscape 2:1 (1200x600) — PAD mode shows full image
  */
 export function infoImage(url: string | undefined | null): string {
   return transformImage(url, {
     width: 1200,
     height: 600,
-    crop: "fill",
-    gravity: "auto",
+    crop: "pad",
+    background: CREAM_BG,
     quality: "auto",
     format: "auto",
     dpr: "auto",

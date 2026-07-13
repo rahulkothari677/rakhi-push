@@ -13,6 +13,7 @@ import { InfoPage } from "@/components/rakhi/InfoPage"
 import { CartDrawer } from "@/components/rakhi/CartDrawer"
 import { AdminView } from "@/components/rakhi/AdminView"
 import { FloatingActions } from "@/components/rakhi/FloatingActions"
+import { BackButton, BrowserHistorySync } from "@/components/rakhi/BackButton"
 import { useEffect } from "react"
 
 const pageTransitions = {
@@ -35,13 +36,16 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-[#FBF6EC]">
         <AdminView />
+        <BrowserHistorySync />
       </div>
     )
   }
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <BrowserHistorySync />
       <Header />
+      <BackButton />
       <main className="flex-1">
         <AnimatePresence mode="wait">
           <motion.div key={view} {...pageTransitions}>
