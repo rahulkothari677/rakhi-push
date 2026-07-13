@@ -379,9 +379,13 @@ function ProductForm({ product, categories, onClose, onSaved }: {
       const data = await res.json()
       if (data.urls) {
         setForm((f) => ({ ...f, images: [...f.images, ...data.urls] }))
+      } else if (data.needsCloudinary) {
+        alert("⚠️ Image upload requires Cloudinary on Vercel.\n\nPlease set these env vars in Vercel:\n• CLOUDINARY_CLOUD_NAME\n• CLOUDINARY_API_KEY\n• CLOUDINARY_API_SECRET\n\nSign up free at https://cloudinary.com\n\nSee README.md for step-by-step instructions.")
+      } else {
+        alert("Upload failed: " + (data.error || "Unknown error"))
       }
-    } catch (e) {
-      alert("Upload failed")
+    } catch (e: any) {
+      alert("Upload failed: " + (e.message || "Network error"))
     } finally {
       setUploading(false)
     }
@@ -897,15 +901,24 @@ function HeroTab() {
   }
 
   const handleUpload = async (slideIdx: number, files: FileList) => {
+    if (!files.length) return
     const fd = new FormData()
     fd.append("files", files[0])
-    const res = await fetch("/api/admin/upload", { method: "POST", body: fd })
-    const data = await res.json()
-    if (data.urls?.[0]) {
-      const updated = [...slides]
-      updated[slideIdx].image = data.urls[0]
-      setSlides(updated)
-      await handleUpdate(updated[slideIdx])
+    try {
+      const res = await fetch("/api/admin/upload", { method: "POST", body: fd })
+      const data = await res.json()
+      if (data.urls?.[0]) {
+        const updated = [...slides]
+        updated[slideIdx].image = data.urls[0]
+        setSlides(updated)
+        await handleUpdate(updated[slideIdx])
+      } else if (data.needsCloudinary) {
+        alert("⚠️ Image upload requires Cloudinary on Vercel.\n\nPlease set these env vars in Vercel:\n• CLOUDINARY_CLOUD_NAME\n• CLOUDINARY_API_KEY\n• CLOUDINARY_API_SECRET\n\nSign up free at https://cloudinary.com")
+      } else {
+        alert("Upload failed: " + (data.error || "Unknown error"))
+      }
+    } catch (e: any) {
+      alert("Upload failed: " + (e.message || "Network error"))
     }
   }
 

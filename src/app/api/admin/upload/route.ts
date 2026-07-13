@@ -1,46 +1,75 @@
 import { NextResponse } from "next/server"
 import { promises as fs } from "fs"
 import path from "path"
+import crypto from "crypto"
 import { requireAdmin } from "@/lib/admin-guard"
 
-// Try Cloudinary if env vars are set (required for Vercel), else fall back to local FS
-async function uploadToCloudinary(file: File): Promise<string | null> {
+// ─── Cloudinary Upload (signed) ─────────────────────────────────────────────
+// Uses proper signed uploads with API key + secret
+async function uploadToCloudinary(file: File): Promise<string> {
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME
   const apiKey = process.env.CLOUDINARY_API_KEY
   const apiSecret = process.env.CLOUDINARY_API_SECRET
-  if (!cloudName || !apiKey || !apiSecret) return null
 
+  if (!cloudName || !apiKey || !apiSecret) {
+    throw new Error("Cloudinary env vars not set")
+  }
+
+  // Convert file to base64 data URI
   const buffer = Buffer.from(await file.arrayBuffer())
   const base64 = buffer.toString("base64")
   const mime = file.type || "image/jpeg"
   const dataUri = `data:${mime};base64,${base64}`
 
-  // Use unsigned upload via upload preset — but for signed admin uploads we use basic auth
+  // Generate signed upload parameters
+  const timestamp = Math.round(Date.now() / 1000)
+  const folder = "house-of-neelam"
+
+  // Parameters to sign (alphabetical order, excluding file and signature)
+  const paramsToSign: Record<string, string> = {
+    folder,
+    timestamp: timestamp.toString(),
+  }
+
+  // Create signature string (sorted alphabetically: folder=...&timestamp=...)
+  const signatureString = Object.keys(paramsToSign)
+    .sort()
+    .map((k) => `${k}=${paramsToSign[k]}`)
+    .join("&")
+
+  // Generate SHA1 signature
+  const signature = crypto
+    .createHash("sha1")
+    .update(signatureString + apiSecret)
+    .digest("hex")
+
+  // Build multipart form data
+  const formData = new FormData()
+  formData.append("file", dataUri)
+  formData.append("folder", folder)
+  formData.append("timestamp", timestamp.toString())
+  formData.append("api_key", apiKey)
+  formData.append("signature", signature)
+
   const res = await fetch(
     `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          "Basic " + Buffer.from(`${apiKey}:${apiSecret}`).toString("base64"),
-      },
-      body: JSON.stringify({
-        file: dataUri,
-        folder: "house-of-neelam",
-        resource_type: "image",
-      }),
+      body: formData,
     }
   )
+
   if (!res.ok) {
-    const err = await res.text()
-    console.error("Cloudinary upload failed:", err)
-    return null
+    const errText = await res.text()
+    console.error("Cloudinary upload failed:", errText)
+    throw new Error(`Cloudinary error: ${res.status} ${errText.slice(0, 200)}`)
   }
+
   const data = await res.json()
   return data.secure_url as string
 }
 
+// ─── Local Upload (development only) ────────────────────────────────────────
 async function uploadToLocal(file: File): Promise<string> {
   const uploadDir = path.join(process.cwd(), "public", "uploads")
   try {
@@ -58,10 +87,30 @@ async function uploadToLocal(file: File): Promise<string> {
   return `/uploads/${filename}`
 }
 
+// ─── Upload Handler ─────────────────────────────────────────────────────────
 export async function POST(req: Request) {
   const session = await requireAdmin()
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  const isVercel = process.env.VERCEL === "1"
+  const hasCloudinary = !!(
+    process.env.CLOUDINARY_CLOUD_NAME &&
+    process.env.CLOUDINARY_API_KEY &&
+    process.env.CLOUDINARY_API_SECRET
+  )
+
+  // On Vercel, Cloudinary is REQUIRED (local FS is read-only)
+  if (isVercel && !hasCloudinary) {
+    return NextResponse.json(
+      {
+        error:
+          "Image upload requires Cloudinary on Vercel. Please set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET env vars in Vercel. Sign up free at https://cloudinary.com",
+        needsCloudinary: true,
+      },
+      { status: 500 }
+    )
   }
 
   try {
@@ -72,28 +121,27 @@ export async function POST(req: Request) {
     }
 
     const urls: string[] = []
-    const useCloudinary = !!(
-      process.env.CLOUDINARY_CLOUD_NAME &&
-      process.env.CLOUDINARY_API_KEY &&
-      process.env.CLOUDINARY_API_SECRET
-    )
-
     for (const file of files) {
       if (!(file instanceof File)) continue
       let url: string | null = null
-      if (useCloudinary) {
+
+      if (hasCloudinary) {
         url = await uploadToCloudinary(file)
-      }
-      if (!url) {
-        // Fallback to local FS
+      } else {
         url = await uploadToLocal(file)
       }
       urls.push(url)
     }
 
-    return NextResponse.json({ urls, storage: useCloudinary ? "cloudinary" : "local" })
+    return NextResponse.json({
+      urls,
+      storage: hasCloudinary ? "cloudinary" : "local",
+    })
   } catch (e: any) {
     console.error("Upload error:", e)
-    return NextResponse.json({ error: e.message }, { status: 500 })
+    return NextResponse.json(
+      { error: e.message || "Upload failed" },
+      { status: 500 }
+    )
   }
 }
