@@ -111,8 +111,7 @@ export function ProductCard({ product, index = 0 }: Props) {
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
           loading="lazy"
         />
-        {/* Subtle gradient overlay for premium depth */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-60 group-hover:opacity-100 transition-opacity pointer-events-none" />
+        {/* No dark overlay — images stay vibrant */}
 
         {/* Badges — top left */}
         <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 items-start">

@@ -131,10 +131,10 @@ export function HomeView() {
                   </span>
                 </div>
               )}
-              {/* Light gradient overlay for text contrast — VIBRANT, not dark */}
-              <div className="absolute inset-0 bg-gradient-to-t from-white/90 via-white/30 to-transparent" />
+              {/* Light golden gradient at bottom — subtle, keeps image visible */}
+              <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#FFF8DC]/95 via-[#FFE4B5]/40 to-transparent" />
               <div className="absolute inset-0 flex flex-col items-center justify-end p-4 text-center">
-                <h3 className="font-serif text-base sm:text-lg font-semibold leading-tight text-[var(--foreground)] drop-shadow-sm">
+                <h3 className="font-serif text-base sm:text-lg font-semibold leading-tight text-[var(--primary)] drop-shadow-sm">
                   {cat.name}
                 </h3>
                 <p className="text-[10px] tracking-elegant uppercase mt-1.5 font-semibold text-accent">
@@ -158,9 +158,9 @@ export function HomeView() {
         </div>
       </section>
 
-      {/* Featured Rakhis — dot grid pattern */}
-      <section className="py-20 bg-gradient-to-b from-[var(--background)] to-[var(--cream)]/50 relative overflow-hidden">
-        {/* Dot grid pattern */}
+      {/* Featured Rakhis — VIBRANT light gradient with dot pattern */}
+      <section className="py-20 bg-gradient-to-b from-[#FFF8DC] via-[var(--background)] to-[#FFF8DC] relative overflow-hidden">
+        {/* Dot grid pattern — subtle */}
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{
           backgroundImage: `radial-gradient(circle, var(--primary) 1.5px, transparent 1.5px)`,
           backgroundSize: '30px 30px',
@@ -232,8 +232,13 @@ export function HomeView() {
         </div>
       </section>
 
-      {/* Testimonials / Social Proof */}
-      <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Testimonials / Social Proof — VIBRANT gradient background */}
+      <section className="py-20 bg-gradient-to-br from-[#FFF8DC] via-[var(--background)] to-[#FFE4B5] relative overflow-hidden">
+        {/* Wave pattern background */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10 Q25 0 50 10 T100 10' fill='none' stroke='%238B1E3E' stroke-width='1'/%3E%3C/svg%3E")`,
+        }} />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-4 mb-4">
             <div className="h-px w-16 bg-gradient-to-r from-transparent to-[var(--accent)]" />
@@ -296,10 +301,11 @@ export function HomeView() {
             </motion.div>
           ))}
         </div>
+        </div>
       </section>
 
-      {/* New Arrivals — diagonal lines pattern */}
-      <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* New Arrivals — VIBRANT with diagonal lines pattern */}
+      <section className="py-20 bg-gradient-to-b from-[var(--background)] via-[#FFF8DC] to-[var(--background)] relative overflow-hidden">
         {/* Diagonal lines pattern */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
           backgroundImage: `repeating-linear-gradient(45deg, var(--accent) 0, var(--accent) 1px, transparent 1px, transparent 20px)`,

@@ -55,7 +55,7 @@ export function ShopView() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
       {/* Page header */}
-      <div className="bg-gradient-to-br from-[var(--foreground)] to-[var(--primary)] text-[var(--background)] py-16">
+      <div className="bg-gradient-to-br from-[var(--primary)] via-[var(--primary-dark)] to-[var(--primary)] text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex items-center justify-center gap-3 mb-3">
             <div className="h-px w-12 bg-[var(--accent)]" />

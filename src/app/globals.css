@@ -176,6 +176,12 @@
   .font-script {
     font-family: var(--font-script), "Brush Script MT", cursive;
   }
+  .font-hero {
+    font-family: var(--font-hero), "Great Vibes", cursive;
+  }
+  .font-body {
+    font-family: var(--font-body), "Montserrat", system-ui, sans-serif;
+  }
   .font-sans {
     font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
   }

@@ -25,13 +25,13 @@ export function Footer() {
   const social = settings?.social
 
   return (
-    <footer className="bg-gradient-to-b from-[var(--foreground)] to-[#0D0205] text-[var(--background)] mt-20 relative overflow-hidden">
+    <footer className="bg-gradient-to-br from-[var(--primary)] via-[var(--primary-dark)] to-[var(--primary)] text-white mt-20 relative overflow-hidden">
       {/* Decorative top border */}
       <div className="h-1 gradient-gold" />
 
       {/* Decorative pattern overlay */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 0 L80 40 L40 80 L0 40 Z' fill='%23C9A24B'/%3E%3C/svg%3E")`,
+      <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 0 L80 40 L40 80 L0 40 Z' fill='%23FFD700'/%3E%3C/svg%3E")`,
       }} />
 
       {/* Footer — larger with bigger fonts */}

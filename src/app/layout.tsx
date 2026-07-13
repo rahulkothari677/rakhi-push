@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display, Cormorant_Garamond } from "next/font/google";
+import { Inter, Playfair_Display, Cormorant_Garamond, Great_Vibes, Montserrat } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
@@ -25,6 +25,20 @@ const cormorant = Cormorant_Garamond({
   display: "swap",
   weight: ["300", "400", "500", "600", "700"],
   style: ["normal", "italic"],
+});
+
+const greatVibes = Great_Vibes({
+  variable: "--font-hero",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400"],
+});
+
+const montserrat = Montserrat({
+  variable: "--font-body",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -56,7 +70,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${playfair.variable} ${cormorant.variable} antialiased bg-background text-foreground`}
+        className={`${inter.variable} ${playfair.variable} ${cormorant.variable} ${greatVibes.variable} ${montserrat.variable} antialiased bg-background text-foreground`}
       >
         <SessionProvider>{children}</SessionProvider>
         <Toaster />
