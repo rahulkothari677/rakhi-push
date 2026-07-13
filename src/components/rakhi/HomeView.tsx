@@ -267,11 +267,11 @@ export function HomeView() {
               </button>
             </div>
             <div className="relative">
-              <div className="aspect-square max-w-md mx-auto rounded-xl overflow-hidden shadow-luxe-hover">
+              <div className="aspect-square max-w-md mx-auto rounded-xl overflow-hidden shadow-luxe-hover bg-[#FBF6EC]">
                 <img
                   src={ctaImage(ctaContent?.image || "/images/thali-marigold-1.svg")}
                   alt={ctaContent?.titleAccent || "Roli Chawal Thali"}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
               </div>
             </div>

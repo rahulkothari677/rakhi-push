@@ -462,7 +462,7 @@ function ProductForm({ product, categories, onClose, onSaved }: {
               />
             </label>
           </div>
-          <p className="text-xs text-[#6B5544]">Click the + tile to upload images from your phone or laptop.</p>
+          <p className="text-xs text-[#6B5544]">📐 <strong>Recommended size: 1200 × 1200 px (square 1:1)</strong> — Square images display perfectly in product cards, product detail, cart, and wishlist. JPG/PNG, max 5MB.</p>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
@@ -846,7 +846,7 @@ function CategoryForm({ category, onClose, onSaved }: {
                 </button>
               )}
               <p className="text-xs text-[#6B5544] mt-1.5">
-                Upload a beautiful photo representing this category. Recommended: 800×800px, JPG/PNG.
+                📐 <strong>Recommended size: 1000 × 1250 px (portrait 4:5)</strong> — This fits the homepage category grid perfectly. JPG/PNG, max 5MB.
               </p>
             </div>
           </div>
@@ -1023,6 +1023,7 @@ function HeroTab() {
                   <Upload size={12} /> Upload
                   <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files && handleUpload(idx, e.target.files)} />
                 </label>
+                <p className="text-xs text-[#6B5544] mt-1">📐 1920 × 1080 px (16:9 landscape)</p>
               </div>
               <div className="md:col-span-2 space-y-2">
                 <div className="grid sm:grid-cols-2 gap-2">
@@ -1295,7 +1296,7 @@ function CTASectionEditor({ current, update }: {
               </button>
             )}
             <p className="text-xs text-[#6B5544] mt-1.5">
-              Recommended: square image (800×800px or larger). The image will be smart-cropped to fit.
+              📐 <strong>Recommended size: 1000 × 1000 px (square 1:1)</strong> — Square image for the CTA section. JPG/PNG, max 5MB.
             </p>
           </div>
         </div>

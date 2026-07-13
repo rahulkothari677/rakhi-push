@@ -137,11 +137,11 @@ export function ProductView() {
             className="lg:sticky lg:top-28 lg:self-start"
           >
             <div className="bg-white rounded-lg overflow-hidden border border-[#E8D9B8] shadow-luxe">
-              <div className="aspect-square">
+              <div className="aspect-square bg-[#FBF6EC]">
                 <img
                   src={productImageLarge(images[activeImage] || product.primaryImage)}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
               </div>
             </div>
@@ -156,7 +156,7 @@ export function ProductView() {
                       i === activeImage ? "border-[#8B1E3E]" : "border-[#E8D9B8] hover:border-[#C9A24B]"
                     )}
                   >
-                    <img src={thumbnailImage(img)} alt="" className="w-full h-full object-cover" />
+                    <img src={thumbnailImage(img)} alt="" className="w-full h-full object-contain" />
                   </button>
                 ))}
               </div>

@@ -155,7 +155,7 @@ export function CartDrawer() {
                       className="flex gap-3 bg-white p-3 rounded-lg border border-[#E8D9B8]"
                     >
                       <div className="w-20 h-20 rounded-md overflow-hidden bg-[#FBF6EC] flex-shrink-0">
-                        <img src={thumbnailImage(item.image)} alt={item.name} className="w-full h-full object-cover" />
+                        <img src={thumbnailImage(item.image)} alt={item.name} className="w-full h-full object-contain" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="text-sm font-semibold text-[#2A0A0F] line-clamp-2">{item.name}</h4>

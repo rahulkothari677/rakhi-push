@@ -62,7 +62,7 @@ export function ProductCard({ product, index = 0 }: Props) {
         <img
           src={productImage(product.primaryImage)}
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700"
           loading="lazy"
         />
         {/* Badges */}
