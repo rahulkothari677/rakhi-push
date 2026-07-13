@@ -8,10 +8,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  // Static fallback URL for schema validation only.
-  // The actual database connection is handled by the adapter in src/lib/db.ts
-  // which reads DATABASE_URL at runtime (works on Vercel + Turso).
-  url = "file:./prisma/dev.db"
+  url      = env("DATABASE_URL")
 }
 
 // ─── AUTH ────────────────────────────────────────────────────────────────────

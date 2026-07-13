@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaLibSql } from '@prisma/adapter-libsql'
+import { PrismaLibSQL } from '@prisma/adapter-libsql'
 import { createClient } from '@libsql/client'
 
 // Lazy singleton — PrismaClient is created on first use, NOT at module load time
@@ -34,7 +34,7 @@ function createPrismaClient(): PrismaClient {
       url,
       authToken: process.env.DATABASE_AUTH_TOKEN,
     })
-    const adapter = new PrismaLibSql(libsql)
+    const adapter = new PrismaLibSQL(libsql)
     // Prisma v6 with driverAdapters supports the adapter option natively
     return new PrismaClient({ adapter })
   }
