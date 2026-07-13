@@ -2,7 +2,7 @@
 
 import { useStore } from "@/lib/store"
 import { useEffect, useState } from "react"
-import { Instagram, Facebook, Youtube, Mail, Phone, MapPin, MessageCircle } from "lucide-react"
+import { Instagram, Facebook, Youtube, Mail, Phone, MapPin, MessageCircle, Sparkles, Heart } from "lucide-react"
 
 export function Footer() {
   const { setView, setCategory, openInfo } = useStore()
@@ -25,39 +25,54 @@ export function Footer() {
   const social = settings?.social
 
   return (
-    <footer className="bg-gradient-to-b from-[#2A0A0F] to-[#1A0508] text-[#FBF6EC] mt-20">
-      {/* Top decorative border */}
+    <footer className="bg-gradient-to-b from-[#2A0A0F] to-[#1A0508] text-[#FBF6EC] mt-20 relative overflow-hidden">
+      {/* Decorative top border */}
       <div className="h-1 gradient-gold" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      {/* Decorative pattern overlay */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 0 L80 40 L40 80 L0 40 Z' fill='%23C9A24B'/%3E%3C/svg%3E")`,
+      }} />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
           <div>
             <div className="mb-4">
-              <h3 className="font-serif text-2xl font-bold text-[#FBF6EC] leading-none">
-                House of <span className="text-gradient-gold italic">Neelam</span>
+              <h3 className="font-serif text-2xl font-bold leading-none">
+                <span className="text-[#FBF6EC]">House of </span>
+                <span className="text-gradient-gold italic">Neelam</span>
               </h3>
-              <p className="text-[10px] tracking-[0.3em] text-[#C9A24B] uppercase mt-1">
-                Rakhi Collection
+              <p className="text-[10px] tracking-[0.3em] text-[#C9A24B] uppercase mt-1.5 flex items-center gap-2">
+                <span>❖</span> Rakhi Collection <span>❖</span>
               </p>
             </div>
-            <p className="text-sm text-[#FBF6EC]/70 leading-relaxed mb-4">
+            <p className="text-sm text-[#FBF6EC]/70 leading-relaxed mb-6">
               Handcrafted premium Rakhis celebrating the eternal bond between brothers and sisters. Each piece is a timeless symbol of love, devotion, and tradition.
             </p>
+            {/* Trust indicators */}
+            <div className="flex flex-wrap gap-3">
+              <div className="flex items-center gap-1.5 text-xs text-[#C9A24B]">
+                <Sparkles size={12} /> Premium Quality
+              </div>
+              <div className="flex items-center gap-1.5 text-xs text-[#C9A24B]">
+                <Heart size={12} className="fill-current" /> Made with Love
+              </div>
+            </div>
             {social && (social.instagram || social.facebook || social.youtube) && (
-              <div className="flex gap-3">
+              <div className="flex gap-3 mt-6">
                 {social.instagram && (
-                  <a href={social.instagram} target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-[#FBF6EC]/10 hover:bg-[#C9A24B] hover:text-[#2A0A0F] flex items-center justify-center transition-colors">
+                  <a href={social.instagram} target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-[#FBF6EC]/10 hover:bg-[#C9A24B] hover:text-[#2A0A0F] flex items-center justify-center transition-all hover:scale-110">
                     <Instagram size={16} />
                   </a>
                 )}
                 {social.facebook && (
-                  <a href={social.facebook} target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-[#FBF6EC]/10 hover:bg-[#C9A24B] hover:text-[#2A0A0F] flex items-center justify-center transition-colors">
+                  <a href={social.facebook} target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-[#FBF6EC]/10 hover:bg-[#C9A24B] hover:text-[#2A0A0F] flex items-center justify-center transition-all hover:scale-110">
                     <Facebook size={16} />
                   </a>
                 )}
                 {social.youtube && (
-                  <a href={social.youtube} target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-[#FBF6EC]/10 hover:bg-[#C9A24B] hover:text-[#2A0A0F] flex items-center justify-center transition-colors">
+                  <a href={social.youtube} target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-[#FBF6EC]/10 hover:bg-[#C9A24B] hover:text-[#2A0A0F] flex items-center justify-center transition-all hover:scale-110">
                     <Youtube size={16} />
                   </a>
                 )}
@@ -67,11 +82,11 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-sm tracking-elegant uppercase text-[#C9A24B] font-semibold mb-4">
-              Quick Links
+            <h4 className="text-sm tracking-elegant uppercase text-[#C9A24B] font-semibold mb-4 flex items-center gap-2">
+              <span className="h-px w-6 bg-[#C9A24B]" /> Quick Links
             </h4>
             <ul className="space-y-2.5 text-sm text-[#FBF6EC]/80">
-              <li><button onClick={() => setView("home")} className="hover:text-[#C9A24B] transition-colors">Home</button></li>
+              <li><button onClick={() => useStore.getState().goHome()} className="hover:text-[#C9A24B] transition-colors">Home</button></li>
               <li><button onClick={() => setView("shop")} className="hover:text-[#C9A24B] transition-colors">All Collection</button></li>
               <li><button onClick={() => setView("wishlist")} className="hover:text-[#C9A24B] transition-colors">Wishlist</button></li>
               <li><button onClick={() => openInfo("about")} className="hover:text-[#C9A24B] transition-colors">About Us</button></li>
@@ -82,8 +97,8 @@ export function Footer() {
 
           {/* Categories */}
           <div>
-            <h4 className="text-sm tracking-elegant uppercase text-[#C9A24B] font-semibold mb-4">
-              Collections
+            <h4 className="text-sm tracking-elegant uppercase text-[#C9A24B] font-semibold mb-4 flex items-center gap-2">
+              <span className="h-px w-6 bg-[#C9A24B]" /> Collections
             </h4>
             <ul className="space-y-2.5 text-sm text-[#FBF6EC]/80">
               {categories.slice(0, 7).map((c) => (
@@ -98,8 +113,8 @@ export function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="text-sm tracking-elegant uppercase text-[#C9A24B] font-semibold mb-4">
-              Get in Touch
+            <h4 className="text-sm tracking-elegant uppercase text-[#C9A24B] font-semibold mb-4 flex items-center gap-2">
+              <span className="h-px w-6 bg-[#C9A24B]" /> Get in Touch
             </h4>
             <ul className="space-y-3 text-sm text-[#FBF6EC]/80">
               {contact?.email && (
@@ -130,7 +145,7 @@ export function Footer() {
                     href={`https://wa.me/${whatsapp.primaryNumber.replace(/[^\d]/g, "")}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 mt-2 px-4 py-2 bg-[#25D366] text-white text-xs tracking-elegant uppercase font-semibold rounded-md hover:bg-[#1FAE54] transition-colors"
+                    className="inline-flex items-center gap-2 mt-3 px-5 py-2.5 bg-[#25D366] text-white text-xs tracking-elegant uppercase font-semibold rounded-md hover:bg-[#1FAE54] transition-all hover:scale-105"
                   >
                     <MessageCircle size={14} /> Chat on WhatsApp
                   </a>
@@ -140,12 +155,18 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="divider-gold my-10 opacity-50" />
+        {/* Divider with ornament */}
+        <div className="flex items-center gap-4 my-10">
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent to-[#C9A24B]/50" />
+          <span className="text-[#C9A24B] text-lg">❖</span>
+          <div className="flex-1 h-px bg-gradient-to-l from-transparent to-[#C9A24B]/50" />
+        </div>
 
         {/* Bottom */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#FBF6EC]/60">
-          <p>© {new Date().getFullYear()} House of Neelam. All rights reserved. Handcrafted with love in India. 🪔</p>
+          <p className="flex items-center gap-1.5">
+            © {new Date().getFullYear()} House of Neelam. All rights reserved. Made with <Heart size={10} className="fill-[#8B1E3E] text-[#8B1E3E]" /> in India.
+          </p>
           <div className="flex gap-6">
             <button onClick={() => openInfo("shipping")} className="hover:text-[#C9A24B] transition-colors">Shipping</button>
             <button onClick={() => openInfo("care")} className="hover:text-[#C9A24B] transition-colors">Care Guide</button>

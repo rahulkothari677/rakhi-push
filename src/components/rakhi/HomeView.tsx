@@ -181,34 +181,111 @@ export function HomeView() {
         </div>
       </section>
 
-      {/* Quote / Story section */}
-      <section className="py-24 relative overflow-hidden">
+      {/* Quote / Story section — premium with decorative elements */}
+      <section className="py-28 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#8B1E3E] via-[#6B0E2A] to-[#2A0A0F]" />
+        {/* Decorative mandala pattern */}
+        <div className="absolute inset-0 opacity-[0.04]" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='120' height='120' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='60' cy='60' r='50' fill='none' stroke='%23C9A24B' stroke-width='1'/%3E%3Ccircle cx='60' cy='60' r='30' fill='none' stroke='%23C9A24B' stroke-width='1'/%3E%3Cpath d='M60 10 L60 110 M10 60 L110 60' stroke='%23C9A24B' stroke-width='1'/%3E%3C/svg%3E")`,
+        }} />
         <div className="absolute inset-0 opacity-10">
-          {Array.from({ length: 6 }).map((_, i) => (
+          {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
               className="absolute animate-float-slow"
               style={{
-                left: `${10 + i * 15}%`,
-                top: `${20 + (i % 3) * 25}%`,
-                animationDelay: `${i * 0.5}s`,
+                left: `${5 + i * 12}%`,
+                top: `${15 + (i % 4) * 22}%`,
+                animationDelay: `${i * 0.4}s`,
               }}
             >
-              <Sparkles size={24} className="text-[#C9A24B]" />
+              <Sparkles size={20} className="text-[#C9A24B]" />
             </div>
           ))}
         </div>
 
-        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <div className="text-5xl text-[#C9A24B] font-serif mb-4">&ldquo;</div>
-          <p className="font-serif text-2xl sm:text-4xl text-[#FBF6EC] italic leading-relaxed mb-6">
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <span className="text-[#C9A24B] text-2xl">❖</span>
+            <span className="text-[#C9A24B] text-3xl font-serif">&ldquo;</span>
+            <span className="text-[#C9A24B] text-2xl">❖</span>
+          </div>
+          <p className="font-serif text-2xl sm:text-4xl lg:text-5xl text-[#FBF6EC] italic leading-relaxed mb-8">
             A brother may not be a friend, but a friend will always be a brother. The sacred thread of Rakhi binds not just wrists, but hearts across lifetimes.
           </p>
-          <div className="h-px w-16 bg-[#C9A24B] mx-auto mb-4" />
-          <p className="text-sm tracking-[0.3em] uppercase text-[#C9A24B] font-semibold">
-            House of Neelam
-          </p>
+          <div className="flex items-center justify-center gap-4">
+            <div className="h-px w-12 bg-[#C9A24B]" />
+            <p className="text-sm tracking-[0.3em] uppercase text-[#C9A24B] font-semibold">
+              House of Neelam
+            </p>
+            <div className="h-px w-12 bg-[#C9A24B]" />
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials / Social Proof */}
+      <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <div className="h-px w-16 bg-gradient-to-r from-transparent to-[#C9A24B]" />
+            <span className="text-[#C9A24B] text-lg">❖</span>
+            <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-[#C9A24B] font-semibold">
+              Loved by Families
+            </p>
+            <span className="text-[#C9A24B] text-lg">❖</span>
+            <div className="h-px w-16 bg-gradient-to-l from-transparent to-[#C9A24B]" />
+          </div>
+          <h2 className="font-serif text-3xl sm:text-5xl font-bold text-[#2A0A0F] mb-3">
+            What Our <span className="text-gradient-burgundy italic">Customers Say</span>
+          </h2>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          {[
+            {
+              name: "Priya Sharma",
+              location: "Mumbai",
+              text: "The Imperial Gold Peacock Rakhi was absolutely stunning! My brother was speechless. The craftsmanship is heirloom quality — worth every rupee.",
+              rating: 5,
+            },
+            {
+              name: "Anjali Patel",
+              location: "Delhi",
+              text: "Ordered the Lumba set for bhaiya-bhabhi. The pearls and golden work were even more beautiful in person. Felt premium and royal!",
+              rating: 5,
+            },
+            {
+              name: "Ritu Agarwal",
+              location: "Bangalore",
+              text: "The WhatsApp ordering was so easy! Neelam responded immediately and the Rakhi arrived in a beautiful gift box. Highly recommend!",
+              rating: 5,
+            },
+          ].map((t, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="bg-white p-6 rounded-xl border border-[#E8D9B8] shadow-luxe hover:shadow-luxe-hover transition-all hover-lift"
+            >
+              <div className="flex gap-1 mb-3">
+                {Array.from({ length: t.rating }).map((_, j) => (
+                  <span key={j} className="text-[#C9A24B] text-lg">★</span>
+                ))}
+              </div>
+              <p className="text-sm text-[#6B5544] leading-relaxed mb-4 italic">&ldquo;{t.text}&rdquo;</p>
+              <div className="flex items-center gap-3 pt-4 border-t border-[#E8D9B8]">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#8B1E3E] to-[#6B0E2A] flex items-center justify-center text-[#FBF6EC] font-serif font-bold">
+                  {t.name.charAt(0)}
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-[#2A0A0F]">{t.name}</p>
+                  <p className="text-xs text-[#6B5544]">{t.location}</p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </section>
 
