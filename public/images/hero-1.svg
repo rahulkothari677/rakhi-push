@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+  <defs>
+    <radialGradient id="bg-grad" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#F4EAD5"/>
+      <stop offset="100%" stop-color="#FBF6EC"/>
+    </radialGradient>
+    <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B5862D"/>
+      <stop offset="50%" stop-color="#E6C373"/>
+      <stop offset="100%" stop-color="#C9A24B"/>
+    </linearGradient>
+    <linearGradient id="silver-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A8A8A8"/>
+      <stop offset="50%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#C0C0C0"/>
+    </linearGradient>
+    <linearGradient id="burgundy-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A8425B"/>
+      <stop offset="100%" stop-color="#6B0E2A"/>
+    </linearGradient>
+    <filter id="soft-shadow">
+      <feGaussianBlur stdDeviation="3"/>
+      <feOffset dx="2" dy="4" result="offsetblur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.2"/>
+      <feComposite in2="offsetblur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="1200" height="600" fill="url(#bg-grad)"/>
+  
+    <g transform="translate(600, 300)">
+      <!-- Big ornate rakhi on left -->
+      <g transform="translate(-200, 0) scale(1.2)" filter="url(#soft-shadow)">
+        <circle r="130" fill="#8B1E3E" stroke="url(#gold-grad)" stroke-width="4"/>
+        <circle r="110" fill="none" stroke="url(#gold-grad)" stroke-width="1.5" opacity="0.6"/>
+        <g transform="translate(100, 0) rotate(0)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#gold-grad)" opacity="0.7"/>
+          </g><g transform="translate(86.60254037844388, 49.99999999999999) rotate(30)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#gold-grad)" opacity="0.7"/>
+          </g><g transform="translate(50.000000000000014, 86.60254037844386) rotate(60)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#gold-grad)" opacity="0.7"/>
+          </g><g transform="translate(6.123233995736766e-15, 100) rotate(90)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#gold-grad)" opacity="0.7"/>
+          </g><g transform="translate(-49.99999999999998, 86.60254037844388) rotate(120)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#gold-grad)" opacity="0.7"/>
+          </g><g transform="translate(-86.60254037844388, 49.99999999999999) rotate(150)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#gold-grad)" opacity="0.7"/>
+          </g><g transform="translate(-100, 1.2246467991473532e-14) rotate(180)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#gold-grad)" opacity="0.7"/>
+          </g><g transform="translate(-86.60254037844386, -50.000000000000014) rotate(210)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#gold-grad)" opacity="0.7"/>
+          </g><g transform="translate(-50.00000000000004, -86.60254037844383) rotate(240)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#gold-grad)" opacity="0.7"/>
+          </g><g transform="translate(-1.8369701987210297e-14, -100) rotate(270)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#gold-grad)" opacity="0.7"/>
+          </g><g transform="translate(50.000000000000014, -86.60254037844386) rotate(300)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#gold-grad)" opacity="0.7"/>
+          </g><g transform="translate(86.60254037844383, -50.00000000000004) rotate(330)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#gold-grad)" opacity="0.7"/>
+          </g>
+        
+    <!-- Peacock motif -->
+    <g transform="scale(0.7)">
+      <ellipse cx="0" cy="-20" rx="20" ry="35" fill="url(#gold-grad)"/>
+      <circle cx="0" cy="-40" r="14" fill="url(#burgundy-grad)"/>
+      <!-- Peacock feathers -->
+      <g transform="translate(25.000000000000007, -53.30127018922193) rotate(-60)">
+          <ellipse cx="0" cy="0" rx="8" ry="22" fill="url(#gold-grad)" opacity="0.8"/>
+          <circle cx="0" cy="-15" r="6" fill="#8B1E3E"/>
+          <circle cx="0" cy="-15" r="3" fill="#C9A24B"/>
+        </g><g transform="translate(43.30127018922194, -35) rotate(-30)">
+          <ellipse cx="0" cy="0" rx="8" ry="22" fill="url(#gold-grad)" opacity="0.8"/>
+          <circle cx="0" cy="-15" r="6" fill="#8B1E3E"/>
+          <circle cx="0" cy="-15" r="3" fill="#C9A24B"/>
+        </g><g transform="translate(50, -10) rotate(0)">
+          <ellipse cx="0" cy="0" rx="8" ry="22" fill="url(#gold-grad)" opacity="0.8"/>
+          <circle cx="0" cy="-15" r="6" fill="#8B1E3E"/>
+          <circle cx="0" cy="-15" r="3" fill="#C9A24B"/>
+        </g><g transform="translate(43.30127018922194, 14.999999999999996) rotate(30)">
+          <ellipse cx="0" cy="0" rx="8" ry="22" fill="url(#gold-grad)" opacity="0.8"/>
+          <circle cx="0" cy="-15" r="6" fill="#8B1E3E"/>
+          <circle cx="0" cy="-15" r="3" fill="#C9A24B"/>
+        </g><g transform="translate(25.000000000000007, 33.30127018922193) rotate(60)">
+          <ellipse cx="0" cy="0" rx="8" ry="22" fill="url(#gold-grad)" opacity="0.8"/>
+          <circle cx="0" cy="-15" r="6" fill="#8B1E3E"/>
+          <circle cx="0" cy="-15" r="3" fill="#C9A24B"/>
+        </g>
+    </g>
+      </g>
+      <!-- Decorative threads -->
+      <path d="M -50 0 Q 100 -50 250 0" stroke="#8B1E3E" stroke-width="3" fill="none"/>
+      <path d="M -50 30 Q 100 -20 250 30" stroke="url(#gold-grad)" stroke-width="2" fill="none"/>
+    </g>
+    <!-- Scattered petals -->
+    <ellipse cx="200" cy="100" rx="12" ry="6" fill="#8B1E3E" opacity="0.2" transform="rotate(0 200 100)"/><ellipse cx="290" cy="170" rx="12" ry="6" fill="#8B1E3E" opacity="0.2" transform="rotate(45 290 170)"/><ellipse cx="380" cy="240" rx="12" ry="6" fill="#8B1E3E" opacity="0.2" transform="rotate(90 380 240)"/><ellipse cx="470" cy="310" rx="12" ry="6" fill="#8B1E3E" opacity="0.2" transform="rotate(135 470 310)"/><ellipse cx="560" cy="380" rx="12" ry="6" fill="#8B1E3E" opacity="0.2" transform="rotate(180 560 380)"/><ellipse cx="650" cy="450" rx="12" ry="6" fill="#8B1E3E" opacity="0.2" transform="rotate(225 650 450)"/><ellipse cx="740" cy="120" rx="12" ry="6" fill="#8B1E3E" opacity="0.2" transform="rotate(270 740 120)"/><ellipse cx="830" cy="190" rx="12" ry="6" fill="#8B1E3E" opacity="0.2" transform="rotate(315 830 190)"/>
+  
+</svg>

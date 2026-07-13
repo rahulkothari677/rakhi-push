@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+  <defs>
+    <radialGradient id="bg-grad" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#F4EAD5"/>
+      <stop offset="100%" stop-color="#FBF6EC"/>
+    </radialGradient>
+    <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B5862D"/>
+      <stop offset="50%" stop-color="#E6C373"/>
+      <stop offset="100%" stop-color="#C9A24B"/>
+    </linearGradient>
+    <linearGradient id="silver-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A8A8A8"/>
+      <stop offset="50%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#C0C0C0"/>
+    </linearGradient>
+    <linearGradient id="burgundy-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A8425B"/>
+      <stop offset="100%" stop-color="#6B0E2A"/>
+    </linearGradient>
+    <filter id="soft-shadow">
+      <feGaussianBlur stdDeviation="3"/>
+      <feOffset dx="2" dy="4" result="offsetblur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.2"/>
+      <feComposite in2="offsetblur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="1200" height="600" fill="url(#bg-grad)"/>
+  
+    <g transform="translate(600, 300)">
+      <!-- Silver rakhi prominent -->
+      <g transform="translate(0, 0) scale(1.3)" filter="url(#soft-shadow)">
+        <circle r="140" fill="#F4EAD5" stroke="url(#silver-grad)" stroke-width="4"/>
+        <circle r="120" fill="none" stroke="url(#silver-grad)" stroke-width="1.5" opacity="0.6"/>
+        <g transform="translate(110, 0) rotate(0)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#silver-grad)" opacity="0.7"/>
+          </g><g transform="translate(95.26279441628826, 54.99999999999999) rotate(30)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#silver-grad)" opacity="0.7"/>
+          </g><g transform="translate(55.000000000000014, 95.26279441628824) rotate(60)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#silver-grad)" opacity="0.7"/>
+          </g><g transform="translate(6.735557395310443e-15, 110) rotate(90)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#silver-grad)" opacity="0.7"/>
+          </g><g transform="translate(-54.99999999999998, 95.26279441628826) rotate(120)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#silver-grad)" opacity="0.7"/>
+          </g><g transform="translate(-95.26279441628826, 54.99999999999999) rotate(150)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#silver-grad)" opacity="0.7"/>
+          </g><g transform="translate(-110, 1.3471114790620885e-14) rotate(180)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#silver-grad)" opacity="0.7"/>
+          </g><g transform="translate(-95.26279441628824, -55.000000000000014) rotate(210)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#silver-grad)" opacity="0.7"/>
+          </g><g transform="translate(-55.00000000000005, -95.26279441628822) rotate(240)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#silver-grad)" opacity="0.7"/>
+          </g><g transform="translate(-2.0206672185931328e-14, -110) rotate(270)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#silver-grad)" opacity="0.7"/>
+          </g><g transform="translate(55.000000000000014, -95.26279441628824) rotate(300)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#silver-grad)" opacity="0.7"/>
+          </g><g transform="translate(95.26279441628822, -55.00000000000005) rotate(330)">
+            <ellipse cx="0" cy="0" rx="16" ry="7" fill="url(#silver-grad)" opacity="0.7"/>
+          </g>
+        
+    <!-- Lotus motif -->
+    <g transform="scale(0.85)">
+      <g transform="rotate(0)">
+          <path d="M 0 -60 Q -15 -30 0 -10 Q 15 -30 0 -60" fill="url(#silver-grad)" opacity="0.85"/>
+        </g><g transform="rotate(45)">
+          <path d="M 0 -60 Q -15 -30 0 -10 Q 15 -30 0 -60" fill="url(#silver-grad)" opacity="0.85"/>
+        </g><g transform="rotate(90)">
+          <path d="M 0 -60 Q -15 -30 0 -10 Q 15 -30 0 -60" fill="url(#silver-grad)" opacity="0.85"/>
+        </g><g transform="rotate(135)">
+          <path d="M 0 -60 Q -15 -30 0 -10 Q 15 -30 0 -60" fill="url(#silver-grad)" opacity="0.85"/>
+        </g><g transform="rotate(180)">
+          <path d="M 0 -60 Q -15 -30 0 -10 Q 15 -30 0 -60" fill="url(#silver-grad)" opacity="0.85"/>
+        </g><g transform="rotate(225)">
+          <path d="M 0 -60 Q -15 -30 0 -10 Q 15 -30 0 -60" fill="url(#silver-grad)" opacity="0.85"/>
+        </g><g transform="rotate(270)">
+          <path d="M 0 -60 Q -15 -30 0 -10 Q 15 -30 0 -60" fill="url(#silver-grad)" opacity="0.85"/>
+        </g><g transform="rotate(315)">
+          <path d="M 0 -60 Q -15 -30 0 -10 Q 15 -30 0 -60" fill="url(#silver-grad)" opacity="0.85"/>
+        </g>
+      <circle r="12" fill="#C9A24B"/>
+      <circle r="6" fill="#8B1E3E"/>
+    </g>
+      </g>
+      <!-- Golden sparkles -->
+      <circle cx="162.7273346446802" cy="72.2478920466806" r="2" fill="#C9A24B" opacity="0.6"/><circle cx="557.9180087685012" cy="321.33259351233966" r="2" fill="#C9A24B" opacity="0.6"/><circle cx="762.3173996577216" cy="525.2987275373304" r="2" fill="#C9A24B" opacity="0.6"/><circle cx="157.25055790461937" cy="438.9467707945246" r="2" fill="#C9A24B" opacity="0.6"/><circle cx="673.8663796955835" cy="256.47436883763413" r="2" fill="#C9A24B" opacity="0.6"/><circle cx="342.0281146594747" cy="256.4447355078976" r="2" fill="#C9A24B" opacity="0.6"/><circle cx="242.94443732347776" cy="180.0202728672788" r="2" fill="#C9A24B" opacity="0.6"/><circle cx="1037.6637345001677" cy="269.7483972034938" r="2" fill="#C9A24B" opacity="0.6"/><circle cx="1015.8069610751415" cy="349.3355871592531" r="2" fill="#C9A24B" opacity="0.6"/><circle cx="447.5080857358507" cy="181.05044411136933" r="2" fill="#C9A24B" opacity="0.6"/><circle cx="204.80594070126568" cy="320.81403436978604" r="2" fill="#C9A24B" opacity="0.6"/><circle cx="790.1260345333078" cy="126.40669179768058" r="2" fill="#C9A24B" opacity="0.6"/><circle cx="673.4538865714244" cy="569.6104024310258" r="2" fill="#C9A24B" opacity="0.6"/><circle cx="627.7421694136634" cy="558.0042984836055" r="2" fill="#C9A24B" opacity="0.6"/><circle cx="843.7404377914122" cy="175.97149649927243" r="2" fill="#C9A24B" opacity="0.6"/>
+    </g>
+  
+</svg>

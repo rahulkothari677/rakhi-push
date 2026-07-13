@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800">
+  <defs>
+    <radialGradient id="bg-grad" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#F4EAD5"/>
+      <stop offset="100%" stop-color="#FBF6EC"/>
+    </radialGradient>
+    <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B5862D"/>
+      <stop offset="50%" stop-color="#E6C373"/>
+      <stop offset="100%" stop-color="#C9A24B"/>
+    </linearGradient>
+    <linearGradient id="silver-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A8A8A8"/>
+      <stop offset="50%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#C0C0C0"/>
+    </linearGradient>
+    <linearGradient id="burgundy-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A8425B"/>
+      <stop offset="100%" stop-color="#6B0E2A"/>
+    </linearGradient>
+    <filter id="soft-shadow">
+      <feGaussianBlur stdDeviation="3"/>
+      <feOffset dx="2" dy="4" result="offsetblur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.2"/>
+      <feComposite in2="offsetblur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="800" height="800" fill="url(#bg-grad)"/>
+  
+    <!-- Decorative background petals (top) -->
+    <g opacity="0.15" transform="translate(400, 200)">
+      <ellipse cx="-180" cy="0" rx="22" ry="10" fill="#8B1E3E" transform="rotate(-30 -180 0)"/><ellipse cx="-120" cy="0" rx="22" ry="10" fill="#8B1E3E" transform="rotate(-20 -120 0)"/><ellipse cx="-60" cy="0" rx="22" ry="10" fill="#8B1E3E" transform="rotate(-10 -60 0)"/><ellipse cx="0" cy="0" rx="22" ry="10" fill="#8B1E3E" transform="rotate(0 0 0)"/><ellipse cx="60" cy="0" rx="22" ry="10" fill="#8B1E3E" transform="rotate(10 60 0)"/><ellipse cx="120" cy="0" rx="22" ry="10" fill="#8B1E3E" transform="rotate(20 120 0)"/><ellipse cx="180" cy="0" rx="22" ry="10" fill="#8B1E3E" transform="rotate(30 180 0)"/>
+    </g>
+
+    <!-- Thread strands (left and right) -->
+    <g>
+      <!-- Left threads -->
+      <path d="M 50 400 Q 200 380 280 400" stroke="#8B1E3E" stroke-width="3" fill="none"/>
+      <path d="M 50 420 Q 200 400 280 420" stroke="#C9A24B" stroke-width="2" fill="none"/>
+      <path d="M 50 380 Q 200 360 280 380" stroke="#6B0E2A" stroke-width="2" fill="none" opacity="0.7"/>
+      
+      <!-- Right threads -->
+      <path d="M 520 400 Q 600 380 750 400" stroke="#8B1E3E" stroke-width="3" fill="none"/>
+      <path d="M 520 420 Q 600 400 750 420" stroke="#C9A24B" stroke-width="2" fill="none"/>
+      <path d="M 520 380 Q 600 360 750 380" stroke="#6B0E2A" stroke-width="2" fill="none" opacity="0.7"/>
+    </g>
+
+    <!-- Decorative beads on threads -->
+    <circle cx="80" cy="400" r="4" fill="url(#gold-grad)"/><circle cx="120" cy="400" r="4" fill="url(#gold-grad)"/><circle cx="160" cy="400" r="4" fill="url(#gold-grad)"/><circle cx="200" cy="400" r="4" fill="url(#gold-grad)"/><circle cx="240" cy="400" r="4" fill="url(#gold-grad)"/>
+    <circle cx="560" cy="400" r="4" fill="url(#gold-grad)"/><circle cx="600" cy="400" r="4" fill="url(#gold-grad)"/><circle cx="640" cy="400" r="4" fill="url(#gold-grad)"/><circle cx="680" cy="400" r="4" fill="url(#gold-grad)"/><circle cx="720" cy="400" r="4" fill="url(#gold-grad)"/>
+
+    <!-- Center medallion -->
+    <g transform="translate(400, 400)" filter="url(#soft-shadow)">
+      <!-- Outer ring -->
+      <circle r="120" fill="#F4EAD5" stroke="url(#gold-grad)" stroke-width="4"/>
+      <circle r="100" fill="none" stroke="url(#gold-grad)" stroke-width="1.5" opacity="0.6"/>
+      
+      <!-- Petal motif around center -->
+      <g transform="translate(95, 0) rotate(0)">
+          <ellipse cx="0" cy="0" rx="14" ry="6" fill="url(#gold-grad)" opacity="0.7"/>
+        </g><g transform="translate(67.17514421272202, 67.175144212722) rotate(45)">
+          <ellipse cx="0" cy="0" rx="14" ry="6" fill="url(#gold-grad)" opacity="0.7"/>
+        </g><g transform="translate(5.8170722959499274e-15, 95) rotate(90)">
+          <ellipse cx="0" cy="0" rx="14" ry="6" fill="url(#gold-grad)" opacity="0.7"/>
+        </g><g transform="translate(-67.175144212722, 67.17514421272202) rotate(135)">
+          <ellipse cx="0" cy="0" rx="14" ry="6" fill="url(#gold-grad)" opacity="0.7"/>
+        </g><g transform="translate(-95, 1.1634144591899855e-14) rotate(180)">
+          <ellipse cx="0" cy="0" rx="14" ry="6" fill="url(#gold-grad)" opacity="0.7"/>
+        </g><g transform="translate(-67.17514421272203, -67.175144212722) rotate(225)">
+          <ellipse cx="0" cy="0" rx="14" ry="6" fill="url(#gold-grad)" opacity="0.7"/>
+        </g><g transform="translate(-1.745121688784978e-14, -95) rotate(270)">
+          <ellipse cx="0" cy="0" rx="14" ry="6" fill="url(#gold-grad)" opacity="0.7"/>
+        </g><g transform="translate(67.175144212722, -67.17514421272203) rotate(315)">
+          <ellipse cx="0" cy="0" rx="14" ry="6" fill="url(#gold-grad)" opacity="0.7"/>
+        </g>
+      
+      <!-- Center motif -->
+      
+    <!-- Thali (plate) -->
+    <g transform="scale(0.85)">
+      <circle r="80" fill="url(#gold-grad)" stroke="#8B1E3E" stroke-width="3"/>
+      <circle r="65" fill="none" stroke="#8B1E3E" stroke-width="1" opacity="0.6"/>
+      <!-- Small bowls -->
+      <circle cx="-30" cy="-30" r="15" fill="#8B1E3E" stroke="#C9A24B" stroke-width="1.5"/>
+      <circle cx="30" cy="-30" r="15" fill="#F4EAD5" stroke="#C9A24B" stroke-width="1.5"/>
+      <!-- Diya (lamp) -->
+      <ellipse cy="20" rx="20" ry="8" fill="#C9A24B"/>
+      <ellipse cy="15" rx="6" ry="10" fill="#8B1E3E"/>
+    </g>
+    </g>
+
+    
+  
+</svg>

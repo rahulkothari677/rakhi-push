@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+  <defs>
+    <radialGradient id="bg-grad" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#F4EAD5"/>
+      <stop offset="100%" stop-color="#FBF6EC"/>
+    </radialGradient>
+    <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B5862D"/>
+      <stop offset="50%" stop-color="#E6C373"/>
+      <stop offset="100%" stop-color="#C9A24B"/>
+    </linearGradient>
+    <linearGradient id="silver-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A8A8A8"/>
+      <stop offset="50%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#C0C0C0"/>
+    </linearGradient>
+    <linearGradient id="burgundy-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A8425B"/>
+      <stop offset="100%" stop-color="#6B0E2A"/>
+    </linearGradient>
+    <filter id="soft-shadow">
+      <feGaussianBlur stdDeviation="3"/>
+      <feOffset dx="2" dy="4" result="offsetblur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.2"/>
+      <feComposite in2="offsetblur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="1200" height="600" fill="url(#bg-grad)"/>
+  
+    <g transform="translate(600, 300)">
+      <!-- Two rakhis side by side (bhaiya + bhabhi) -->
+      <g transform="translate(-150, 0) scale(0.9)" filter="url(#soft-shadow)">
+        <circle r="110" fill="#8B1E3E" stroke="url(#gold-grad)" stroke-width="3"/>
+        
+    <!-- Peacock motif -->
+    <g transform="scale(0.7)">
+      <ellipse cx="0" cy="-20" rx="20" ry="35" fill="url(#gold-grad)"/>
+      <circle cx="0" cy="-40" r="14" fill="url(#burgundy-grad)"/>
+      <!-- Peacock feathers -->
+      <g transform="translate(25.000000000000007, -53.30127018922193) rotate(-60)">
+          <ellipse cx="0" cy="0" rx="8" ry="22" fill="url(#gold-grad)" opacity="0.8"/>
+          <circle cx="0" cy="-15" r="6" fill="#8B1E3E"/>
+          <circle cx="0" cy="-15" r="3" fill="#C9A24B"/>
+        </g><g transform="translate(43.30127018922194, -35) rotate(-30)">
+          <ellipse cx="0" cy="0" rx="8" ry="22" fill="url(#gold-grad)" opacity="0.8"/>
+          <circle cx="0" cy="-15" r="6" fill="#8B1E3E"/>
+          <circle cx="0" cy="-15" r="3" fill="#C9A24B"/>
+        </g><g transform="translate(50, -10) rotate(0)">
+          <ellipse cx="0" cy="0" rx="8" ry="22" fill="url(#gold-grad)" opacity="0.8"/>
+          <circle cx="0" cy="-15" r="6" fill="#8B1E3E"/>
+          <circle cx="0" cy="-15" r="3" fill="#C9A24B"/>
+        </g><g transform="translate(43.30127018922194, 14.999999999999996) rotate(30)">
+          <ellipse cx="0" cy="0" rx="8" ry="22" fill="url(#gold-grad)" opacity="0.8"/>
+          <circle cx="0" cy="-15" r="6" fill="#8B1E3E"/>
+          <circle cx="0" cy="-15" r="3" fill="#C9A24B"/>
+        </g><g transform="translate(25.000000000000007, 33.30127018922193) rotate(60)">
+          <ellipse cx="0" cy="0" rx="8" ry="22" fill="url(#gold-grad)" opacity="0.8"/>
+          <circle cx="0" cy="-15" r="6" fill="#8B1E3E"/>
+          <circle cx="0" cy="-15" r="3" fill="#C9A24B"/>
+        </g>
+    </g>
+      </g>
+      <g transform="translate(150, 0) scale(0.9)" filter="url(#soft-shadow)">
+        <circle r="110" fill="#F4EAD5" stroke="url(#gold-grad)" stroke-width="3"/>
+        
+    <!-- Lumba (pendant style) -->
+    <g transform="scale(0.85)">
+      <ellipse cx="0" cy="-20" rx="35" ry="25" fill="url(#burgundy-grad)" stroke="url(#gold-grad)" stroke-width="2"/>
+      <!-- Pearl drops -->
+      <g transform="translate(-30, 15)">
+          <line y1="0" y2="20" stroke="#C9A24B" stroke-width="1"/>
+          <circle cy="25" r="4" fill="url(#silver-grad)"/>
+        </g><g transform="translate(-10, 15)">
+          <line y1="0" y2="20" stroke="#C9A24B" stroke-width="1"/>
+          <circle cy="25" r="4" fill="url(#silver-grad)"/>
+        </g><g transform="translate(10, 15)">
+          <line y1="0" y2="20" stroke="#C9A24B" stroke-width="1"/>
+          <circle cy="25" r="4" fill="url(#silver-grad)"/>
+        </g><g transform="translate(30, 15)">
+          <line y1="0" y2="20" stroke="#C9A24B" stroke-width="1"/>
+          <circle cy="25" r="4" fill="url(#silver-grad)"/>
+        </g>
+      <circle cy="-20" r="8" fill="#C9A24B"/>
+    </g>
+      </g>
+      <!-- Connecting thread -->
+      <path d="M -40 0 Q 0 30 40 0" stroke="url(#gold-grad)" stroke-width="2" fill="none"/>
+      <!-- Pearl drops -->
+      <circle cx="-40" cy="0" r="3" fill="url(#silver-grad)"/><circle cx="-24" cy="6.731767878463172" r="3" fill="url(#silver-grad)"/><circle cx="-8" cy="7.274379414605454" r="3" fill="url(#silver-grad)"/><circle cx="8" cy="1.1289600644789377" r="3" fill="url(#silver-grad)"/><circle cx="24" cy="-6.054419962463426" r="3" fill="url(#silver-grad)"/><circle cx="40" cy="-7.671394197305108" r="3" fill="url(#silver-grad)"/>
+    </g>
+  
+</svg>
