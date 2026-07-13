@@ -35,7 +35,8 @@ function createPrismaClient(): PrismaClient {
       authToken: process.env.DATABASE_AUTH_TOKEN,
     })
     const adapter = new PrismaLibSql(libsql)
-    return new PrismaClient({ adapter } as any)
+    // Prisma v6 with driverAdapters supports the adapter option natively
+    return new PrismaClient({ adapter })
   }
 
   // Local SQLite file — direct Prisma connection (dev only)
