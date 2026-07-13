@@ -95,23 +95,23 @@ export function CartView() {
 
   if (submitted) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center bg-[#FBF6EC] px-4">
+      <div className="min-h-[70vh] flex items-center justify-center bg-[var(--background)] px-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="max-w-lg w-full bg-white rounded-2xl p-8 sm:p-12 text-center shadow-luxe border border-[#E8D9B8]"
+          className="max-w-lg w-full bg-white rounded-2xl p-8 sm:p-12 text-center shadow-luxe border border-[var(--border)]"
         >
           <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-[#5C8C3E]/10 flex items-center justify-center">
             <CheckCircle2 size={40} className="text-[#5C8C3E]" />
           </div>
-          <h2 className="font-serif text-3xl font-bold text-[#2A0A0F] mb-3">
+          <h2 className="font-serif text-3xl font-bold text-[var(--foreground)] mb-3">
             Order Sent! 🎉
           </h2>
-          <p className="text-[#6B5544] mb-2">
+          <p className="text-[var(--muted-foreground)] mb-2">
             Your order has been forwarded to us via WhatsApp. We'll confirm your order and share payment details shortly.
           </p>
-          <p className="text-sm text-[#6B5544] mb-8">
-            Order Total: <span className="font-bold text-[#8B1E3E]">{formatINR(total)}</span>
+          <p className="text-sm text-[var(--muted-foreground)] mb-8">
+            Order Total: <span className="font-bold text-[var(--primary)]">{formatINR(total)}</span>
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
@@ -119,13 +119,13 @@ export function CartView() {
                 clearCart()
                 setView("home")
               }}
-              className="px-6 py-3 bg-[#8B1E3E] text-[#FBF6EC] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[#6B0E2A] transition-colors"
+              className="px-6 py-3 bg-[var(--primary)] text-[var(--background)] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors"
             >
               Continue Shopping
             </button>
             <button
               onClick={() => setView("shop")}
-              className="px-6 py-3 border-2 border-[#8B1E3E] text-[#8B1E3E] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[#8B1E3E] hover:text-[#FBF6EC] transition-colors"
+              className="px-6 py-3 border-2 border-[var(--primary)] text-[var(--primary)] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary)] hover:text-[var(--background)] transition-colors"
             >
               Browse More Rakhis
             </button>
@@ -137,18 +137,18 @@ export function CartView() {
 
   if (cart.length === 0) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center bg-[#FBF6EC] px-4">
+      <div className="min-h-[70vh] flex items-center justify-center bg-[var(--background)] px-4">
         <div className="text-center">
           <div className="text-7xl mb-6">🛍️</div>
-          <h2 className="font-serif text-3xl font-bold text-[#2A0A0F] mb-3">
+          <h2 className="font-serif text-3xl font-bold text-[var(--foreground)] mb-3">
             Your cart is empty
           </h2>
-          <p className="text-[#6B5544] mb-8 max-w-md">
+          <p className="text-[var(--muted-foreground)] mb-8 max-w-md">
             Discover beautiful handcrafted Rakhis in our collection. Each piece is made with devotion and love.
           </p>
           <button
             onClick={() => setView("shop")}
-            className="px-8 py-3.5 bg-[#8B1E3E] text-[#FBF6EC] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[#6B0E2A] transition-colors inline-flex items-center gap-2"
+            className="px-8 py-3.5 bg-[var(--primary)] text-[var(--background)] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors inline-flex items-center gap-2"
           >
             Explore Collection <ArrowRight size={16} />
           </button>
@@ -158,17 +158,17 @@ export function CartView() {
   }
 
   return (
-    <div className="bg-[#FBF6EC] min-h-screen">
+    <div className="bg-[var(--background)] min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="text-center mb-10">
           <div className="flex items-center justify-center gap-3 mb-3">
-            <div className="h-px w-12 bg-[#C9A24B]" />
-            <p className="text-xs tracking-[0.3em] uppercase text-[#C9A24B] font-medium">
+            <div className="h-px w-12 bg-[var(--accent)]" />
+            <p className="text-xs tracking-[0.3em] uppercase text-[var(--accent)] font-medium">
               Shopping Cart
             </p>
-            <div className="h-px w-12 bg-[#C9A24B]" />
+            <div className="h-px w-12 bg-[var(--accent)]" />
           </div>
-          <h1 className="font-serif text-4xl font-bold text-[#2A0A0F]">
+          <h1 className="font-serif text-4xl font-bold text-[var(--foreground)]">
             Your <span className="text-gradient-burgundy italic">Selection</span>
           </h1>
         </div>
@@ -180,40 +180,40 @@ export function CartView() {
               <motion.div
                 key={item.productId}
                 layout
-                className="bg-white p-4 rounded-lg border border-[#E8D9B8] flex gap-4"
+                className="bg-white p-4 rounded-lg border border-[var(--border)] flex gap-4"
               >
-                <div className="w-24 h-24 rounded-md overflow-hidden bg-[#FBF6EC] flex-shrink-0">
+                <div className="w-24 h-24 rounded-md overflow-hidden bg-[var(--background)] flex-shrink-0">
                   <img src={productImage(item.image)} alt={item.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-serif text-base font-semibold text-[#2A0A0F] line-clamp-2">
+                  <h3 className="font-serif text-base font-semibold text-[var(--foreground)] line-clamp-2">
                     {item.name}
                   </h3>
-                  <p className="text-xs text-[#6B5544] mt-0.5">SKU: {item.sku}</p>
-                  <p className="text-lg font-bold text-[#8B1E3E] mt-1">{formatINR(item.price)}</p>
+                  <p className="text-xs text-[var(--muted-foreground)] mt-0.5">SKU: {item.sku}</p>
+                  <p className="text-lg font-bold text-[var(--primary)] mt-1">{formatINR(item.price)}</p>
                   <div className="flex items-center justify-between mt-3">
-                    <div className="flex items-center border border-[#E8D9B8] rounded">
+                    <div className="flex items-center border border-[var(--border)] rounded">
                       <button
                         onClick={() => updateCartQty(item.productId, item.quantity - 1)}
-                        className="w-8 h-8 flex items-center justify-center text-[#8B1E3E] hover:bg-[#F4EAD5] transition-colors"
+                        className="w-8 h-8 flex items-center justify-center text-[var(--primary)] hover:bg-[var(--cream)] transition-colors"
                       >
                         <Minus size={14} />
                       </button>
                       <span className="w-10 text-center text-sm font-semibold">{item.quantity}</span>
                       <button
                         onClick={() => updateCartQty(item.productId, item.quantity + 1)}
-                        className="w-8 h-8 flex items-center justify-center text-[#8B1E3E] hover:bg-[#F4EAD5] transition-colors"
+                        className="w-8 h-8 flex items-center justify-center text-[var(--primary)] hover:bg-[var(--cream)] transition-colors"
                       >
                         <Plus size={14} />
                       </button>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="font-bold text-[#8B1E3E]">
+                      <span className="font-bold text-[var(--primary)]">
                         {formatINR(item.price * item.quantity)}
                       </span>
                       <button
                         onClick={() => removeFromCart(item.productId)}
-                        className="text-[#6B5544] hover:text-[#B3324A]"
+                        className="text-[var(--muted-foreground)] hover:text-[#B3324A]"
                         aria-label="Remove item"
                       >
                         <Trash2 size={16} />
@@ -226,7 +226,7 @@ export function CartView() {
 
             <button
               onClick={() => setView("shop")}
-              className="text-sm text-[#8B1E3E] hover:underline flex items-center gap-1"
+              className="text-sm text-[var(--primary)] hover:underline flex items-center gap-1"
             >
               ← Continue Shopping
             </button>
@@ -234,8 +234,8 @@ export function CartView() {
 
           {/* Order summary + form */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg border border-[#E8D9B8] p-6 sticky top-28">
-              <h3 className="font-serif text-lg font-bold text-[#2A0A0F] mb-4">
+            <div className="bg-white rounded-lg border border-[var(--border)] p-6 sticky top-28">
+              <h3 className="font-serif text-lg font-bold text-[var(--foreground)] mb-4">
                 Delivery Details
               </h3>
 
@@ -245,28 +245,28 @@ export function CartView() {
                   placeholder="Full Name *"
                   value={customerForm.name}
                   onChange={(e) => setCustomerForm({ ...customerForm, name: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-[#E8D9B8] rounded-md outline-none focus:border-[#C9A24B] bg-[#FBF6EC]"
+                  className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-md outline-none focus:border-[var(--accent)] bg-[var(--background)]"
                 />
                 <input
                   type="tel"
                   placeholder="Phone Number *"
                   value={customerForm.phone}
                   onChange={(e) => setCustomerForm({ ...customerForm, phone: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-[#E8D9B8] rounded-md outline-none focus:border-[#C9A24B] bg-[#FBF6EC]"
+                  className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-md outline-none focus:border-[var(--accent)] bg-[var(--background)]"
                 />
                 <input
                   type="email"
                   placeholder="Email (optional)"
                   value={customerForm.email}
                   onChange={(e) => setCustomerForm({ ...customerForm, email: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-[#E8D9B8] rounded-md outline-none focus:border-[#C9A24B] bg-[#FBF6EC]"
+                  className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-md outline-none focus:border-[var(--accent)] bg-[var(--background)]"
                 />
                 <textarea
                   placeholder="Full Address"
                   value={customerForm.address}
                   onChange={(e) => setCustomerForm({ ...customerForm, address: e.target.value })}
                   rows={2}
-                  className="w-full px-3 py-2 text-sm border border-[#E8D9B8] rounded-md outline-none focus:border-[#C9A24B] bg-[#FBF6EC] resize-none"
+                  className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-md outline-none focus:border-[var(--accent)] bg-[var(--background)] resize-none"
                 />
                 <div className="grid grid-cols-2 gap-2">
                   <input
@@ -274,14 +274,14 @@ export function CartView() {
                     placeholder="City"
                     value={customerForm.city}
                     onChange={(e) => setCustomerForm({ ...customerForm, city: e.target.value })}
-                    className="px-3 py-2 text-sm border border-[#E8D9B8] rounded-md outline-none focus:border-[#C9A24B] bg-[#FBF6EC]"
+                    className="px-3 py-2 text-sm border border-[var(--border)] rounded-md outline-none focus:border-[var(--accent)] bg-[var(--background)]"
                   />
                   <input
                     type="text"
                     placeholder="State"
                     value={customerForm.state}
                     onChange={(e) => setCustomerForm({ ...customerForm, state: e.target.value })}
-                    className="px-3 py-2 text-sm border border-[#E8D9B8] rounded-md outline-none focus:border-[#C9A24B] bg-[#FBF6EC]"
+                    className="px-3 py-2 text-sm border border-[var(--border)] rounded-md outline-none focus:border-[var(--accent)] bg-[var(--background)]"
                   />
                 </div>
                 <input
@@ -289,14 +289,14 @@ export function CartView() {
                   placeholder="Pincode"
                   value={customerForm.pincode}
                   onChange={(e) => setCustomerForm({ ...customerForm, pincode: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-[#E8D9B8] rounded-md outline-none focus:border-[#C9A24B] bg-[#FBF6EC]"
+                  className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-md outline-none focus:border-[var(--accent)] bg-[var(--background)]"
                 />
                 <textarea
                   placeholder="Order Notes (optional)"
                   value={customerForm.notes}
                   onChange={(e) => setCustomerForm({ ...customerForm, notes: e.target.value })}
                   rows={2}
-                  className="w-full px-3 py-2 text-sm border border-[#E8D9B8] rounded-md outline-none focus:border-[#C9A24B] bg-[#FBF6EC] resize-none"
+                  className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-md outline-none focus:border-[var(--accent)] bg-[var(--background)] resize-none"
                 />
               </div>
 
@@ -304,25 +304,25 @@ export function CartView() {
 
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between text-sm">
-                  <span className="text-[#6B5544]">Subtotal ({cart.length} items)</span>
-                  <span className="font-semibold text-[#2A0A0F]">{formatINR(subtotal)}</span>
+                  <span className="text-[var(--muted-foreground)]">Subtotal ({cart.length} items)</span>
+                  <span className="font-semibold text-[var(--foreground)]">{formatINR(subtotal)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-[#6B5544]">Shipping</span>
-                  <span className="font-semibold text-[#2A0A0F]">
+                  <span className="text-[var(--muted-foreground)]">Shipping</span>
+                  <span className="font-semibold text-[var(--foreground)]">
                     {shipping === 0 ? <span className="text-[#5C8C3E]">FREE</span> : formatINR(shipping)}
                   </span>
                 </div>
                 {shipping > 0 && (
-                  <p className="text-xs text-[#6B5544] italic">
+                  <p className="text-xs text-[var(--muted-foreground)] italic">
                     Add {formatINR(freeShipAbove - subtotal)} more for free shipping
                   </p>
                 )}
               </div>
 
-              <div className="flex justify-between items-center py-3 border-t border-[#E8D9B8] mb-4">
-                <span className="font-semibold text-[#2A0A0F]">Total</span>
-                <span className="font-bold text-2xl text-[#8B1E3E]">{formatINR(total)}</span>
+              <div className="flex justify-between items-center py-3 border-t border-[var(--border)] mb-4">
+                <span className="font-semibold text-[var(--foreground)]">Total</span>
+                <span className="font-bold text-2xl text-[var(--primary)]">{formatINR(total)}</span>
               </div>
 
               <button
@@ -331,7 +331,7 @@ export function CartView() {
               >
                 <MessageCircle size={18} /> Send Order via WhatsApp
               </button>
-              <p className="text-xs text-[#6B5544] text-center">
+              <p className="text-xs text-[var(--muted-foreground)] text-center">
                 You'll be redirected to WhatsApp with your order pre-filled. Just hit send and we'll take care of the rest!
               </p>
             </div>

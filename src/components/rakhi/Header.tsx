@@ -72,7 +72,7 @@ export function Header() {
     <>
       {/* Announcement bar — premium gradient */}
       {announcement?.enabled && (
-        <div className="bg-gradient-to-r from-[#6B0E2A] via-[#8B1E3E] to-[#6B0E2A] text-[#FBF6EC] text-xs sm:text-sm py-2 overflow-hidden border-b border-[#C9A24B]/30">
+        <div className="bg-gradient-to-r from-[var(--primary-dark)] via-[var(--primary)] to-[var(--primary-dark)] text-[var(--background)] text-xs sm:text-sm py-2 overflow-hidden border-b border-[var(--accent)]/30">
           <div className="animate-marquee whitespace-nowrap flex">
             <span className="mx-8 flex items-center gap-2">✨ {announcement.text} ✨</span>
             <span className="mx-8 flex items-center gap-2">✨ {announcement.text} ✨</span>
@@ -86,8 +86,8 @@ export function Header() {
         className={cn(
           "sticky top-0 z-50 transition-all duration-500",
           scrolled
-            ? "bg-white/95 backdrop-blur-md shadow-[0_4px_30px_rgba(139,30,62,0.08)] border-b border-[#E8D9B8]"
-            : "bg-gradient-to-b from-[#FBF6EC] to-[#FBF6EC]/95 border-b border-[#E8D9B8]/50"
+            ? "bg-white/95 backdrop-blur-md shadow-[0_4px_30px_rgba(139,30,62,0.08)] border-b border-[var(--border)]"
+            : "bg-gradient-to-b from-[var(--background)] to-[var(--background)]/95 border-b border-[var(--border)]/50"
         )}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -95,7 +95,7 @@ export function Header() {
             {/* Mobile menu toggle */}
             <button
               onClick={() => setMenuOpen(!isMenuOpen)}
-              className="lg:hidden p-2 -ml-2 text-[#8B1E3E] hover:bg-[#F4EAD5] rounded-md transition-colors"
+              className="lg:hidden p-2 -ml-2 text-[var(--primary)] hover:bg-[var(--cream)] rounded-md transition-colors"
               aria-label="Toggle menu"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -108,14 +108,14 @@ export function Header() {
             >
               <div className="flex items-center gap-2">
                 {/* Decorative ornament */}
-                <span className="text-[#C9A24B] text-lg hidden sm:block">❖</span>
+                <span className="text-[var(--accent)] text-lg hidden sm:block">❖</span>
                 <span className="font-serif text-2xl sm:text-3xl font-bold leading-none tracking-tight">
-                  <span className="text-[#2A0A0F]">House of </span>
+                  <span className="text-[var(--foreground)]">House of </span>
                   <span className="text-gradient-gold italic">Neelam</span>
                 </span>
-                <span className="text-[#C9A24B] text-lg hidden sm:block">❖</span>
+                <span className="text-[var(--accent)] text-lg hidden sm:block">❖</span>
               </div>
-              <span className="text-[10px] sm:text-xs tracking-[0.3em] text-[#8B1E3E] uppercase mt-1.5 font-semibold">
+              <span className="text-[10px] sm:text-xs tracking-[0.3em] text-[var(--primary)] uppercase mt-1.5 font-semibold">
                 ✦ Rakhi Collection ✦
               </span>
             </button>
@@ -126,7 +126,7 @@ export function Header() {
                 onClick={() => useStore.getState().goHome()}
                 className={cn(
                   "px-4 py-2 text-sm tracking-elegant uppercase font-medium rounded-md transition-all",
-                  view === "home" ? "text-[#8B1E3E] bg-[#F4EAD5]" : "text-[#2A0A0F] hover:text-[#8B1E3E] hover:bg-[#F4EAD5]/50"
+                  view === "home" ? "text-[var(--primary)] bg-[var(--cream)]" : "text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--cream)]/50"
                 )}
               >
                 Home
@@ -142,7 +142,7 @@ export function Header() {
                   onClick={() => setView("shop")}
                   className={cn(
                     "px-4 py-2 text-sm tracking-elegant uppercase font-medium rounded-md transition-all flex items-center gap-1",
-                    view === "shop" || view === "search" ? "text-[#8B1E3E] bg-[#F4EAD5]" : "text-[#2A0A0F] hover:text-[#8B1E3E] hover:bg-[#F4EAD5]/50"
+                    view === "shop" || view === "search" ? "text-[var(--primary)] bg-[var(--cream)]" : "text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--cream)]/50"
                   )}
                 >
                   Collection <ChevronDown size={14} className={cn("transition-transform", showCategories && "rotate-180")} />
@@ -154,28 +154,28 @@ export function Header() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                       transition={{ duration: 0.2 }}
-                      className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[680px] bg-white shadow-[0_20px_60px_rgba(139,30,62,0.15)] rounded-xl border border-[#E8D9B8] p-6 grid grid-cols-3 gap-2"
+                      className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[680px] bg-white shadow-[0_20px_60px_rgba(139,30,62,0.15)] rounded-xl border border-[var(--border)] p-6 grid grid-cols-3 gap-2"
                     >
                       {categories.map((cat) => (
                         <button
                           key={cat.id}
                           onClick={() => navToCategory(cat.name)}
-                          className="flex items-start gap-3 p-3 rounded-lg hover:bg-[#FBF6EC] transition-all text-left group"
+                          className="flex items-start gap-3 p-3 rounded-lg hover:bg-[var(--background)] transition-all text-left group"
                         >
-                          <div className="w-12 h-12 rounded-lg overflow-hidden bg-[#F4EAD5] flex-shrink-0 ring-2 ring-transparent group-hover:ring-[#C9A24B] transition-all">
+                          <div className="w-12 h-12 rounded-lg overflow-hidden bg-[var(--cream)] flex-shrink-0 ring-2 ring-transparent group-hover:ring-[var(--accent)] transition-all">
                             {cat.image ? (
                               <img src={categoryThumbnail(cat.image)} alt={cat.name} className="w-full h-full object-cover" />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-[#8B1E3E] font-serif font-bold text-xl">
+                              <div className="w-full h-full flex items-center justify-center text-[var(--primary)] font-serif font-bold text-xl">
                                 {cat.name.charAt(0)}
                               </div>
                             )}
                           </div>
                           <div>
-                            <div className="text-sm font-semibold text-[#2A0A0F] group-hover:text-[#8B1E3E] transition-colors">
+                            <div className="text-sm font-semibold text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors">
                               {cat.name}
                             </div>
-                            <div className="text-xs text-[#6B5544] mt-0.5">
+                            <div className="text-xs text-[var(--muted-foreground)] mt-0.5">
                               {cat.productCount} {cat.productCount === 1 ? "item" : "items"}
                             </div>
                           </div>
@@ -186,7 +186,7 @@ export function Header() {
                           setView("shop")
                           setShowCategories(false)
                         }}
-                        className="col-span-3 mt-2 py-3 text-center text-sm tracking-elegant uppercase font-semibold text-[#8B1E3E] hover:bg-[#FBF6EC] rounded-lg transition-colors border-t border-[#E8D9B8]"
+                        className="col-span-3 mt-2 py-3 text-center text-sm tracking-elegant uppercase font-semibold text-[var(--primary)] hover:bg-[var(--background)] rounded-lg transition-colors border-t border-[var(--border)]"
                       >
                         View All Collection →
                       </button>
@@ -197,14 +197,14 @@ export function Header() {
 
               <button
                 onClick={() => { useStore.setState({ infoPageId: "about" }); setView("info") }}
-                className="px-4 py-2 text-sm tracking-elegant uppercase font-medium text-[#2A0A0F] hover:text-[#8B1E3E] hover:bg-[#F4EAD5]/50 rounded-md transition-all"
+                className="px-4 py-2 text-sm tracking-elegant uppercase font-medium text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--cream)]/50 rounded-md transition-all"
               >
                 Our Story
               </button>
 
               <button
                 onClick={() => { useStore.setState({ infoPageId: "contact" }); setView("info") }}
-                className="px-4 py-2 text-sm tracking-elegant uppercase font-medium text-[#2A0A0F] hover:text-[#8B1E3E] hover:bg-[#F4EAD5]/50 rounded-md transition-all"
+                className="px-4 py-2 text-sm tracking-elegant uppercase font-medium text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--cream)]/50 rounded-md transition-all"
               >
                 Contact
               </button>
@@ -215,7 +215,7 @@ export function Header() {
               {/* Search */}
               <button
                 onClick={() => setShowSearch(!showSearch)}
-                className="p-2.5 text-[#2A0A0F] hover:text-[#8B1E3E] hover:bg-[#F4EAD5] rounded-md transition-all"
+                className="p-2.5 text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--cream)] rounded-md transition-all"
                 aria-label="Search"
               >
                 <Search size={20} />
@@ -223,12 +223,12 @@ export function Header() {
 
               <button
                 onClick={() => setView("wishlist")}
-                className="relative p-2.5 text-[#2A0A0F] hover:text-[#8B1E3E] hover:bg-[#F4EAD5] rounded-md transition-all"
+                className="relative p-2.5 text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--cream)] rounded-md transition-all"
                 aria-label="Wishlist"
               >
                 <Heart size={20} />
                 {wishlist.length > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 bg-[#8B1E3E] text-[#FBF6EC] text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-semibold animate-badge-pop">
+                  <span className="absolute -top-0.5 -right-0.5 bg-[var(--primary)] text-[var(--background)] text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-semibold animate-badge-pop">
                     {wishlist.length}
                   </span>
                 )}
@@ -236,12 +236,12 @@ export function Header() {
 
               <button
                 onClick={() => setCartOpen(true)}
-                className="relative p-2.5 text-[#2A0A0F] hover:text-[#8B1E3E] hover:bg-[#F4EAD5] rounded-md transition-all"
+                className="relative p-2.5 text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--cream)] rounded-md transition-all"
                 aria-label="Cart"
               >
                 <ShoppingBag size={20} />
                 {cart.length > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 bg-[#C9A24B] text-[#2A0A0F] text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold animate-badge-pop">
+                  <span className="absolute -top-0.5 -right-0.5 bg-[var(--accent)] text-[var(--foreground)] text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold animate-badge-pop">
                     {cart.reduce((s, c) => s + c.quantity, 0)}
                   </span>
                 )}
@@ -251,14 +251,14 @@ export function Header() {
               {session ? (
                 <button
                   onClick={() => setAdminOpen(true)}
-                  className="hidden sm:flex items-center gap-1.5 px-4 py-2 ml-1 bg-gradient-to-r from-[#8B1E3E] to-[#6B0E2A] text-[#FBF6EC] text-xs tracking-elegant uppercase font-semibold rounded-md hover:shadow-lg transition-all"
+                  className="hidden sm:flex items-center gap-1.5 px-4 py-2 ml-1 bg-gradient-to-r from-[var(--primary)] to-[var(--primary-dark)] text-[var(--background)] text-xs tracking-elegant uppercase font-semibold rounded-md hover:shadow-lg transition-all"
                 >
                   <Sparkles size={14} /> Admin
                 </button>
               ) : (
                 <button
                   onClick={() => setAdminOpen(true)}
-                  className="p-2.5 text-[#2A0A0F] hover:text-[#8B1E3E] hover:bg-[#F4EAD5] rounded-md transition-all"
+                  className="p-2.5 text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--cream)] rounded-md transition-all"
                   aria-label="Admin login"
                 >
                   <User size={20} />
@@ -275,22 +275,22 @@ export function Header() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden bg-white border-t border-[#E8D9B8]"
+              className="overflow-hidden bg-white border-t border-[var(--border)]"
             >
               <form onSubmit={onSearch} className="max-w-3xl mx-auto px-4 py-4">
                 <div className="relative">
-                  <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6B5544]" />
+                  <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
                   <input
                     type="text"
                     autoFocus
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
                     placeholder="Search for Rakhis, categories..."
-                    className="w-full pl-12 pr-4 py-3 bg-[#FBF6EC] border border-[#E8D9B8] rounded-lg text-sm outline-none focus:border-[#C9A24B] focus:ring-2 focus:ring-[#C9A24B]/20 transition-all"
+                    className="w-full pl-12 pr-4 py-3 bg-[var(--background)] border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition-all"
                   />
                   <button
                     type="submit"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5 bg-[#8B1E3E] text-[#FBF6EC] text-xs tracking-elegant uppercase font-semibold rounded-md hover:bg-[#6B0E2A] transition-colors"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5 bg-[var(--primary)] text-[var(--background)] text-xs tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors"
                   >
                     Search
                   </button>
@@ -307,7 +307,7 @@ export function Header() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden bg-white border-t border-[#E8D9B8] overflow-hidden"
+              className="lg:hidden bg-white border-t border-[var(--border)] overflow-hidden"
             >
               <div className="px-4 py-4 space-y-1 max-h-[80vh] overflow-y-auto">
                 <form onSubmit={onSearch} className="mb-3">
@@ -317,24 +317,24 @@ export function Header() {
                       value={searchInput}
                       onChange={(e) => setSearchInput(e.target.value)}
                       placeholder="Search Rakhis..."
-                      className="w-full bg-[#FBF6EC] border border-[#E8D9B8] rounded-md py-2.5 pl-9 pr-3 text-sm outline-none focus:border-[#C9A24B]"
+                      className="w-full bg-[var(--background)] border border-[var(--border)] rounded-md py-2.5 pl-9 pr-3 text-sm outline-none focus:border-[var(--accent)]"
                     />
-                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B5544]" />
+                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
                   </div>
                 </form>
                 <button
                   onClick={() => useStore.getState().goHome()}
-                  className="block w-full text-left px-3 py-2.5 text-sm font-medium text-[#2A0A0F] hover:bg-[#FBF6EC] rounded-md"
+                  className="block w-full text-left px-3 py-2.5 text-sm font-medium text-[var(--foreground)] hover:bg-[var(--background)] rounded-md"
                 >
                   Home
                 </button>
                 <button
                   onClick={() => setView("shop")}
-                  className="block w-full text-left px-3 py-2.5 text-sm font-medium text-[#2A0A0F] hover:bg-[#FBF6EC] rounded-md"
+                  className="block w-full text-left px-3 py-2.5 text-sm font-medium text-[var(--foreground)] hover:bg-[var(--background)] rounded-md"
                 >
                   All Collection
                 </button>
-                <div className="px-3 py-1 text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold">
+                <div className="px-3 py-1 text-xs tracking-elegant uppercase text-[var(--accent)] font-semibold">
                   Collections
                 </div>
                 <div className="max-h-72 overflow-y-auto">
@@ -342,13 +342,13 @@ export function Header() {
                     <button
                       key={cat.id}
                       onClick={() => navToCategory(cat.name)}
-                      className="flex items-center gap-3 w-full text-left px-3 py-2 text-sm text-[#2A0A0F] hover:bg-[#FBF6EC] rounded-md"
+                      className="flex items-center gap-3 w-full text-left px-3 py-2 text-sm text-[var(--foreground)] hover:bg-[var(--background)] rounded-md"
                     >
-                      <div className="w-8 h-8 rounded overflow-hidden bg-[#F4EAD5] flex-shrink-0">
+                      <div className="w-8 h-8 rounded overflow-hidden bg-[var(--cream)] flex-shrink-0">
                         {cat.image ? (
                           <img src={categoryThumbnail(cat.image)} alt={cat.name} className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[#8B1E3E] font-serif font-bold text-sm">
+                          <div className="w-full h-full flex items-center justify-center text-[var(--primary)] font-serif font-bold text-sm">
                             {cat.name.charAt(0)}
                           </div>
                         )}
@@ -360,13 +360,13 @@ export function Header() {
                 <div className="divider-gold my-3" />
                 <button
                   onClick={() => { useStore.setState({ infoPageId: "about" }); setView("info") }}
-                  className="block w-full text-left px-3 py-2.5 text-sm font-medium text-[#2A0A0F] hover:bg-[#FBF6EC] rounded-md"
+                  className="block w-full text-left px-3 py-2.5 text-sm font-medium text-[var(--foreground)] hover:bg-[var(--background)] rounded-md"
                 >
                   Our Story
                 </button>
                 <button
                   onClick={() => { useStore.setState({ infoPageId: "contact" }); setView("info") }}
-                  className="block w-full text-left px-3 py-2.5 text-sm font-medium text-[#2A0A0F] hover:bg-[#FBF6EC] rounded-md"
+                  className="block w-full text-left px-3 py-2.5 text-sm font-medium text-[var(--foreground)] hover:bg-[var(--background)] rounded-md"
                 >
                   Contact
                 </button>

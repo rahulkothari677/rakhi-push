@@ -38,10 +38,10 @@ export function HeroCarousel() {
 
   if (!slides.length) {
     return (
-      <section className="relative h-[70vh] sm:h-[80vh] min-h-[500px] bg-gradient-to-br from-[#F4EAD5] via-[#FBF6EC] to-[#F4EAD5] flex items-center justify-center">
+      <section className="relative h-[70vh] sm:h-[80vh] min-h-[500px] bg-gradient-to-br from-[var(--cream)] via-[var(--background)] to-[var(--cream)] flex items-center justify-center">
         <div className="text-center animate-pulse">
-          <div className="font-serif text-3xl text-[#8B1E3E]">House of Neelam</div>
-          <div className="text-sm tracking-[0.3em] text-[#C9A24B] uppercase mt-2">Loading...</div>
+          <div className="font-serif text-3xl text-[var(--primary)]">House of Neelam</div>
+          <div className="text-sm tracking-[0.3em] text-[var(--accent)] uppercase mt-2">Loading...</div>
         </div>
       </section>
     )
@@ -74,8 +74,8 @@ export function HeroCarousel() {
               className="w-full h-full object-cover animate-kenburns"
             />
             {/* Overlay for text contrast */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#1A0508]/60 via-[#1A0508]/30 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#1A0508]/40 via-transparent to-[#1A0508]/10" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[var(--foreground)]/60 via-[var(--foreground)]/30 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[var(--foreground)]/40 via-transparent to-[var(--foreground)]/10" />
           </div>
 
           {/* Content */}
@@ -84,11 +84,11 @@ export function HeroCarousel() {
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="max-w-2xl text-[#FBF6EC]"
+              className="max-w-2xl text-[var(--background)]"
             >
               <div className="flex items-center gap-3 mb-4">
-                <div className="h-px w-12 bg-[#C9A24B]" />
-                <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-[#C9A24B] font-medium">
+                <div className="h-px w-12 bg-[var(--accent)]" />
+                <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-[var(--accent)] font-medium">
                   {slide.subtitle}
                 </p>
               </div>
@@ -97,7 +97,7 @@ export function HeroCarousel() {
                 {slide.title}
               </h1>
 
-              <p className="text-base sm:text-lg text-[#FBF6EC]/90 leading-relaxed mb-8 max-w-xl">
+              <p className="text-base sm:text-lg text-[var(--background)]/90 leading-relaxed mb-8 max-w-xl">
                 {slide.description}
               </p>
 
@@ -105,14 +105,14 @@ export function HeroCarousel() {
                 {slide.ctaLabel && (
                   <button
                     onClick={onCta}
-                    className="btn-luxe px-8 py-4 bg-[#8B1E3E] text-[#FBF6EC] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[#6B0E2A] transition-colors shadow-luxe-hover"
+                    className="btn-luxe px-8 py-4 bg-[var(--primary)] text-[var(--background)] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors shadow-luxe-hover"
                   >
                     {slide.ctaLabel}
                   </button>
                 )}
                 <button
                   onClick={() => setView("shop")}
-                  className="btn-luxe px-8 py-4 border-2 border-[#C9A24B] text-[#C9A24B] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[#C9A24B] hover:text-[#2A0A0F] transition-colors"
+                  className="btn-luxe px-8 py-4 border-2 border-[var(--accent)] text-[var(--accent)] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--accent)] hover:text-[var(--foreground)] transition-colors"
                 >
                   Browse Collection
                 </button>
@@ -127,14 +127,14 @@ export function HeroCarousel() {
         <>
           <button
             onClick={() => setCurrent((c) => (c - 1 + slides.length) % slides.length)}
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#FBF6EC]/20 backdrop-blur-sm border border-[#C9A24B]/50 text-[#FBF6EC] flex items-center justify-center hover:bg-[#C9A24B] hover:text-[#2A0A0F] transition-colors"
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[var(--background)]/20 backdrop-blur-sm border border-[var(--accent)]/50 text-[var(--background)] flex items-center justify-center hover:bg-[var(--accent)] hover:text-[var(--foreground)] transition-colors"
             aria-label="Previous slide"
           >
             <ChevronLeft size={20} />
           </button>
           <button
             onClick={() => setCurrent((c) => (c + 1) % slides.length)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#FBF6EC]/20 backdrop-blur-sm border border-[#C9A24B]/50 text-[#FBF6EC] flex items-center justify-center hover:bg-[#C9A24B] hover:text-[#2A0A0F] transition-colors"
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[var(--background)]/20 backdrop-blur-sm border border-[var(--accent)]/50 text-[var(--background)] flex items-center justify-center hover:bg-[var(--accent)] hover:text-[var(--foreground)] transition-colors"
             aria-label="Next slide"
           >
             <ChevronRight size={20} />
@@ -147,7 +147,7 @@ export function HeroCarousel() {
                 key={i}
                 onClick={() => setCurrent(i)}
                 className={`h-1.5 rounded-full transition-all ${
-                  i === current ? "w-8 bg-[#C9A24B]" : "w-1.5 bg-[#FBF6EC]/50"
+                  i === current ? "w-8 bg-[var(--accent)]" : "w-1.5 bg-[var(--background)]/50"
                 }`}
                 aria-label={`Go to slide ${i + 1}`}
               />

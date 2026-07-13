@@ -44,60 +44,60 @@ export function AdminLogin({ onClose }: { onClose: () => void }) {
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
-        className="bg-[#FBF6EC] rounded-2xl shadow-2xl max-w-md w-full p-8 relative"
+        className="bg-[var(--background)] rounded-2xl shadow-2xl max-w-md w-full p-8 relative"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 rounded-full hover:bg-[#F4EAD5] flex items-center justify-center"
+          className="absolute top-4 right-4 w-8 h-8 rounded-full hover:bg-[var(--cream)] flex items-center justify-center"
           aria-label="Close"
         >
           <X size={18} />
         </button>
 
         <div className="text-center mb-6">
-          <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-[#8B1E3E] to-[#6B0E2A] flex items-center justify-center">
-            <Sparkles size={24} className="text-[#C9A24B]" />
+          <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--primary-dark)] flex items-center justify-center">
+            <Sparkles size={24} className="text-[var(--accent)]" />
           </div>
-          <h2 className="font-serif text-2xl font-bold text-[#2A0A0F]">
+          <h2 className="font-serif text-2xl font-bold text-[var(--foreground)]">
             Admin <span className="text-gradient-burgundy italic">Login</span>
           </h2>
-          <p className="text-sm text-[#6B5544] mt-1">
+          <p className="text-sm text-[var(--muted-foreground)] mt-1">
             House of Neelam — Management Portal
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-1.5 block">
+            <label className="text-xs tracking-elegant uppercase text-[var(--accent)] font-semibold mb-1.5 block">
               Email
             </label>
             <div className="relative">
-              <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B5544]" />
+              <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@houseofneelam.com"
-                className="w-full pl-10 pr-3 py-2.5 border border-[#E8D9B8] rounded-md text-sm bg-white outline-none focus:border-[#C9A24B]"
+                className="w-full pl-10 pr-3 py-2.5 border border-[var(--border)] rounded-md text-sm bg-white outline-none focus:border-[var(--accent)]"
               />
             </div>
           </div>
 
           <div>
-            <label className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-1.5 block">
+            <label className="text-xs tracking-elegant uppercase text-[var(--accent)] font-semibold mb-1.5 block">
               Password
             </label>
             <div className="relative">
-              <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B5544]" />
+              <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-10 pr-3 py-2.5 border border-[#E8D9B8] rounded-md text-sm bg-white outline-none focus:border-[#C9A24B]"
+                className="w-full pl-10 pr-3 py-2.5 border border-[var(--border)] rounded-md text-sm bg-white outline-none focus:border-[var(--accent)]"
               />
             </div>
           </div>
@@ -111,16 +111,16 @@ export function AdminLogin({ onClose }: { onClose: () => void }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-[#8B1E3E] text-[#FBF6EC] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[#6B0E2A] transition-colors disabled:opacity-50"
+            className="w-full py-3 bg-[var(--primary)] text-[var(--background)] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors disabled:opacity-50"
           >
             {loading ? "Signing in..." : "Sign In to Admin"}
           </button>
         </form>
 
-        <div className="mt-6 p-3 bg-[#F4EAD5] rounded-md text-xs text-[#6B5544] text-center">
-          <p className="font-semibold text-[#2A0A0F] mb-1">Demo Admin Credentials:</p>
-          <p>Email: <span className="font-mono text-[#8B1E3E]">admin@houseofneelam.com</span></p>
-          <p>Password: <span className="font-mono text-[#8B1E3E]">Neelam@Admin2026</span></p>
+        <div className="mt-6 p-3 bg-[var(--cream)] rounded-md text-xs text-[var(--muted-foreground)] text-center">
+          <p className="font-semibold text-[var(--foreground)] mb-1">Demo Admin Credentials:</p>
+          <p>Email: <span className="font-mono text-[var(--primary)]">admin@houseofneelam.com</span></p>
+          <p>Password: <span className="font-mono text-[var(--primary)]">Neelam@Admin2026</span></p>
         </div>
       </motion.div>
     </motion.div>

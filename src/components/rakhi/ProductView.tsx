@@ -53,8 +53,8 @@ export function ProductView() {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 mx-auto border-4 border-[#C9A24B] border-t-[#8B1E3E] rounded-full animate-spin" />
-          <p className="mt-4 text-sm text-[#6B5544]">Loading...</p>
+          <div className="w-16 h-16 mx-auto border-4 border-[var(--accent)] border-t-[var(--primary)] rounded-full animate-spin" />
+          <p className="mt-4 text-sm text-[var(--muted-foreground)]">Loading...</p>
         </div>
       </div>
     )
@@ -64,8 +64,8 @@ export function ProductView() {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="text-center">
-          <p className="font-serif text-2xl text-[#2A0A0F] mb-4">Product not found</p>
-          <button onClick={() => setView("shop")} className="text-[#8B1E3E] underline">
+          <p className="font-serif text-2xl text-[var(--foreground)] mb-4">Product not found</p>
+          <button onClick={() => setView("shop")} className="text-[var(--primary)] underline">
             Back to Shop
           </button>
         </div>
@@ -113,19 +113,19 @@ export function ProductView() {
   }
 
   return (
-    <div className="bg-[#FBF6EC] min-h-screen">
+    <div className="bg-[var(--background)] min-h-screen">
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <nav className="flex items-center gap-2 text-xs text-[#6B5544]">
-          <button onClick={() => setView("home")} className="hover:text-[#8B1E3E]">Home</button>
+        <nav className="flex items-center gap-2 text-xs text-[var(--muted-foreground)]">
+          <button onClick={() => setView("home")} className="hover:text-[var(--primary)]">Home</button>
           <ChevronRight size={12} />
-          <button onClick={() => setView("shop")} className="hover:text-[#8B1E3E]">Collection</button>
+          <button onClick={() => setView("shop")} className="hover:text-[var(--primary)]">Collection</button>
           <ChevronRight size={12} />
-          <button onClick={() => useStore.getState().setCategory(product.category)} className="hover:text-[#8B1E3E]">
+          <button onClick={() => useStore.getState().setCategory(product.category)} className="hover:text-[var(--primary)]">
             {product.category}
           </button>
           <ChevronRight size={12} />
-          <span className="text-[#2A0A0F] font-medium truncate">{product.name}</span>
+          <span className="text-[var(--foreground)] font-medium truncate">{product.name}</span>
         </nav>
       </div>
 
@@ -137,14 +137,14 @@ export function ProductView() {
             animate={{ opacity: 1, x: 0 }}
             className="lg:sticky lg:top-28 lg:self-start"
           >
-            <div className="bg-white rounded-lg overflow-hidden border border-[#E8D9B8] shadow-luxe">
-              <div className="aspect-square bg-[#FBF6EC] relative cursor-zoom-in" onClick={() => setLightboxOpen(true)}>
+            <div className="bg-white rounded-lg overflow-hidden border border-[var(--border)] shadow-luxe">
+              <div className="aspect-square bg-[var(--background)] relative cursor-zoom-in" onClick={() => setLightboxOpen(true)}>
                 <img
                   src={productImageLarge(images[activeImage] || product.primaryImage)}
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-[#8B1E3E] shadow-sm">
+                <div className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-[var(--primary)] shadow-sm">
                   <Maximize2 size={16} />
                 </div>
               </div>
@@ -157,7 +157,7 @@ export function ProductView() {
                     onClick={() => setActiveImage(i)}
                     className={cn(
                       "w-20 h-20 rounded-md overflow-hidden border-2 transition-colors",
-                      i === activeImage ? "border-[#8B1E3E]" : "border-[#E8D9B8] hover:border-[#C9A24B]"
+                      i === activeImage ? "border-[var(--primary)]" : "border-[var(--border)] hover:border-[var(--accent)]"
                     )}
                   >
                     <img src={thumbnailImage(img)} alt="" className="w-full h-full object-cover" />
@@ -174,10 +174,10 @@ export function ProductView() {
             className="space-y-6"
           >
             <div>
-              <p className="text-xs tracking-[0.3em] uppercase text-[#C9A24B] font-semibold mb-2">
+              <p className="text-xs tracking-[0.3em] uppercase text-[var(--accent)] font-semibold mb-2">
                 {product.category}
               </p>
-              <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2A0A0F] leading-tight">
+              <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[var(--foreground)] leading-tight">
                 {product.name}
               </h1>
             </div>
@@ -189,26 +189,26 @@ export function ProductView() {
                   <Star
                     key={i}
                     size={16}
-                    className={i < Math.round(product.rating) ? "text-[#C9A24B] fill-current" : "text-[#E8D9B8]"}
+                    className={i < Math.round(product.rating) ? "text-[var(--accent)] fill-current" : "text-[var(--border)]"}
                   />
                 ))}
               </div>
-              <span className="text-sm text-[#6B5544]">
+              <span className="text-sm text-[var(--muted-foreground)]">
                 {product.rating.toFixed(1)} ({product.reviewCount} reviews)
               </span>
             </div>
 
             {/* Price */}
-            <div className="flex items-baseline gap-3 py-4 border-y border-[#E8D9B8]">
-              <span className="text-3xl sm:text-4xl font-bold text-[#8B1E3E]">
+            <div className="flex items-baseline gap-3 py-4 border-y border-[var(--border)]">
+              <span className="text-3xl sm:text-4xl font-bold text-[var(--primary)]">
                 {formatINR(product.price)}
               </span>
               {product.compareAtPrice && product.compareAtPrice > product.price && (
                 <>
-                  <span className="text-xl text-[#6B5544] line-through">
+                  <span className="text-xl text-[var(--muted-foreground)] line-through">
                     {formatINR(product.compareAtPrice)}
                   </span>
-                  <span className="px-2.5 py-1 bg-[#C9A24B] text-[#2A0A0F] text-xs font-bold rounded-full">
+                  <span className="px-2.5 py-1 bg-[var(--accent)] text-[var(--foreground)] text-xs font-bold rounded-full">
                     SAVE {discount}%
                   </span>
                 </>
@@ -217,10 +217,10 @@ export function ProductView() {
 
             {/* Description */}
             <div>
-              <p className="text-base text-[#2A0A0F] font-medium mb-2">
+              <p className="text-base text-[var(--foreground)] font-medium mb-2">
                 {product.shortDescription}
               </p>
-              <p className="text-sm text-[#6B5544] leading-relaxed whitespace-pre-line">
+              <p className="text-sm text-[var(--muted-foreground)] leading-relaxed whitespace-pre-line">
                 {product.description}
               </p>
             </div>
@@ -228,16 +228,16 @@ export function ProductView() {
             {/* Features */}
             {features.length > 0 && (
               <div>
-                <h3 className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-3">
+                <h3 className="text-xs tracking-elegant uppercase text-[var(--accent)] font-semibold mb-3">
                   Highlights
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {features.map((f, i) => (
                     <span
                       key={i}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F4EAD5] text-[#2A0A0F] text-xs rounded-full border border-[#E8D9B8]"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--cream)] text-[var(--foreground)] text-xs rounded-full border border-[var(--border)]"
                     >
-                      <Check size={12} className="text-[#8B1E3E]" />
+                      <Check size={12} className="text-[var(--primary)]" />
                       {f}
                     </span>
                   ))}
@@ -248,10 +248,10 @@ export function ProductView() {
             {/* Materials */}
             {materials.length > 0 && (
               <div>
-                <h3 className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-2">
+                <h3 className="text-xs tracking-elegant uppercase text-[var(--accent)] font-semibold mb-2">
                   Materials
                 </h3>
-                <p className="text-sm text-[#6B5544]">
+                <p className="text-sm text-[var(--muted-foreground)]">
                   {materials.join(" • ")}
                 </p>
               </div>
@@ -259,23 +259,23 @@ export function ProductView() {
 
             {/* Quantity */}
             <div className="flex items-center gap-4">
-              <span className="text-sm font-medium text-[#2A0A0F]">Quantity:</span>
-              <div className="flex items-center border border-[#E8D9B8] rounded-md overflow-hidden">
+              <span className="text-sm font-medium text-[var(--foreground)]">Quantity:</span>
+              <div className="flex items-center border border-[var(--border)] rounded-md overflow-hidden">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-10 h-10 flex items-center justify-center text-[#8B1E3E] hover:bg-[#F4EAD5] transition-colors text-lg"
+                  className="w-10 h-10 flex items-center justify-center text-[var(--primary)] hover:bg-[var(--cream)] transition-colors text-lg"
                 >
                   −
                 </button>
                 <span className="w-12 text-center font-semibold">{quantity}</span>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="w-10 h-10 flex items-center justify-center text-[#8B1E3E] hover:bg-[#F4EAD5] transition-colors text-lg"
+                  className="w-10 h-10 flex items-center justify-center text-[var(--primary)] hover:bg-[var(--cream)] transition-colors text-lg"
                 >
                   +
                 </button>
               </div>
-              <span className="text-xs text-[#6B5544]">
+              <span className="text-xs text-[var(--muted-foreground)]">
                 SKU: <span className="font-mono">{product.sku}</span>
               </span>
             </div>
@@ -288,8 +288,8 @@ export function ProductView() {
                   className={cn(
                     "btn-luxe flex items-center justify-center gap-2 px-6 py-4 text-sm tracking-elegant uppercase font-semibold rounded-md transition-colors",
                     added
-                      ? "bg-[#5C8C3E] text-[#FBF6EC]"
-                      : "bg-[#8B1E3E] text-[#FBF6EC] hover:bg-[#6B0E2A]"
+                      ? "bg-[#5C8C3E] text-[var(--background)]"
+                      : "bg-[var(--primary)] text-[var(--background)] hover:bg-[var(--primary-dark)]"
                   )}
                 >
                   {added ? (
@@ -320,8 +320,8 @@ export function ProductView() {
                 className={cn(
                   "w-full flex items-center justify-center gap-2 px-6 py-3 border-2 text-sm tracking-elegant uppercase font-semibold rounded-md transition-colors",
                   wishlisted
-                    ? "border-[#8B1E3E] bg-[#8B1E3E] text-[#FBF6EC]"
-                    : "border-[#E8D9B8] text-[#2A0A0F] hover:border-[#8B1E3E] hover:text-[#8B1E3E]"
+                    ? "border-[var(--primary)] bg-[var(--primary)] text-[var(--background)]"
+                    : "border-[var(--border)] text-[var(--foreground)] hover:border-[var(--primary)] hover:text-[var(--primary)]"
                 )}
               >
                 <Heart size={16} className={wishlisted ? "fill-current" : ""} />
@@ -330,16 +330,16 @@ export function ProductView() {
             </div>
 
             {/* Trust badges */}
-            <div className="grid grid-cols-3 gap-3 pt-6 border-t border-[#E8D9B8]">
+            <div className="grid grid-cols-3 gap-3 pt-6 border-t border-[var(--border)]">
               {[
                 { icon: Truck, label: "Free Shipping", sub: "Above ₹999" },
                 { icon: Shield, label: "Secure Packaging", sub: "Gift-ready" },
                 { icon: Crown, label: "Premium Quality", sub: "Handcrafted" },
               ].map((b, i) => (
                 <div key={i} className="text-center">
-                  <b.icon size={20} className="mx-auto text-[#C9A24B] mb-1" />
-                  <div className="text-xs font-semibold text-[#2A0A0F]">{b.label}</div>
-                  <div className="text-[10px] text-[#6B5544]">{b.sub}</div>
+                  <b.icon size={20} className="mx-auto text-[var(--accent)] mb-1" />
+                  <div className="text-xs font-semibold text-[var(--foreground)]">{b.label}</div>
+                  <div className="text-[10px] text-[var(--muted-foreground)]">{b.sub}</div>
                 </div>
               ))}
             </div>
@@ -351,13 +351,13 @@ export function ProductView() {
           <div className="mt-20">
             <div className="text-center mb-10">
               <div className="flex items-center justify-center gap-3 mb-3">
-                <div className="h-px w-12 bg-[#C9A24B]" />
-                <p className="text-xs tracking-[0.3em] uppercase text-[#C9A24B] font-medium">
+                <div className="h-px w-12 bg-[var(--accent)]" />
+                <p className="text-xs tracking-[0.3em] uppercase text-[var(--accent)] font-medium">
                   You May Also Love
                 </p>
-                <div className="h-px w-12 bg-[#C9A24B]" />
+                <div className="h-px w-12 bg-[var(--accent)]" />
               </div>
-              <h2 className="font-serif text-3xl font-bold text-[#2A0A0F]">
+              <h2 className="font-serif text-3xl font-bold text-[var(--foreground)]">
                 Complete <span className="text-gradient-burgundy italic">Your Celebration</span>
               </h2>
             </div>
@@ -487,7 +487,7 @@ function ImageLightbox({ images, activeIndex, onClose, onNavigate }: {
               onClick={(e) => { e.stopPropagation(); setCurrent(i); onNavigate(i); setZoomed(false) }}
               className={cn(
                 "w-14 h-14 rounded-md overflow-hidden border-2 transition-all flex-shrink-0",
-                i === current ? "border-[#C9A24B] scale-110" : "border-white/30 opacity-60 hover:opacity-100"
+                i === current ? "border-[var(--accent)] scale-110" : "border-white/30 opacity-60 hover:opacity-100"
               )}
             >
               <img src={img} alt="" className="w-full h-full object-cover" />

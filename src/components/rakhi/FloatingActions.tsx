@@ -28,7 +28,7 @@ export function FloatingActions() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.5 }}
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="w-12 h-12 rounded-full bg-[#2A0A0F] text-[#C9A24B] shadow-luxe-hover flex items-center justify-center hover:bg-[#8B1E3E] hover:text-[#FBF6EC] transition-colors"
+            className="w-12 h-12 rounded-full bg-[var(--foreground)] text-[var(--accent)] shadow-luxe-hover flex items-center justify-center hover:bg-[var(--primary)] hover:text-[var(--background)] transition-colors"
             aria-label="Back to top"
           >
             <ChevronUp size={20} />

@@ -50,15 +50,15 @@ export function InfoPage({ pageId }: { pageId: InfoPageId }) {
      pageId === "terms" ? "Terms & Conditions" : "")
 
   return (
-    <div className="bg-[#FBF6EC] min-h-screen">
-      <div className="bg-gradient-to-br from-[#2A0A0F] to-[#8B1E3E] text-[#FBF6EC] py-16">
+    <div className="bg-[var(--background)] min-h-screen">
+      <div className="bg-gradient-to-br from-[var(--foreground)] to-[var(--primary)] text-[var(--background)] py-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex items-center justify-center gap-3 mb-3">
-            <div className="h-px w-12 bg-[#C9A24B]" />
-            <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-[#C9A24B] font-medium">
+            <div className="h-px w-12 bg-[var(--accent)]" />
+            <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-[var(--accent)] font-medium">
               House of Neelam
             </p>
-            <div className="h-px w-12 bg-[#C9A24B]" />
+            <div className="h-px w-12 bg-[var(--accent)]" />
           </div>
           <h1 className="font-serif text-4xl sm:text-5xl font-bold">
             {pageTitle}
@@ -69,9 +69,9 @@ export function InfoPage({ pageId }: { pageId: InfoPageId }) {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {loading ? (
           <div className="space-y-4 animate-pulse">
-            <div className="h-6 bg-[#F4EAD5] rounded shimmer" />
-            <div className="h-4 bg-[#F4EAD5] rounded shimmer w-3/4" />
-            <div className="h-4 bg-[#F4EAD5] rounded shimmer w-5/6" />
+            <div className="h-6 bg-[var(--cream)] rounded shimmer" />
+            <div className="h-4 bg-[var(--cream)] rounded shimmer w-3/4" />
+            <div className="h-4 bg-[var(--cream)] rounded shimmer w-5/6" />
           </div>
         ) : (
           <motion.div
@@ -85,7 +85,7 @@ export function InfoPage({ pageId }: { pageId: InfoPageId }) {
               </div>
             )}
 
-            <div className="text-[#2A0A0F] leading-relaxed space-y-4 text-base">
+            <div className="text-[var(--foreground)] leading-relaxed space-y-4 text-base">
               {(content?.body || defaultContent[pageId]?.body || "").split("\n").map((line: string, i: number) => (
                 <p key={i} className={line.startsWith("•") ? "ml-4" : ""}>
                   {line}
@@ -97,42 +97,42 @@ export function InfoPage({ pageId }: { pageId: InfoPageId }) {
             {pageId === "contact" && settings && (
               <div className="mt-10 grid sm:grid-cols-2 gap-4">
                 {settings.contact?.email && (
-                  <div className="flex items-start gap-3 p-5 bg-white rounded-lg border border-[#E8D9B8]">
-                    <Mail size={20} className="text-[#C9A24B] mt-0.5" />
+                  <div className="flex items-start gap-3 p-5 bg-white rounded-lg border border-[var(--border)]">
+                    <Mail size={20} className="text-[var(--accent)] mt-0.5" />
                     <div>
-                      <p className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-1">Email</p>
-                      <a href={`mailto:${settings.contact.email}`} className="text-sm text-[#2A0A0F] hover:text-[#8B1E3E]">
+                      <p className="text-xs tracking-elegant uppercase text-[var(--accent)] font-semibold mb-1">Email</p>
+                      <a href={`mailto:${settings.contact.email}`} className="text-sm text-[var(--foreground)] hover:text-[var(--primary)]">
                         {settings.contact.email}
                       </a>
                     </div>
                   </div>
                 )}
                 {settings.contact?.phone && (
-                  <div className="flex items-start gap-3 p-5 bg-white rounded-lg border border-[#E8D9B8]">
-                    <Phone size={20} className="text-[#C9A24B] mt-0.5" />
+                  <div className="flex items-start gap-3 p-5 bg-white rounded-lg border border-[var(--border)]">
+                    <Phone size={20} className="text-[var(--accent)] mt-0.5" />
                     <div>
-                      <p className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-1">Phone</p>
-                      <a href={`tel:${settings.contact.phone}`} className="text-sm text-[#2A0A0F] hover:text-[#8B1E3E]">
+                      <p className="text-xs tracking-elegant uppercase text-[var(--accent)] font-semibold mb-1">Phone</p>
+                      <a href={`tel:${settings.contact.phone}`} className="text-sm text-[var(--foreground)] hover:text-[var(--primary)]">
                         {settings.contact.phone}
                       </a>
                     </div>
                   </div>
                 )}
                 {content?.hours && (
-                  <div className="flex items-start gap-3 p-5 bg-white rounded-lg border border-[#E8D9B8]">
-                    <Clock size={20} className="text-[#C9A24B] mt-0.5" />
+                  <div className="flex items-start gap-3 p-5 bg-white rounded-lg border border-[var(--border)]">
+                    <Clock size={20} className="text-[var(--accent)] mt-0.5" />
                     <div>
-                      <p className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-1">Hours</p>
-                      <p className="text-sm text-[#2A0A0F]">{content.hours}</p>
+                      <p className="text-xs tracking-elegant uppercase text-[var(--accent)] font-semibold mb-1">Hours</p>
+                      <p className="text-sm text-[var(--foreground)]">{content.hours}</p>
                     </div>
                   </div>
                 )}
                 {settings.contact?.address && (
-                  <div className="flex items-start gap-3 p-5 bg-white rounded-lg border border-[#E8D9B8]">
-                    <MapPin size={20} className="text-[#C9A24B] mt-0.5" />
+                  <div className="flex items-start gap-3 p-5 bg-white rounded-lg border border-[var(--border)]">
+                    <MapPin size={20} className="text-[var(--accent)] mt-0.5" />
                     <div>
-                      <p className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-1">Address</p>
-                      <p className="text-sm text-[#2A0A0F]">{settings.contact.address}</p>
+                      <p className="text-xs tracking-elegant uppercase text-[var(--accent)] font-semibold mb-1">Address</p>
+                      <p className="text-sm text-[var(--foreground)]">{settings.contact.address}</p>
                     </div>
                   </div>
                 )}
@@ -156,7 +156,7 @@ export function InfoPage({ pageId }: { pageId: InfoPageId }) {
         <div className="mt-12 text-center">
           <button
             onClick={() => setView("shop")}
-            className="text-sm text-[#8B1E3E] hover:underline tracking-elegant uppercase font-semibold"
+            className="text-sm text-[var(--primary)] hover:underline tracking-elegant uppercase font-semibold"
           >
             ← Back to Collection
           </button>

@@ -20,8 +20,8 @@ export function BackButton() {
         className={cn(
           "flex items-center justify-center w-10 h-10 rounded-full shadow-lg transition-all backdrop-blur-sm",
           canGoBack
-            ? "bg-white/90 text-[#8B1E3E] hover:bg-[#8B1E3E] hover:text-white hover:scale-110 border border-[#E8D9B8]"
-            : "bg-white/50 text-[#6B5544]/40 cursor-not-allowed border border-[#E8D9B8]/50"
+            ? "bg-white/90 text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white hover:scale-110 border border-[var(--border)]"
+            : "bg-white/50 text-[var(--muted-foreground)]/40 cursor-not-allowed border border-[var(--border)]/50"
         )}
         aria-label="Go back"
       >
@@ -30,7 +30,7 @@ export function BackButton() {
 
       <button
         onClick={goHome}
-        className="flex items-center justify-center w-10 h-10 rounded-full bg-white/90 text-[#6B5544] hover:text-[#8B1E3E] hover:scale-110 shadow-lg border border-[#E8D9B8] backdrop-blur-sm transition-all"
+        className="flex items-center justify-center w-10 h-10 rounded-full bg-white/90 text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:scale-110 shadow-lg border border-[var(--border)] backdrop-blur-sm transition-all"
         aria-label="Go to home"
       >
         <Home size={16} />

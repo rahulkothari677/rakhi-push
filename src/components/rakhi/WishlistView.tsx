@@ -48,20 +48,20 @@ export function WishlistView() {
   }
 
   return (
-    <div className="bg-[#FBF6EC] min-h-screen">
+    <div className="bg-[var(--background)] min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="text-center mb-10">
           <div className="flex items-center justify-center gap-3 mb-3">
-            <div className="h-px w-12 bg-[#C9A24B]" />
-            <p className="text-xs tracking-[0.3em] uppercase text-[#C9A24B] font-medium flex items-center gap-2">
+            <div className="h-px w-12 bg-[var(--accent)]" />
+            <p className="text-xs tracking-[0.3em] uppercase text-[var(--accent)] font-medium flex items-center gap-2">
               <Heart size={14} className="fill-current" /> Saved Items
             </p>
-            <div className="h-px w-12 bg-[#C9A24B]" />
+            <div className="h-px w-12 bg-[var(--accent)]" />
           </div>
-          <h1 className="font-serif text-4xl font-bold text-[#2A0A0F]">
+          <h1 className="font-serif text-4xl font-bold text-[var(--foreground)]">
             Your <span className="text-gradient-burgundy italic">Wishlist</span>
           </h1>
-          <p className="text-[#6B5544] mt-3">
+          <p className="text-[var(--muted-foreground)] mt-3">
             {wishlist.length === 0
               ? "Your wishlist is waiting to be filled with love."
               : `${wishlist.length} ${wishlist.length === 1 ? "Rakhi" : "Rakhis"} saved for later`}
@@ -71,15 +71,15 @@ export function WishlistView() {
         {wishlist.length === 0 ? (
           <div className="text-center py-20">
             <div className="text-7xl mb-6">💝</div>
-            <h3 className="font-serif text-2xl font-bold text-[#2A0A0F] mb-3">
+            <h3 className="font-serif text-2xl font-bold text-[var(--foreground)] mb-3">
               No favorites yet
             </h3>
-            <p className="text-[#6B5544] mb-8 max-w-md mx-auto">
+            <p className="text-[var(--muted-foreground)] mb-8 max-w-md mx-auto">
               Tap the heart icon on any Rakhi to save it here. Build your perfect collection and order all your favorites at once.
             </p>
             <button
               onClick={() => setView("shop")}
-              className="px-8 py-3.5 bg-[#8B1E3E] text-[#FBF6EC] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[#6B0E2A] transition-colors inline-flex items-center gap-2"
+              className="px-8 py-3.5 bg-[var(--primary)] text-[var(--background)] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors inline-flex items-center gap-2"
             >
               Explore Collection <ArrowRight size={16} />
             </button>
@@ -89,7 +89,7 @@ export function WishlistView() {
             <div className="flex justify-end mb-6 gap-3">
               <button
                 onClick={moveAllToCart}
-                className="px-5 py-2.5 bg-[#8B1E3E] text-[#FBF6EC] text-xs tracking-elegant uppercase font-semibold rounded-md hover:bg-[#6B0E2A] transition-colors inline-flex items-center gap-2"
+                className="px-5 py-2.5 bg-[var(--primary)] text-[var(--background)] text-xs tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors inline-flex items-center gap-2"
               >
                 <ShoppingBag size={14} /> Move All to Cart
               </button>
@@ -102,11 +102,11 @@ export function WishlistView() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="group bg-white rounded-lg overflow-hidden shadow-luxe hover:shadow-luxe-hover transition-all border border-[#E8D9B8]/60"
+                  className="group bg-white rounded-lg overflow-hidden shadow-luxe hover:shadow-luxe-hover transition-all border border-[var(--border)]/60"
                 >
                   <button
                     onClick={() => openProduct(item.slug)}
-                    className="block w-full aspect-square overflow-hidden bg-[#FBF6EC] relative"
+                    className="block w-full aspect-square overflow-hidden bg-[var(--background)] relative"
                   >
                     <img
                       src={productImage(item.image)}
@@ -118,7 +118,7 @@ export function WishlistView() {
 
                   <button
                     onClick={() => removeFromWishlist(item.productId)}
-                    className="absolute top-3 right-3 w-9 h-9 rounded-full bg-[#8B1E3E] text-[#FBF6EC] flex items-center justify-center hover:bg-[#6B0E2A] transition-colors"
+                    className="absolute top-3 right-3 w-9 h-9 rounded-full bg-[var(--primary)] text-[var(--background)] flex items-center justify-center hover:bg-[var(--primary-dark)] transition-colors"
                     style={{ position: "relative", marginLeft: "auto", marginTop: "-3rem" }}
                     aria-label="Remove from wishlist"
                   >
@@ -126,10 +126,10 @@ export function WishlistView() {
                   </button>
 
                   <div className="p-4 text-center">
-                    <h3 className="font-serif text-base font-semibold text-[#2A0A0F] line-clamp-2 mb-1">
+                    <h3 className="font-serif text-base font-semibold text-[var(--foreground)] line-clamp-2 mb-1">
                       {item.name}
                     </h3>
-                    <p className="text-lg font-bold text-[#8B1E3E] mb-3">{formatINR(item.price)}</p>
+                    <p className="text-lg font-bold text-[var(--primary)] mb-3">{formatINR(item.price)}</p>
                     <div className="flex gap-2">
                       <button
                         onClick={() =>
@@ -143,7 +143,7 @@ export function WishlistView() {
                             sku: item.sku,
                           })
                         }
-                        className="flex-1 py-2 bg-[#8B1E3E] text-[#FBF6EC] text-xs tracking-elegant uppercase font-semibold rounded-md hover:bg-[#6B0E2A] transition-colors"
+                        className="flex-1 py-2 bg-[var(--primary)] text-[var(--background)] text-xs tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors"
                       >
                         Add to Cart
                       </button>

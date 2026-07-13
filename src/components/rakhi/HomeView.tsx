@@ -48,10 +48,10 @@ export function HomeView() {
       <HeroCarousel />
 
       {/* Trust badges strip — premium dark with gold accents */}
-      <section className="bg-gradient-to-r from-[#2A0A0F] via-[#1A0508] to-[#2A0A0F] text-[#FBF6EC] py-6 border-y-2 border-[#C9A24B]/30 relative overflow-hidden">
+      <section className="bg-gradient-to-r from-[var(--foreground)] via-[var(--foreground)] to-[var(--foreground)] text-[var(--background)] py-6 border-y-2 border-[var(--accent)]/30 relative overflow-hidden">
         {/* Decorative pattern overlay */}
         <div className="absolute inset-0 opacity-5" style={{
-          backgroundImage: `radial-gradient(circle at 20% 50%, #C9A24B 1px, transparent 1px), radial-gradient(circle at 80% 50%, #C9A24B 1px, transparent 1px)`,
+          backgroundImage: `radial-gradient(circle at 20% 50%, var(--accent) 1px, transparent 1px), radial-gradient(circle at 80% 50%, var(--accent) 1px, transparent 1px)`,
           backgroundSize: '40px 40px',
         }} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-6 relative">
@@ -69,12 +69,12 @@ export function HomeView() {
               transition={{ delay: i * 0.1 }}
               className="flex items-center gap-3"
             >
-              <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#C9A24B] to-[#B5862D] flex items-center justify-center flex-shrink-0 shadow-lg">
-                <b.icon size={18} className="text-[#2A0A0F]" />
+              <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dark)] flex items-center justify-center flex-shrink-0 shadow-lg">
+                <b.icon size={18} className="text-[var(--foreground)]" />
               </div>
               <div>
-                <div className="text-sm font-semibold text-[#FBF6EC]">{b.title}</div>
-                <div className="text-xs text-[#C9A24B]">{b.sub}</div>
+                <div className="text-sm font-semibold text-[var(--background)]">{b.title}</div>
+                <div className="text-xs text-[var(--accent)]">{b.sub}</div>
               </div>
             </motion.div>
           ))}
@@ -89,18 +89,18 @@ export function HomeView() {
         }} />
         <div className="text-center mb-12 relative">
           <div className="flex items-center justify-center gap-4 mb-4">
-            <div className="h-px w-16 bg-gradient-to-r from-transparent to-[#C9A24B]" />
-            <span className="text-[#C9A24B] text-lg">❖</span>
-            <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-[#C9A24B] font-semibold">
+            <div className="h-px w-16 bg-gradient-to-r from-transparent to-[var(--accent)]" />
+            <span className="text-[var(--accent)] text-lg">❖</span>
+            <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-[var(--accent)] font-semibold">
               Explore Our Collections
             </p>
-            <span className="text-[#C9A24B] text-lg">❖</span>
-            <div className="h-px w-16 bg-gradient-to-l from-transparent to-[#C9A24B]" />
+            <span className="text-[var(--accent)] text-lg">❖</span>
+            <div className="h-px w-16 bg-gradient-to-l from-transparent to-[var(--accent)]" />
           </div>
-          <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2A0A0F] mb-4 tracking-tight">
+          <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-[var(--foreground)] mb-4 tracking-tight">
             Curated <span className="text-gradient-burgundy italic">Collections</span>
           </h2>
-          <p className="text-[#6B5544] max-w-2xl mx-auto text-base sm:text-lg leading-relaxed">
+          <p className="text-[var(--muted-foreground)] max-w-2xl mx-auto text-base sm:text-lg leading-relaxed">
             From traditional moli to diamond-studded luxury — discover Rakhis for every bond and every story.
           </p>
         </div>
@@ -114,29 +114,33 @@ export function HomeView() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.05 }}
               onClick={() => setCategory(cat.name)}
-              className="group relative aspect-[4/5] rounded-lg overflow-hidden bg-gradient-to-br from-[#F4EAD5] to-[#FBF6EC] border border-[#E8D9B8] hover-lift"
+              className="group relative aspect-[4/5] rounded-xl overflow-hidden bg-muted border border-border hover-lift"
             >
-              {/* Category image (or gradient fallback) */}
+              {/* Category image — fills entire box with object-cover (no gaps) */}
               {cat.image ? (
                 <img
                   src={categoryImagePortrait(cat.image)}
                   alt={cat.name}
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   loading="lazy"
                 />
-              ) : null}
-              {/* Dark gradient overlay for text contrast (only when image present) */}
-              {cat.image && (
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1A0508]/80 via-[#1A0508]/30 to-transparent" />
+              ) : (
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
+                  <span className="font-serif text-5xl font-bold text-primary/30">
+                    {cat.name.charAt(0)}
+                  </span>
+                </div>
               )}
+              {/* Dark gradient overlay for text contrast (always present) */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
               <div className="absolute inset-0 flex flex-col items-center justify-end p-4 text-center">
-                <h3 className={`font-serif text-base sm:text-lg font-semibold leading-tight transition-colors ${cat.image ? "text-[#FBF6EC]" : "text-[#2A0A0F] group-hover:text-[#8B1E3E]"}`}>
+                <h3 className="font-serif text-base sm:text-lg font-semibold leading-tight text-background drop-shadow-lg">
                   {cat.name}
                 </h3>
-                <p className={`text-[10px] tracking-elegant uppercase mt-1.5 font-semibold ${cat.image ? "text-[#C9A24B]" : "text-[#C9A24B]"}`}>
+                <p className="text-[10px] tracking-elegant uppercase mt-1.5 font-semibold text-accent">
                   {cat.productCount} {cat.productCount === 1 ? "Item" : "Items"}
                 </p>
-                <div className="mt-2 flex items-center gap-1 text-xs text-[#C9A24B] opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="mt-2 flex items-center gap-1 text-xs text-accent opacity-0 group-hover:opacity-100 transition-opacity">
                   Explore <ArrowRight size={12} />
                 </div>
               </div>
@@ -147,7 +151,7 @@ export function HomeView() {
         <div className="text-center mt-12">
           <button
             onClick={() => setView("shop")}
-            className="btn-luxe inline-flex items-center gap-2 px-8 py-3.5 border-2 border-[#8B1E3E] text-[#8B1E3E] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[#8B1E3E] hover:text-[#FBF6EC] transition-colors"
+            className="btn-luxe inline-flex items-center gap-2 px-8 py-3.5 border-2 border-primary text-primary text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-primary hover:text-primary-foreground transition-colors"
           >
             View All Collections <ArrowRight size={16} />
           </button>
@@ -155,20 +159,24 @@ export function HomeView() {
       </section>
 
       {/* Featured Rakhis */}
-      <section className="py-20 bg-gradient-to-b from-[#FBF6EC] to-[#F4EAD5]/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 bg-gradient-to-b from-[var(--background)] to-[var(--cream)]/50 relative overflow-hidden">
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 0 L80 40 L40 80 L0 40 Z' fill='%238B1E3E'/%3E%3C/svg%3E")`,
+        }} />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-3 mb-3">
-              <div className="h-px w-12 bg-[#C9A24B]" />
-              <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-[#C9A24B] font-medium flex items-center gap-2">
+              <div className="h-px w-12 bg-[var(--accent)]" />
+              <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-[var(--accent)] font-medium flex items-center gap-2">
                 <Sparkles size={14} /> Handpicked for You
               </p>
-              <div className="h-px w-12 bg-[#C9A24B]" />
+              <div className="h-px w-12 bg-[var(--accent)]" />
             </div>
-            <h2 className="font-serif text-3xl sm:text-5xl font-bold text-[#2A0A0F] mb-3">
+            <h2 className="font-serif text-3xl sm:text-5xl font-bold text-[var(--foreground)] mb-3">
               Featured <span className="text-gradient-burgundy italic">Rakhis</span>
             </h2>
-            <p className="text-[#6B5544] max-w-2xl mx-auto">
+            <p className="text-[var(--muted-foreground)] max-w-2xl mx-auto">
               Our most-loved pieces — each one a celebration of the sacred bond between siblings.
             </p>
           </div>
@@ -183,7 +191,7 @@ export function HomeView() {
 
       {/* Quote / Story section — premium with decorative elements */}
       <section className="py-28 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#8B1E3E] via-[#6B0E2A] to-[#2A0A0F]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary)] via-[var(--primary-dark)] to-[var(--foreground)]" />
         {/* Decorative mandala pattern */}
         <div className="absolute inset-0 opacity-[0.04]" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='120' height='120' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='60' cy='60' r='50' fill='none' stroke='%23C9A24B' stroke-width='1'/%3E%3Ccircle cx='60' cy='60' r='30' fill='none' stroke='%23C9A24B' stroke-width='1'/%3E%3Cpath d='M60 10 L60 110 M10 60 L110 60' stroke='%23C9A24B' stroke-width='1'/%3E%3C/svg%3E")`,
@@ -199,26 +207,26 @@ export function HomeView() {
                 animationDelay: `${i * 0.4}s`,
               }}
             >
-              <Sparkles size={20} className="text-[#C9A24B]" />
+              <Sparkles size={20} className="text-[var(--accent)]" />
             </div>
           ))}
         </div>
 
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <div className="flex items-center justify-center gap-4 mb-6">
-            <span className="text-[#C9A24B] text-2xl">❖</span>
-            <span className="text-[#C9A24B] text-3xl font-serif">&ldquo;</span>
-            <span className="text-[#C9A24B] text-2xl">❖</span>
+            <span className="text-[var(--accent)] text-2xl">❖</span>
+            <span className="text-[var(--accent)] text-3xl font-serif">&ldquo;</span>
+            <span className="text-[var(--accent)] text-2xl">❖</span>
           </div>
-          <p className="font-serif text-2xl sm:text-4xl lg:text-5xl text-[#FBF6EC] italic leading-relaxed mb-8">
+          <p className="font-serif text-2xl sm:text-4xl lg:text-5xl text-[var(--background)] italic leading-relaxed mb-8">
             A brother may not be a friend, but a friend will always be a brother. The sacred thread of Rakhi binds not just wrists, but hearts across lifetimes.
           </p>
           <div className="flex items-center justify-center gap-4">
-            <div className="h-px w-12 bg-[#C9A24B]" />
-            <p className="text-sm tracking-[0.3em] uppercase text-[#C9A24B] font-semibold">
+            <div className="h-px w-12 bg-[var(--accent)]" />
+            <p className="text-sm tracking-[0.3em] uppercase text-[var(--accent)] font-semibold">
               House of Neelam
             </p>
-            <div className="h-px w-12 bg-[#C9A24B]" />
+            <div className="h-px w-12 bg-[var(--accent)]" />
           </div>
         </div>
       </section>
@@ -227,15 +235,15 @@ export function HomeView() {
       <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-4 mb-4">
-            <div className="h-px w-16 bg-gradient-to-r from-transparent to-[#C9A24B]" />
-            <span className="text-[#C9A24B] text-lg">❖</span>
-            <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-[#C9A24B] font-semibold">
+            <div className="h-px w-16 bg-gradient-to-r from-transparent to-[var(--accent)]" />
+            <span className="text-[var(--accent)] text-lg">❖</span>
+            <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-[var(--accent)] font-semibold">
               Loved by Families
             </p>
-            <span className="text-[#C9A24B] text-lg">❖</span>
-            <div className="h-px w-16 bg-gradient-to-l from-transparent to-[#C9A24B]" />
+            <span className="text-[var(--accent)] text-lg">❖</span>
+            <div className="h-px w-16 bg-gradient-to-l from-transparent to-[var(--accent)]" />
           </div>
-          <h2 className="font-serif text-3xl sm:text-5xl font-bold text-[#2A0A0F] mb-3">
+          <h2 className="font-serif text-3xl sm:text-5xl font-bold text-[var(--foreground)] mb-3">
             What Our <span className="text-gradient-burgundy italic">Customers Say</span>
           </h2>
         </div>
@@ -267,21 +275,21 @@ export function HomeView() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="bg-white p-6 rounded-xl border border-[#E8D9B8] shadow-luxe hover:shadow-luxe-hover transition-all hover-lift"
+              className="bg-white p-6 rounded-xl border border-[var(--border)] shadow-luxe hover:shadow-luxe-hover transition-all hover-lift"
             >
               <div className="flex gap-1 mb-3">
                 {Array.from({ length: t.rating }).map((_, j) => (
-                  <span key={j} className="text-[#C9A24B] text-lg">★</span>
+                  <span key={j} className="text-[var(--accent)] text-lg">★</span>
                 ))}
               </div>
-              <p className="text-sm text-[#6B5544] leading-relaxed mb-4 italic">&ldquo;{t.text}&rdquo;</p>
-              <div className="flex items-center gap-3 pt-4 border-t border-[#E8D9B8]">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#8B1E3E] to-[#6B0E2A] flex items-center justify-center text-[#FBF6EC] font-serif font-bold">
+              <p className="text-sm text-[var(--muted-foreground)] leading-relaxed mb-4 italic">&ldquo;{t.text}&rdquo;</p>
+              <div className="flex items-center gap-3 pt-4 border-t border-[var(--border)]">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--primary-dark)] flex items-center justify-center text-[var(--background)] font-serif font-bold">
                   {t.name.charAt(0)}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-[#2A0A0F]">{t.name}</p>
-                  <p className="text-xs text-[#6B5544]">{t.location}</p>
+                  <p className="text-sm font-semibold text-[var(--foreground)]">{t.name}</p>
+                  <p className="text-xs text-[var(--muted-foreground)]">{t.location}</p>
                 </div>
               </div>
             </motion.div>
@@ -290,19 +298,24 @@ export function HomeView() {
       </section>
 
       {/* New Arrivals */}
-      <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 0 L80 40 L40 80 L0 40 Z' fill='%23C9A24B'/%3E%3C/svg%3E")`,
+        }} />
+        <div className="relative">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-3">
-            <div className="h-px w-12 bg-[#C9A24B]" />
-            <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-[#C9A24B] font-medium">
+            <div className="h-px w-12 bg-[var(--accent)]" />
+            <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-[var(--accent)] font-medium">
               Fresh Additions
             </p>
-            <div className="h-px w-12 bg-[#C9A24B]" />
+            <div className="h-px w-12 bg-[var(--accent)]" />
           </div>
-          <h2 className="font-serif text-3xl sm:text-5xl font-bold text-[#2A0A0F] mb-3">
+          <h2 className="font-serif text-3xl sm:text-5xl font-bold text-[var(--foreground)] mb-3">
             New <span className="text-gradient-burgundy italic">Arrivals</span>
           </h2>
-          <p className="text-[#6B5544] max-w-2xl mx-auto">
+          <p className="text-[var(--muted-foreground)] max-w-2xl mx-auto">
             Just landed — the newest pieces in our Rakhi collection, handcrafted and ready to celebrate.
           </p>
         </div>
@@ -316,46 +329,47 @@ export function HomeView() {
         <div className="text-center mt-12">
           <button
             onClick={() => setView("shop")}
-            className="btn-luxe inline-flex items-center gap-2 px-8 py-3.5 bg-[#8B1E3E] text-[#FBF6EC] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[#6B0E2A] transition-colors shadow-luxe"
+            className="btn-luxe inline-flex items-center gap-2 px-8 py-3.5 bg-[var(--primary)] text-[var(--background)] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors shadow-luxe"
           >
             View All Rakhis <ArrowRight size={16} />
           </button>
+        </div>
         </div>
       </section>
 
       {/* Festive / Gift box CTA */}
       <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-gradient-to-r from-[#F4EAD5] to-[#FBF6EC] rounded-2xl p-8 sm:p-12 lg:p-16 border border-[#C9A24B]/30 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#C9A24B]/10 rounded-full -translate-y-1/3 translate-x-1/3" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#8B1E3E]/10 rounded-full translate-y-1/3 -translate-x-1/3" />
+        <div className="bg-gradient-to-r from-[var(--cream)] to-[var(--background)] rounded-2xl p-8 sm:p-12 lg:p-16 border border-[var(--accent)]/30 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--accent)]/10 rounded-full -translate-y-1/3 translate-x-1/3" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-[var(--primary)]/10 rounded-full translate-y-1/3 -translate-x-1/3" />
 
           <div className="relative grid lg:grid-cols-2 gap-8 items-center">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <Gift size={18} className="text-[#C9A24B]" />
-                <p className="text-xs tracking-[0.3em] uppercase text-[#C9A24B] font-semibold">
+                <Gift size={18} className="text-[var(--accent)]" />
+                <p className="text-xs tracking-[0.3em] uppercase text-[var(--accent)] font-semibold">
                   {ctaContent?.eyebrow || "Complete the Celebration"}
                 </p>
               </div>
-              <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#2A0A0F] mb-4 leading-tight">
+              <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[var(--foreground)] mb-4 leading-tight">
                 {ctaContent?.titlePrefix || "Don't forget the"}{" "}
                 <span className="text-gradient-burgundy italic">
                   {ctaContent?.titleAccent || "Roli-Chawal Thali"}
                 </span>
               </h2>
-              <p className="text-[#6B5544] mb-6 leading-relaxed">
+              <p className="text-[var(--muted-foreground)] mb-6 leading-relaxed">
                 {ctaContent?.description ||
                   "Complete your Raksha Bandhan ritual with our beautifully crafted thali sets. Including premium roli, chawal, decorative diya, and traditional brass plates — everything you need for the sacred ceremony."}
               </p>
               <button
                 onClick={() => setCategory(ctaContent?.ctaCategory || "Roli-Chawal & Thali")}
-                className="btn-luxe inline-flex items-center gap-2 px-7 py-3.5 bg-[#8B1E3E] text-[#FBF6EC] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[#6B0E2A] transition-colors"
+                className="btn-luxe inline-flex items-center gap-2 px-7 py-3.5 bg-[var(--primary)] text-[var(--background)] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors"
               >
                 {ctaContent?.ctaLabel || "Shop Thali Sets"} <ArrowRight size={16} />
               </button>
             </div>
             <div className="relative">
-              <div className="aspect-square max-w-md mx-auto rounded-xl overflow-hidden shadow-luxe-hover bg-[#FBF6EC]">
+              <div className="aspect-square max-w-md mx-auto rounded-xl overflow-hidden shadow-luxe-hover bg-[var(--background)]">
                 <img
                   src={ctaImage(ctaContent?.image || "/images/thali-marigold-1.svg")}
                   alt={ctaContent?.titleAccent || "Roli Chawal Thali"}

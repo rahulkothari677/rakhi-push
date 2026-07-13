@@ -83,10 +83,10 @@ export function CartDrawer() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "tween", duration: 0.3 }}
-            className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-[#FBF6EC] z-50 flex flex-col shadow-2xl"
+            className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-[var(--background)] z-50 flex flex-col shadow-2xl"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-5 border-b border-[#E8D9B8] bg-[#8B1E3E] text-[#FBF6EC]">
+            <div className="flex items-center justify-between p-5 border-b border-[var(--border)] bg-[var(--primary)] text-[var(--background)]">
               <div className="flex items-center gap-2">
                 <ShoppingBag size={20} />
                 <h2 className="font-serif text-lg font-semibold">
@@ -105,8 +105,8 @@ export function CartDrawer() {
             {cart.length === 0 ? (
               <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
                 <div className="text-6xl mb-4">🛍️</div>
-                <h3 className="font-serif text-xl text-[#2A0A0F] mb-2">Your cart is empty</h3>
-                <p className="text-sm text-[#6B5544] mb-6">
+                <h3 className="font-serif text-xl text-[var(--foreground)] mb-2">Your cart is empty</h3>
+                <p className="text-sm text-[var(--muted-foreground)] mb-6">
                   Discover beautiful handcrafted Rakhis in our collection.
                 </p>
                 <button
@@ -114,7 +114,7 @@ export function CartDrawer() {
                     setCartOpen(false)
                     setView("shop")
                   }}
-                  className="px-6 py-3 bg-[#8B1E3E] text-[#FBF6EC] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[#6B0E2A] transition-colors"
+                  className="px-6 py-3 bg-[var(--primary)] text-[var(--background)] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors"
                 >
                   Explore Collection
                 </button>
@@ -123,20 +123,20 @@ export function CartDrawer() {
               <>
                 {/* Free shipping progress */}
                 {shipping > 0 && (
-                  <div className="px-5 py-3 bg-[#F4EAD5] border-b border-[#E8D9B8]">
-                    <p className="text-xs text-[#2A0A0F] mb-1.5">
-                      Add <span className="font-bold text-[#8B1E3E]">{formatINR(freeShipAbove - subtotal)}</span> more for FREE shipping! 🚚
+                  <div className="px-5 py-3 bg-[var(--cream)] border-b border-[var(--border)]">
+                    <p className="text-xs text-[var(--foreground)] mb-1.5">
+                      Add <span className="font-bold text-[var(--primary)]">{formatINR(freeShipAbove - subtotal)}</span> more for FREE shipping! 🚚
                     </p>
-                    <div className="h-1.5 bg-[#E8D9B8] rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-[#8B1E3E] to-[#C9A24B] transition-all"
+                        className="h-full bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] transition-all"
                         style={{ width: `${Math.min(100, (subtotal / freeShipAbove) * 100)}%` }}
                       />
                     </div>
                   </div>
                 )}
                 {shipping === 0 && subtotal > 0 && (
-                  <div className="px-5 py-2.5 bg-[#5C8C3E]/10 border-b border-[#E8D9B8] text-center">
+                  <div className="px-5 py-2.5 bg-[#5C8C3E]/10 border-b border-[var(--border)] text-center">
                     <p className="text-xs text-[#5C8C3E] font-semibold">
                       🎉 You've unlocked FREE shipping!
                     </p>
@@ -152,37 +152,37 @@ export function CartDrawer() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0, x: 50 }}
-                      className="flex gap-3 bg-white p-3 rounded-lg border border-[#E8D9B8]"
+                      className="flex gap-3 bg-white p-3 rounded-lg border border-[var(--border)]"
                     >
-                      <div className="w-20 h-20 rounded-md overflow-hidden bg-[#FBF6EC] flex-shrink-0">
+                      <div className="w-20 h-20 rounded-md overflow-hidden bg-[var(--background)] flex-shrink-0">
                         <img src={thumbnailImage(item.image)} alt={item.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-semibold text-[#2A0A0F] line-clamp-2">{item.name}</h4>
-                        <p className="text-xs text-[#6B5544] mt-0.5">SKU: {item.sku}</p>
+                        <h4 className="text-sm font-semibold text-[var(--foreground)] line-clamp-2">{item.name}</h4>
+                        <p className="text-xs text-[var(--muted-foreground)] mt-0.5">SKU: {item.sku}</p>
                         <div className="flex items-center justify-between mt-2">
-                          <div className="flex items-center border border-[#E8D9B8] rounded">
+                          <div className="flex items-center border border-[var(--border)] rounded">
                             <button
                               onClick={() => updateCartQty(item.productId, item.quantity - 1)}
-                              className="w-7 h-7 flex items-center justify-center text-[#8B1E3E] hover:bg-[#F4EAD5] transition-colors"
+                              className="w-7 h-7 flex items-center justify-center text-[var(--primary)] hover:bg-[var(--cream)] transition-colors"
                             >
                               <Minus size={12} />
                             </button>
                             <span className="w-8 text-center text-sm font-semibold">{item.quantity}</span>
                             <button
                               onClick={() => updateCartQty(item.productId, item.quantity + 1)}
-                              className="w-7 h-7 flex items-center justify-center text-[#8B1E3E] hover:bg-[#F4EAD5] transition-colors"
+                              className="w-7 h-7 flex items-center justify-center text-[var(--primary)] hover:bg-[var(--cream)] transition-colors"
                             >
                               <Plus size={12} />
                             </button>
                           </div>
                           <div className="text-right">
-                            <p className="text-sm font-bold text-[#8B1E3E]">
+                            <p className="text-sm font-bold text-[var(--primary)]">
                               {formatINR(item.price * item.quantity)}
                             </p>
                             <button
                               onClick={() => removeFromCart(item.productId)}
-                              className="text-xs text-[#6B5544] hover:text-[#B3324A] flex items-center gap-1 mt-0.5"
+                              className="text-xs text-[var(--muted-foreground)] hover:text-[#B3324A] flex items-center gap-1 mt-0.5"
                             >
                               <Trash2 size={11} /> Remove
                             </button>
@@ -194,21 +194,21 @@ export function CartDrawer() {
                 </div>
 
                 {/* Footer */}
-                <div className="border-t border-[#E8D9B8] p-5 space-y-3 bg-white">
+                <div className="border-t border-[var(--border)] p-5 space-y-3 bg-white">
                   <div className="space-y-1.5">
                     <div className="flex justify-between text-sm">
-                      <span className="text-[#6B5544]">Subtotal</span>
-                      <span className="font-semibold text-[#2A0A0F]">{formatINR(subtotal)}</span>
+                      <span className="text-[var(--muted-foreground)]">Subtotal</span>
+                      <span className="font-semibold text-[var(--foreground)]">{formatINR(subtotal)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-[#6B5544]">Shipping</span>
-                      <span className="font-semibold text-[#2A0A0F]">
+                      <span className="text-[var(--muted-foreground)]">Shipping</span>
+                      <span className="font-semibold text-[var(--foreground)]">
                         {shipping === 0 ? "FREE" : formatINR(shipping)}
                       </span>
                     </div>
-                    <div className="flex justify-between text-base pt-2 border-t border-[#E8D9B8]">
-                      <span className="font-semibold text-[#2A0A0F]">Total</span>
-                      <span className="font-bold text-[#8B1E3E] text-lg">{formatINR(total)}</span>
+                    <div className="flex justify-between text-base pt-2 border-t border-[var(--border)]">
+                      <span className="font-semibold text-[var(--foreground)]">Total</span>
+                      <span className="font-bold text-[var(--primary)] text-lg">{formatINR(total)}</span>
                     </div>
                   </div>
 
@@ -223,7 +223,7 @@ export function CartDrawer() {
                       setCartOpen(false)
                       setView("cart")
                     }}
-                    className="w-full flex items-center justify-center gap-1 px-6 py-2 text-sm text-[#6B5544] hover:text-[#8B1E3E] transition-colors"
+                    className="w-full flex items-center justify-center gap-1 px-6 py-2 text-sm text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors"
                   >
                     View Full Cart <ArrowRight size={14} />
                   </button>

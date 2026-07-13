@@ -53,26 +53,26 @@ export function ShopView() {
   }, [products, sortBy, priceRange])
 
   return (
-    <div className="min-h-screen bg-[#FBF6EC]">
+    <div className="min-h-screen bg-[var(--background)]">
       {/* Page header */}
-      <div className="bg-gradient-to-br from-[#2A0A0F] to-[#8B1E3E] text-[#FBF6EC] py-16">
+      <div className="bg-gradient-to-br from-[var(--foreground)] to-[var(--primary)] text-[var(--background)] py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex items-center justify-center gap-3 mb-3">
-            <div className="h-px w-12 bg-[#C9A24B]" />
-            <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-[#C9A24B] font-medium">
+            <div className="h-px w-12 bg-[var(--accent)]" />
+            <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-[var(--accent)] font-medium">
               {selectedCategory || "All Rakhis"}
             </p>
-            <div className="h-px w-12 bg-[#C9A24B]" />
+            <div className="h-px w-12 bg-[var(--accent)]" />
           </div>
           <h1 className="font-serif text-4xl sm:text-6xl font-bold">
             {selectedCategory || "The Complete Collection"}
           </h1>
           {searchQuery && (
-            <p className="mt-3 text-[#FBF6EC]/80">
-              Search results for: <span className="text-[#C9A24B] font-semibold">&ldquo;{searchQuery}&rdquo;</span>
+            <p className="mt-3 text-[var(--background)]/80">
+              Search results for: <span className="text-[var(--accent)] font-semibold">&ldquo;{searchQuery}&rdquo;</span>
             </p>
           )}
-          <p className="mt-3 text-[#FBF6EC]/70 max-w-2xl mx-auto">
+          <p className="mt-3 text-[var(--background)]/70 max-w-2xl mx-auto">
             Each Rakhi is handcrafted with devotion, celebrating the eternal bond between brother and sister.
           </p>
         </div>
@@ -89,8 +89,8 @@ export function ShopView() {
             className={cn(
               "px-4 py-2 rounded-full text-xs tracking-elegant uppercase font-semibold whitespace-nowrap transition-colors",
               !selectedCategory
-                ? "bg-[#8B1E3E] text-[#FBF6EC]"
-                : "bg-white text-[#2A0A0F] hover:bg-[#F4EAD5] border border-[#E8D9B8]"
+                ? "bg-[var(--primary)] text-[var(--background)]"
+                : "bg-white text-[var(--foreground)] hover:bg-[var(--cream)] border border-[var(--border)]"
             )}
           >
             All
@@ -102,18 +102,18 @@ export function ShopView() {
               className={cn(
                 "px-4 py-2 rounded-full text-xs tracking-elegant uppercase font-semibold whitespace-nowrap transition-colors flex items-center gap-2",
                 selectedCategory === cat.name
-                  ? "bg-[#8B1E3E] text-[#FBF6EC]"
-                  : "bg-white text-[#2A0A0F] hover:bg-[#F4EAD5] border border-[#E8D9B8]"
+                  ? "bg-[var(--primary)] text-[var(--background)]"
+                  : "bg-white text-[var(--foreground)] hover:bg-[var(--cream)] border border-[var(--border)]"
               )}
             >
               <div className={cn(
                 "w-5 h-5 rounded-full overflow-hidden flex-shrink-0",
-                selectedCategory === cat.name ? "bg-[#FBF6EC]/20" : "bg-[#F4EAD5]"
+                selectedCategory === cat.name ? "bg-[var(--background)]/20" : "bg-[var(--cream)]"
               )}>
                 {cat.image ? (
                   <img src={categoryThumbnail(cat.image)} alt="" className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-[#8B1E3E]">
+                  <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-[var(--primary)]">
                     {cat.name.charAt(0)}
                   </div>
                 )}
@@ -124,24 +124,24 @@ export function ShopView() {
         </div>
 
         {/* Toolbar */}
-        <div className="flex items-center justify-between gap-4 mb-8 pb-4 border-b border-[#E8D9B8]">
+        <div className="flex items-center justify-between gap-4 mb-8 pb-4 border-b border-[var(--border)]">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 px-4 py-2 text-sm border border-[#E8D9B8] rounded-md hover:bg-[#F4EAD5] transition-colors lg:hidden"
+              className="flex items-center gap-2 px-4 py-2 text-sm border border-[var(--border)] rounded-md hover:bg-[var(--cream)] transition-colors lg:hidden"
             >
               <SlidersHorizontal size={16} /> Filters
             </button>
-            <p className="text-sm text-[#6B5544]">
-              <span className="font-semibold text-[#2A0A0F]">{filtered.length}</span> {filtered.length === 1 ? "Rakhi" : "Rakhis"} found
+            <p className="text-sm text-[var(--muted-foreground)]">
+              <span className="font-semibold text-[var(--foreground)]">{filtered.length}</span> {filtered.length === 1 ? "Rakhi" : "Rakhis"} found
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <label className="text-xs text-[#6B5544] tracking-elegant uppercase">Sort:</label>
+            <label className="text-xs text-[var(--muted-foreground)] tracking-elegant uppercase">Sort:</label>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="text-sm border border-[#E8D9B8] rounded-md px-3 py-1.5 bg-white outline-none focus:border-[#C9A24B]"
+              className="text-sm border border-[var(--border)] rounded-md px-3 py-1.5 bg-white outline-none focus:border-[var(--accent)]"
             >
               <option value="newest">Newest</option>
               <option value="price-low">Price: Low to High</option>
@@ -166,7 +166,7 @@ export function ShopView() {
                   if (e.target === e.currentTarget) setShowFilters(false)
                 }}
               >
-                <div className="bg-white p-6 rounded-lg border border-[#E8D9B8] lg:sticky lg:top-28 max-h-screen lg:max-h-[calc(100vh-8rem)] overflow-y-auto">
+                <div className="bg-white p-6 rounded-lg border border-[var(--border)] lg:sticky lg:top-28 max-h-screen lg:max-h-[calc(100vh-8rem)] overflow-y-auto">
                   <div className="flex items-center justify-between mb-6 lg:hidden">
                     <h3 className="font-serif text-lg font-bold">Filters</h3>
                     <button onClick={() => setShowFilters(false)}>
@@ -175,7 +175,7 @@ export function ShopView() {
                   </div>
 
                   <div className="mb-6">
-                    <h4 className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-3">
+                    <h4 className="text-xs tracking-elegant uppercase text-[var(--accent)] font-semibold mb-3">
                       Price Range
                     </h4>
                     <div className="space-y-2">
@@ -192,8 +192,8 @@ export function ShopView() {
                           className={cn(
                             "block w-full text-left text-sm py-1.5 px-2 rounded transition-colors",
                             priceRange[0] === r.min && priceRange[1] === r.max
-                              ? "bg-[#F4EAD5] text-[#8B1E3E] font-semibold"
-                              : "text-[#6B5544] hover:bg-[#FBF6EC]"
+                              ? "bg-[var(--cream)] text-[var(--primary)] font-semibold"
+                              : "text-[var(--muted-foreground)] hover:bg-[var(--background)]"
                           )}
                         >
                           {r.label}
@@ -201,7 +201,7 @@ export function ShopView() {
                       ))}
                       <button
                         onClick={() => setPriceRange([0, 10000])}
-                        className="block w-full text-left text-xs text-[#8B1E3E] hover:underline mt-2"
+                        className="block w-full text-left text-xs text-[var(--primary)] hover:underline mt-2"
                       >
                         Clear price filter
                       </button>
@@ -211,7 +211,7 @@ export function ShopView() {
                   <div className="divider-gold mb-6" />
 
                   <div>
-                    <h4 className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-3">
+                    <h4 className="text-xs tracking-elegant uppercase text-[var(--accent)] font-semibold mb-3">
                       Categories
                     </h4>
                     <div className="space-y-1">
@@ -220,8 +220,8 @@ export function ShopView() {
                         className={cn(
                           "block w-full text-left text-sm py-1.5 px-2 rounded transition-colors",
                           !selectedCategory
-                            ? "bg-[#F4EAD5] text-[#8B1E3E] font-semibold"
-                            : "text-[#6B5544] hover:bg-[#FBF6EC]"
+                            ? "bg-[var(--cream)] text-[var(--primary)] font-semibold"
+                            : "text-[var(--muted-foreground)] hover:bg-[var(--background)]"
                         )}
                       >
                         All Categories
@@ -233,21 +233,21 @@ export function ShopView() {
                           className={cn(
                             "block w-full text-left text-sm py-1.5 px-2 rounded transition-colors flex items-center gap-2",
                             selectedCategory === cat.name
-                              ? "bg-[#F4EAD5] text-[#8B1E3E] font-semibold"
-                              : "text-[#6B5544] hover:bg-[#FBF6EC]"
+                              ? "bg-[var(--cream)] text-[var(--primary)] font-semibold"
+                              : "text-[var(--muted-foreground)] hover:bg-[var(--background)]"
                           )}
                         >
-                          <div className="w-6 h-6 rounded overflow-hidden bg-[#F4EAD5] flex-shrink-0">
+                          <div className="w-6 h-6 rounded overflow-hidden bg-[var(--cream)] flex-shrink-0">
                             {cat.image ? (
                               <img src={categoryThumbnail(cat.image)} alt="" className="w-full h-full object-cover" />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-[#8B1E3E]">
+                              <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-[var(--primary)]">
                                 {cat.name.charAt(0)}
                               </div>
                             )}
                           </div>
                           <span>{cat.name}</span>
-                          <span className="ml-auto text-xs text-[#C9A24B]">{cat.productCount}</span>
+                          <span className="ml-auto text-xs text-[var(--accent)]">{cat.productCount}</span>
                         </button>
                       ))}
                     </div>
@@ -262,7 +262,7 @@ export function ShopView() {
             {loading ? (
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="bg-white rounded-lg overflow-hidden shadow-luxe border border-[#E8D9B8]/60">
+                  <div key={i} className="bg-white rounded-lg overflow-hidden shadow-luxe border border-[var(--border)]/60">
                     <div className="aspect-square shimmer" />
                     <div className="p-4 space-y-2">
                       <div className="h-3 w-1/3 rounded shimmer" />
@@ -275,10 +275,10 @@ export function ShopView() {
             ) : filtered.length === 0 ? (
               <div className="text-center py-20">
                 <div className="text-6xl mb-4">🪔</div>
-                <h3 className="font-serif text-2xl font-semibold text-[#2A0A0F] mb-2">
+                <h3 className="font-serif text-2xl font-semibold text-[var(--foreground)] mb-2">
                   No Rakhis found
                 </h3>
-                <p className="text-[#6B5544] mb-6">
+                <p className="text-[var(--muted-foreground)] mb-6">
                   Try adjusting your filters or browse all Rakhis.
                 </p>
                 <button
@@ -287,7 +287,7 @@ export function ShopView() {
                     setSearchQuery("")
                     setPriceRange([0, 10000])
                   }}
-                  className="px-6 py-3 bg-[#8B1E3E] text-[#FBF6EC] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[#6B0E2A] transition-colors"
+                  className="px-6 py-3 bg-[var(--primary)] text-[var(--background)] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors"
                 >
                   Clear All Filters
                 </button>
