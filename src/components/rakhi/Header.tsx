@@ -126,7 +126,7 @@ export function Header() {
                 onClick={() => useStore.getState().goHome()}
                 className={cn(
                   "px-4 py-2 text-sm tracking-elegant uppercase font-medium rounded-md transition-all",
-                  view === "home" ? "text-[var(--primary)] bg-[var(--accent)]/20" : "text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--accent)]/10"
+                  view === "home" ? "text-[var(--primary)]" : "text-[var(--foreground)] hover:text-[var(--primary)]"
                 )}
               >
                 Home
@@ -142,7 +142,7 @@ export function Header() {
                   onClick={() => setView("shop")}
                   className={cn(
                     "px-4 py-2 text-sm tracking-elegant uppercase font-medium rounded-md transition-all flex items-center gap-1",
-                    view === "shop" || view === "search" ? "text-[var(--primary)] bg-[var(--accent)]/20" : "text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--accent)]/10"
+                    view === "shop" || view === "search" ? "text-[var(--primary)]" : "text-[var(--foreground)] hover:text-[var(--primary)]"
                   )}
                 >
                   Collection <ChevronDown size={14} className={cn("transition-transform", showCategories && "rotate-180")} />

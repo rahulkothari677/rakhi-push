@@ -131,13 +131,12 @@ export function HomeView() {
                   </span>
                 </div>
               )}
-              {/* Subtle gradient only at very bottom for text — keeps image visible */}
-              <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-white/90 to-transparent" />
+              {/* NO gradient — image fully visible like New Arrivals section */}
               <div className="absolute inset-0 flex flex-col items-center justify-end p-4 text-center pb-5">
-                <h3 className="font-serif text-base sm:text-lg font-bold leading-tight text-[var(--primary)] drop-shadow-md">
+                <h3 className="font-serif text-base sm:text-lg font-bold leading-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                   {cat.name}
                 </h3>
-                <p className="text-[10px] tracking-elegant uppercase mt-1 font-bold text-[var(--accent)]">
+                <p className="text-[10px] tracking-elegant uppercase mt-1 font-bold text-[var(--accent)] drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
                   {cat.productCount} {cat.productCount === 1 ? "Item" : "Items"}
                 </p>
                 <div className="mt-2 flex items-center gap-1 text-xs text-accent opacity-0 group-hover:opacity-100 transition-opacity">

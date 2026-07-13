@@ -85,23 +85,24 @@ export function HeroCarousel() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="max-w-2xl"
             >
-              <div className="inline-block bg-[var(--primary)]/90 backdrop-blur-sm px-4 py-1.5 rounded-full mb-4">
+              <div className="hidden sm:inline-block bg-[var(--primary)]/90 backdrop-blur-sm px-4 py-1.5 rounded-full mb-4">
                 <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-white font-medium">
                   {slide.subtitle}
                 </p>
               </div>
 
-              {/* Hero title — Great Vibes font, elegant cursive */}
+              {/* Hero title — Great Vibes font, elegant cursive — ALWAYS visible */}
               <h1 className="font-hero text-5xl sm:text-7xl lg:text-8xl text-[var(--primary)] leading-[1.1] mb-4 drop-shadow-sm">
                 {slide.title}
               </h1>
 
-              {/* Description — Montserrat font, plain text without background */}
-              <p className="font-body text-base sm:text-lg text-[var(--foreground)] leading-relaxed mb-8 max-w-xl font-medium drop-shadow-sm">
+              {/* Description — hidden on mobile, shown on sm+ — plain text, lighter color */}
+              <p className="hidden sm:block font-body text-base sm:text-lg text-[var(--foreground)]/80 leading-relaxed mb-8 max-w-xl font-medium drop-shadow-sm">
                 {slide.description}
               </p>
 
-              <div className="flex flex-wrap gap-4">
+              {/* Buttons — hidden on mobile, shown on sm+ */}
+              <div className="hidden sm:flex flex-wrap gap-4">
                 {slide.ctaLabel && (
                   <button
                     onClick={onCta}
