@@ -96,8 +96,8 @@ export function HeroCarousel() {
                 {slide.title}
               </h1>
 
-              {/* Description — Montserrat font, clean and readable */}
-              <p className="font-body text-base sm:text-lg text-[var(--foreground)] leading-relaxed mb-8 max-w-xl bg-white/60 backdrop-blur-sm px-4 py-2 rounded-lg">
+              {/* Description — Montserrat font, plain text without background */}
+              <p className="font-body text-base sm:text-lg text-[var(--foreground)] leading-relaxed mb-8 max-w-xl font-medium drop-shadow-sm">
                 {slide.description}
               </p>
 

@@ -95,7 +95,7 @@ export function Header() {
             {/* Mobile menu toggle */}
             <button
               onClick={() => setMenuOpen(!isMenuOpen)}
-              className="lg:hidden p-2 -ml-2 text-[var(--primary)] hover:bg-[var(--cream)] rounded-md transition-colors"
+              className="lg:hidden p-2 -ml-2 text-[var(--primary)] hover:bg-[var(--accent)]/15 rounded-md transition-colors"
               aria-label="Toggle menu"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -126,7 +126,7 @@ export function Header() {
                 onClick={() => useStore.getState().goHome()}
                 className={cn(
                   "px-4 py-2 text-sm tracking-elegant uppercase font-medium rounded-md transition-all",
-                  view === "home" ? "text-[var(--primary)] bg-[var(--cream)]" : "text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--cream)]/50"
+                  view === "home" ? "text-[var(--primary)] bg-[var(--accent)]/20" : "text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--accent)]/10"
                 )}
               >
                 Home
@@ -142,7 +142,7 @@ export function Header() {
                   onClick={() => setView("shop")}
                   className={cn(
                     "px-4 py-2 text-sm tracking-elegant uppercase font-medium rounded-md transition-all flex items-center gap-1",
-                    view === "shop" || view === "search" ? "text-[var(--primary)] bg-[var(--cream)]" : "text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--cream)]/50"
+                    view === "shop" || view === "search" ? "text-[var(--primary)] bg-[var(--accent)]/20" : "text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--accent)]/10"
                   )}
                 >
                   Collection <ChevronDown size={14} className={cn("transition-transform", showCategories && "rotate-180")} />
@@ -197,14 +197,14 @@ export function Header() {
 
               <button
                 onClick={() => { useStore.setState({ infoPageId: "about" }); setView("info") }}
-                className="px-4 py-2 text-sm tracking-elegant uppercase font-medium text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--cream)]/50 rounded-md transition-all"
+                className="px-4 py-2 text-sm tracking-elegant uppercase font-medium text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--accent)]/10 rounded-md transition-all"
               >
                 Our Story
               </button>
 
               <button
                 onClick={() => { useStore.setState({ infoPageId: "contact" }); setView("info") }}
-                className="px-4 py-2 text-sm tracking-elegant uppercase font-medium text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--cream)]/50 rounded-md transition-all"
+                className="px-4 py-2 text-sm tracking-elegant uppercase font-medium text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--accent)]/10 rounded-md transition-all"
               >
                 Contact
               </button>

@@ -131,13 +131,13 @@ export function HomeView() {
                   </span>
                 </div>
               )}
-              {/* Light golden gradient at bottom — subtle, keeps image visible */}
-              <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#FFF8DC]/95 via-[#FFE4B5]/40 to-transparent" />
-              <div className="absolute inset-0 flex flex-col items-center justify-end p-4 text-center">
-                <h3 className="font-serif text-base sm:text-lg font-semibold leading-tight text-[var(--primary)] drop-shadow-sm">
+              {/* Subtle gradient only at very bottom for text — keeps image visible */}
+              <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-white/90 to-transparent" />
+              <div className="absolute inset-0 flex flex-col items-center justify-end p-4 text-center pb-5">
+                <h3 className="font-serif text-base sm:text-lg font-bold leading-tight text-[var(--primary)] drop-shadow-md">
                   {cat.name}
                 </h3>
-                <p className="text-[10px] tracking-elegant uppercase mt-1.5 font-semibold text-accent">
+                <p className="text-[10px] tracking-elegant uppercase mt-1 font-bold text-[var(--accent)]">
                   {cat.productCount} {cat.productCount === 1 ? "Item" : "Items"}
                 </p>
                 <div className="mt-2 flex items-center gap-1 text-xs text-accent opacity-0 group-hover:opacity-100 transition-opacity">
@@ -310,7 +310,7 @@ export function HomeView() {
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
           backgroundImage: `repeating-linear-gradient(45deg, var(--accent) 0, var(--accent) 1px, transparent 1px, transparent 20px)`,
         }} />
-        <div className="relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-3">
             <div className="h-px w-12 bg-[var(--accent)]" />
