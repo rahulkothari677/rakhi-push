@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useStore } from "@/lib/store"
+import { heroImage } from "@/lib/images"
 
 type Slide = {
   id: string
@@ -68,7 +69,7 @@ export function HeroCarousel() {
           {/* Background image with Ken Burns */}
           <div className="absolute inset-0 overflow-hidden">
             <img
-              src={slide.image}
+              src={heroImage(slide.image)}
               alt={slide.title}
               className="w-full h-full object-cover animate-kenburns"
             />

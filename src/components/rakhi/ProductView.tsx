@@ -7,6 +7,7 @@ import { Heart, ShoppingBag, MessageCircle, ChevronRight, Truck, Shield, Crown, 
 import { cn, formatINR, parseJSON } from "@/lib/utils"
 import { buildWhatsAppUrl, buildSingleProductMessage, normalizeWhatsAppNumber } from "@/lib/whatsapp"
 import { ProductCard, type Product } from "./ProductCard"
+import { productImageLarge, productImage, thumbnailImage } from "@/lib/images"
 
 export function ProductView() {
   const {
@@ -138,7 +139,7 @@ export function ProductView() {
             <div className="bg-white rounded-lg overflow-hidden border border-[#E8D9B8] shadow-luxe">
               <div className="aspect-square">
                 <img
-                  src={images[activeImage] || product.primaryImage}
+                  src={productImageLarge(images[activeImage] || product.primaryImage)}
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
@@ -155,7 +156,7 @@ export function ProductView() {
                       i === activeImage ? "border-[#8B1E3E]" : "border-[#E8D9B8] hover:border-[#C9A24B]"
                     )}
                   >
-                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <img src={thumbnailImage(img)} alt="" className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>

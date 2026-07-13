@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { X, Plus, Minus, Trash2, ShoppingBag, MessageCircle, ArrowRight } from "lucide-react"
 import { cn, formatINR } from "@/lib/utils"
 import { buildWhatsAppUrl, buildCartOrderMessage } from "@/lib/whatsapp"
+import { thumbnailImage } from "@/lib/images"
 
 export function CartDrawer() {
   const { cart, isCartOpen, setCartOpen, updateCartQty, removeFromCart, setView } = useStore()
@@ -154,7 +155,7 @@ export function CartDrawer() {
                       className="flex gap-3 bg-white p-3 rounded-lg border border-[#E8D9B8]"
                     >
                       <div className="w-20 h-20 rounded-md overflow-hidden bg-[#FBF6EC] flex-shrink-0">
-                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                        <img src={thumbnailImage(item.image)} alt={item.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="text-sm font-semibold text-[#2A0A0F] line-clamp-2">{item.name}</h4>

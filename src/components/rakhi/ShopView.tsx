@@ -6,6 +6,7 @@ import { ProductCard, type Product } from "./ProductCard"
 import { Filter, X, SlidersHorizontal } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
+import { categoryThumbnail } from "@/lib/images"
 
 type Category = {
   id: string
@@ -110,7 +111,7 @@ export function ShopView() {
                 selectedCategory === cat.name ? "bg-[#FBF6EC]/20" : "bg-[#F4EAD5]"
               )}>
                 {cat.image ? (
-                  <img src={cat.image} alt="" className="w-full h-full object-cover" />
+                  <img src={categoryThumbnail(cat.image)} alt="" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-[#8B1E3E]">
                     {cat.name.charAt(0)}
@@ -238,7 +239,7 @@ export function ShopView() {
                         >
                           <div className="w-6 h-6 rounded overflow-hidden bg-[#F4EAD5] flex-shrink-0">
                             {cat.image ? (
-                              <img src={cat.image} alt="" className="w-full h-full object-cover" />
+                              <img src={categoryThumbnail(cat.image)} alt="" className="w-full h-full object-cover" />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-[#8B1E3E]">
                                 {cat.name.charAt(0)}

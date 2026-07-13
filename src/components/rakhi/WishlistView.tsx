@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { Heart, ShoppingBag, ArrowRight, Trash2, MessageCircle } from "lucide-react"
 import { formatINR } from "@/lib/utils"
 import { buildWhatsAppUrl, buildSingleProductMessage } from "@/lib/whatsapp"
+import { productImage } from "@/lib/images"
 import { useEffect, useState } from "react"
 
 export function WishlistView() {
@@ -108,9 +109,10 @@ export function WishlistView() {
                     className="block w-full aspect-square overflow-hidden bg-[#FBF6EC] relative"
                   >
                     <img
-                      src={item.image}
+                      src={productImage(item.image)}
                       alt={item.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      loading="lazy"
                     />
                   </button>
 

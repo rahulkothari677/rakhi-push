@@ -10,6 +10,7 @@ import {
   Users, AlertCircle, Phone, ChevronRight, Star,
 } from "lucide-react"
 import { cn, formatINR, slugify, generateSKU, parseJSON } from "@/lib/utils"
+import { thumbnailImage, categoryImage, heroImage, ctaImage } from "@/lib/images"
 import { AdminLogin } from "./AdminLogin"
 
 type Tab = "dashboard" | "products" | "categories" | "hero" | "content" | "settings" | "orders"
@@ -205,7 +206,7 @@ function DashboardTab() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {stats.lowStockProducts.map((p: any) => (
               <div key={p.id} className="flex items-center gap-2 p-2 bg-[#B3324A]/5 rounded-md">
-                <img src={p.primaryImage} alt="" className="w-10 h-10 rounded object-cover" />
+                <img src={thumbnailImage(p.primaryImage)} alt="" className="w-10 h-10 rounded object-cover" />
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold text-[#2A0A0F] truncate">{p.name}</p>
                   <p className="text-xs text-[#B3324A]">{p.inStock} in stock</p>
@@ -301,7 +302,7 @@ function ProductsTab() {
                   <tr key={p.id} className="border-t border-[#E8D9B8] hover:bg-[#FBF6EC]/50">
                     <td className="p-3">
                       <div className="flex items-center gap-3">
-                        <img src={p.primaryImage} alt="" className="w-10 h-10 rounded object-cover flex-shrink-0" />
+                        <img src={thumbnailImage(p.primaryImage)} alt="" className="w-10 h-10 rounded object-cover flex-shrink-0" />
                         <div className="min-w-0">
                           <p className="font-semibold text-[#2A0A0F] truncate max-w-xs">{p.name}</p>
                           <p className="text-xs text-[#6B5544]">{p.sku}</p>
@@ -441,7 +442,7 @@ function ProductForm({ product, categories, onClose, onSaved }: {
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-3">
             {form.images.map((img, i) => (
               <div key={i} className="relative aspect-square rounded-md overflow-hidden border border-[#E8D9B8] group">
-                <img src={img} alt="" className="w-full h-full object-cover" />
+                <img src={thumbnailImage(img)} alt="" className="w-full h-full object-cover" />
                 <button
                   onClick={() => setForm({ ...form, images: form.images.filter((_, idx) => idx !== i) })}
                   className="absolute top-1 right-1 w-6 h-6 rounded-full bg-[#B3324A] text-white opacity-0 group-hover:opacity-100 flex items-center justify-center"
@@ -709,7 +710,7 @@ function CategoriesTab() {
               {/* Category image */}
               <div className="aspect-[16/10] bg-[#FBF6EC] relative overflow-hidden">
                 {c.image ? (
-                  <img src={c.image} alt={c.name} className="w-full h-full object-cover" />
+                  <img src={categoryImage(c.image)} alt={c.name} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-[#6B5544] text-xs">
                     No image uploaded
@@ -1016,7 +1017,7 @@ function HeroTab() {
                   Image
                 </label>
                 <div className="aspect-[2/1] rounded-md overflow-hidden bg-[#FBF6EC] border border-[#E8D9B8] mb-2">
-                  <img src={slide.image} alt="" className="w-full h-full object-cover" />
+                  <img src={heroImage(slide.image)} alt="" className="w-full h-full object-cover" />
                 </div>
                 <label className="px-3 py-1.5 border border-[#E8D9B8] text-xs rounded-md cursor-pointer hover:bg-[#F4EAD5] inline-flex items-center gap-1.5">
                   <Upload size={12} /> Upload
@@ -1105,6 +1106,7 @@ function ContentTab() {
     { id: "care", label: "Care Instructions" },
     { id: "shipping", label: "Shipping & Delivery" },
     { id: "contact", label: "Contact Info" },
+    { id: "cta", label: "Festive CTA Section" },
   ]
 
   useEffect(() => {
@@ -1203,6 +1205,10 @@ function ContentTab() {
           </>
         )}
 
+        {active === "cta" && (
+          <CTASectionEditor current={current} update={update} />
+        )}
+
         <button
           onClick={handleSave}
           disabled={saving}
@@ -1211,6 +1217,171 @@ function ContentTab() {
           {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
           Save Content
         </button>
+      </div>
+    </div>
+  )
+}
+
+// ─── CTA SECTION EDITOR (Don't forget the Roli-Chawal Thali) ─────────────────
+function CTASectionEditor({ current, update }: {
+  current: any
+  update: (field: string, value: string) => void
+}) {
+  const [uploading, setUploading] = useState(false)
+
+  const handleUpload = async (files: FileList) => {
+    if (!files.length) return
+    setUploading(true)
+    const fd = new FormData()
+    for (const f of Array.from(files)) fd.append("files", f)
+    try {
+      const res = await fetch("/api/admin/upload", { method: "POST", body: fd })
+      const data = await res.json()
+      if (data.urls?.[0]) {
+        update("image", data.urls[0])
+      } else if (data.needsCloudinary) {
+        alert("⚠️ Image upload requires Cloudinary on Vercel.\n\nPlease set these env vars in Vercel:\n• CLOUDINARY_CLOUD_NAME\n• CLOUDINARY_API_KEY\n• CLOUDINARY_API_SECRET\n\nSign up free at https://cloudinary.com")
+      } else {
+        alert("Upload failed: " + (data.error || "Unknown error"))
+      }
+    } catch (e: any) {
+      alert("Upload failed: " + (e.message || "Network error"))
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      <p className="text-xs text-[#6B5544] bg-[#F4EAD5] p-3 rounded-md">
+        💡 This controls the &ldquo;Don&apos;t forget the Roli-Chawal Thali&rdquo; section on the homepage. Edit the text, button, and image here.
+      </p>
+
+      {/* Image upload */}
+      <div>
+        <label className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-2 block">
+          CTA Image
+        </label>
+        <div className="flex items-start gap-4">
+          <div className="w-32 h-32 rounded-lg overflow-hidden border border-[#E8D9B8] bg-[#FBF6EC] flex-shrink-0">
+            {current.image ? (
+              <img src={ctaImage(current.image)} alt="CTA" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-[#6B5544] text-xs text-center px-2">
+                No image
+              </div>
+            )}
+          </div>
+          <div className="flex-1">
+            <label className="inline-flex items-center gap-2 px-4 py-2 border border-[#E8D9B8] text-sm rounded-md cursor-pointer hover:bg-[#F4EAD5] transition-colors">
+              {uploading ? (
+                <><Loader2 size={14} className="animate-spin" /> Uploading...</>
+              ) : (
+                <><Upload size={14} /> {current.image ? "Change Image" : "Upload Image"}</>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => e.target.files && handleUpload(e.target.files)}
+              />
+            </label>
+            {current.image && (
+              <button
+                onClick={() => update("image", "")}
+                className="ml-2 text-xs text-[#B3324A] hover:underline"
+              >
+                Remove
+              </button>
+            )}
+            <p className="text-xs text-[#6B5544] mt-1.5">
+              Recommended: square image (800×800px or larger). The image will be smart-cropped to fit.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-1.5 block">
+            Eyebrow Text
+          </label>
+          <input
+            type="text"
+            value={current.eyebrow || ""}
+            onChange={(e) => update("eyebrow", e.target.value)}
+            placeholder="Complete the Celebration"
+            className="w-full px-3 py-2 border border-[#E8D9B8] rounded-md text-sm bg-[#FBF6EC] outline-none focus:border-[#C9A24B]"
+          />
+        </div>
+        <div>
+          <label className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-1.5 block">
+            Title Accent (italicized part)
+          </label>
+          <input
+            type="text"
+            value={current.titleAccent || ""}
+            onChange={(e) => update("titleAccent", e.target.value)}
+            placeholder="Roli-Chawal Thali"
+            className="w-full px-3 py-2 border border-[#E8D9B8] rounded-md text-sm bg-[#FBF6EC] outline-none focus:border-[#C9A24B]"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-1.5 block">
+          Title Prefix (main part of heading)
+        </label>
+        <input
+          type="text"
+          value={current.titlePrefix || ""}
+          onChange={(e) => update("titlePrefix", e.target.value)}
+          placeholder="Don't forget the"
+          className="w-full px-3 py-2 border border-[#E8D9B8] rounded-md text-sm bg-[#FBF6EC] outline-none focus:border-[#C9A24B]"
+        />
+      </div>
+
+      <div>
+        <label className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-1.5 block">
+          Description
+        </label>
+        <textarea
+          rows={3}
+          value={current.description || ""}
+          onChange={(e) => update("description", e.target.value)}
+          placeholder="Complete your Raksha Bandhan ritual with our beautifully crafted thali sets..."
+          className="w-full px-3 py-2 border border-[#E8D9B8] rounded-md text-sm bg-[#FBF6EC] outline-none focus:border-[#C9A24B] resize-none"
+        />
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-1.5 block">
+            CTA Button Label
+          </label>
+          <input
+            type="text"
+            value={current.ctaLabel || ""}
+            onChange={(e) => update("ctaLabel", e.target.value)}
+            placeholder="Shop Thali Sets"
+            className="w-full px-3 py-2 border border-[#E8D9B8] rounded-md text-sm bg-[#FBF6EC] outline-none focus:border-[#C9A24B]"
+          />
+        </div>
+        <div>
+          <label className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-1.5 block">
+            CTA Category (button links to)
+          </label>
+          <input
+            type="text"
+            value={current.ctaCategory || ""}
+            onChange={(e) => update("ctaCategory", e.target.value)}
+            placeholder="Roli-Chawal & Thali"
+            className="w-full px-3 py-2 border border-[#E8D9B8] rounded-md text-sm bg-[#FBF6EC] outline-none focus:border-[#C9A24B]"
+          />
+          <p className="text-xs text-[#6B5544] mt-1">
+            Enter the exact category name. The button will filter products by this category.
+          </p>
+        </div>
       </div>
     </div>
   )
@@ -1323,7 +1494,7 @@ function OrdersTab() {
               <div className="space-y-1 mb-3">
                 {order.items.map((item: any) => (
                   <div key={item.id} className="flex items-center gap-3 text-xs">
-                    <img src={item.image} alt="" className="w-10 h-10 rounded object-cover" />
+                    <img src={thumbnailImage(item.image)} alt="" className="w-10 h-10 rounded object-cover" />
                     <div className="flex-1">
                       <p className="font-semibold text-[#2A0A0F]">{item.name}</p>
                       <p className="text-[#6B5544]">Qty: {item.quantity} × {formatINR(item.price)}</p>

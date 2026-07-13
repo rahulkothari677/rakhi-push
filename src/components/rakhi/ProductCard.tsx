@@ -4,6 +4,7 @@ import { useStore } from "@/lib/store"
 import { Heart, ShoppingBag } from "lucide-react"
 import { motion } from "framer-motion"
 import { cn, formatINR } from "@/lib/utils"
+import { productImage } from "@/lib/images"
 
 export type Product = {
   id: string
@@ -59,9 +60,10 @@ export function ProductCard({ product, index = 0 }: Props) {
         className="block w-full aspect-square overflow-hidden bg-[#FBF6EC] relative"
       >
         <img
-          src={product.primaryImage}
+          src={productImage(product.primaryImage)}
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+          loading="lazy"
         />
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-2 items-start">

@@ -6,6 +6,7 @@ import { ArrowRight, Sparkles, Crown, Heart, Shield, Truck, Gift } from "lucide-
 import { useStore } from "@/lib/store"
 import { HeroCarousel } from "./HeroCarousel"
 import { ProductCard, type Product } from "./ProductCard"
+import { categoryImagePortrait, ctaImage } from "@/lib/images"
 
 type Category = {
   id: string
@@ -21,6 +22,7 @@ export function HomeView() {
   const [featured, setFeatured] = useState<Product[]>([])
   const [newArrivals, setNewArrivals] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
+  const [ctaContent, setCtaContent] = useState<any>(null)
 
   useEffect(() => {
     fetch("/api/products?featured=true&limit=8")
@@ -34,6 +36,10 @@ export function HomeView() {
     fetch("/api/categories")
       .then((r) => r.json())
       .then((d) => setCategories(d.categories || []))
+      .catch(() => {})
+    fetch("/api/site-content?section=cta")
+      .then((r) => r.json())
+      .then((d) => setCtaContent(d.data))
       .catch(() => {})
   }, [])
 
@@ -102,9 +108,10 @@ export function HomeView() {
               {/* Category image (or gradient fallback) */}
               {cat.image ? (
                 <img
-                  src={cat.image}
+                  src={categoryImagePortrait(cat.image)}
                   alt={cat.name}
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  loading="lazy"
                 />
               ) : null}
               {/* Dark gradient overlay for text contrast (only when image present) */}
@@ -239,27 +246,31 @@ export function HomeView() {
               <div className="flex items-center gap-3 mb-4">
                 <Gift size={18} className="text-[#C9A24B]" />
                 <p className="text-xs tracking-[0.3em] uppercase text-[#C9A24B] font-semibold">
-                  Complete the Celebration
+                  {ctaContent?.eyebrow || "Complete the Celebration"}
                 </p>
               </div>
               <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#2A0A0F] mb-4 leading-tight">
-                Don't forget the <span className="text-gradient-burgundy italic">Roli-Chawal Thali</span>
+                {ctaContent?.titlePrefix || "Don't forget the"}{" "}
+                <span className="text-gradient-burgundy italic">
+                  {ctaContent?.titleAccent || "Roli-Chawal Thali"}
+                </span>
               </h2>
               <p className="text-[#6B5544] mb-6 leading-relaxed">
-                Complete your Raksha Bandhan ritual with our beautifully crafted thali sets. Including premium roli, chawal, decorative diya, and traditional brass plates — everything you need for the sacred ceremony.
+                {ctaContent?.description ||
+                  "Complete your Raksha Bandhan ritual with our beautifully crafted thali sets. Including premium roli, chawal, decorative diya, and traditional brass plates — everything you need for the sacred ceremony."}
               </p>
               <button
-                onClick={() => setCategory("Roli-Chawal & Thali")}
+                onClick={() => setCategory(ctaContent?.ctaCategory || "Roli-Chawal & Thali")}
                 className="btn-luxe inline-flex items-center gap-2 px-7 py-3.5 bg-[#8B1E3E] text-[#FBF6EC] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[#6B0E2A] transition-colors"
               >
-                Shop Thali Sets <ArrowRight size={16} />
+                {ctaContent?.ctaLabel || "Shop Thali Sets"} <ArrowRight size={16} />
               </button>
             </div>
             <div className="relative">
               <div className="aspect-square max-w-md mx-auto rounded-xl overflow-hidden shadow-luxe-hover">
                 <img
-                  src="/images/thali-marigold-1.svg"
-                  alt="Roli Chawal Thali"
+                  src={ctaImage(ctaContent?.image || "/images/thali-marigold-1.svg")}
+                  alt={ctaContent?.titleAccent || "Roli Chawal Thali"}
                   className="w-full h-full object-cover"
                 />
               </div>

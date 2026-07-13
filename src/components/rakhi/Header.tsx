@@ -5,6 +5,7 @@ import { useSession, signOut } from "next-auth/react"
 import { useEffect, useState } from "react"
 import { Menu, X, ShoppingBag, Heart, Search, User, ChevronDown, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { categoryThumbnail } from "@/lib/images"
 import { motion, AnimatePresence } from "framer-motion"
 
 type Category = {
@@ -154,7 +155,7 @@ export function Header() {
                         >
                           <div className="w-10 h-10 rounded-md overflow-hidden bg-[#F4EAD5] flex-shrink-0">
                             {cat.image ? (
-                              <img src={cat.image} alt={cat.name} className="w-full h-full object-cover" />
+                              <img src={categoryThumbnail(cat.image)} alt={cat.name} className="w-full h-full object-cover" />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-[#8B1E3E] font-serif font-bold text-lg">
                                 {cat.name.charAt(0)}
@@ -312,7 +313,7 @@ export function Header() {
                     >
                       <div className="w-7 h-7 rounded overflow-hidden bg-[#F4EAD5] flex-shrink-0">
                         {cat.image ? (
-                          <img src={cat.image} alt={cat.name} className="w-full h-full object-cover" />
+                          <img src={categoryThumbnail(cat.image)} alt={cat.name} className="w-full h-full object-cover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-[#8B1E3E] font-serif font-bold text-sm">
                             {cat.name.charAt(0)}

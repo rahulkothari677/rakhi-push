@@ -5,6 +5,7 @@ import { useStore } from "@/lib/store"
 import { motion } from "framer-motion"
 import { Mail, Phone, Clock, MessageCircle, MapPin } from "lucide-react"
 import { buildWhatsAppUrl } from "@/lib/whatsapp"
+import { infoImage } from "@/lib/images"
 
 type InfoPageId = "about" | "story" | "care" | "shipping" | "contact" | "privacy" | "terms"
 
@@ -80,7 +81,7 @@ export function InfoPage({ pageId }: { pageId: InfoPageId }) {
           >
             {content?.image && (
               <div className="aspect-[2/1] rounded-xl overflow-hidden mb-8 shadow-luxe">
-                <img src={content.image} alt={pageTitle} className="w-full h-full object-cover" />
+                <img src={infoImage(content.image)} alt={pageTitle} className="w-full h-full object-cover" />
               </div>
             )}
 

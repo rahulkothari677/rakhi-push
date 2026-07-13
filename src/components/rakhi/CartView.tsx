@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { Plus, Minus, Trash2, ShoppingBag, MessageCircle, ArrowRight, CheckCircle2 } from "lucide-react"
 import { cn, formatINR } from "@/lib/utils"
 import { buildWhatsAppUrl, buildCartOrderMessage } from "@/lib/whatsapp"
+import { productImage, thumbnailImage } from "@/lib/images"
 
 export function CartView() {
   const { cart, updateCartQty, removeFromCart, setView, clearCart } = useStore()
@@ -182,7 +183,7 @@ export function CartView() {
                 className="bg-white p-4 rounded-lg border border-[#E8D9B8] flex gap-4"
               >
                 <div className="w-24 h-24 rounded-md overflow-hidden bg-[#FBF6EC] flex-shrink-0">
-                  <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                  <img src={productImage(item.image)} alt={item.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-serif text-base font-semibold text-[#2A0A0F] line-clamp-2">
