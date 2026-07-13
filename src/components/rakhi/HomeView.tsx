@@ -99,15 +99,26 @@ export function HomeView() {
               onClick={() => setCategory(cat.name)}
               className="group relative aspect-[4/5] rounded-lg overflow-hidden bg-gradient-to-br from-[#F4EAD5] to-[#FBF6EC] border border-[#E8D9B8] hover-lift"
             >
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
-                <div className="text-4xl mb-3">{cat.icon || "🪔"}</div>
-                <h3 className="font-serif text-base sm:text-lg font-semibold text-[#2A0A0F] group-hover:text-[#8B1E3E] transition-colors leading-tight">
+              {/* Category image (or gradient fallback) */}
+              {cat.image ? (
+                <img
+                  src={cat.image}
+                  alt={cat.name}
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              ) : null}
+              {/* Dark gradient overlay for text contrast (only when image present) */}
+              {cat.image && (
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1A0508]/80 via-[#1A0508]/30 to-transparent" />
+              )}
+              <div className="absolute inset-0 flex flex-col items-center justify-end p-4 text-center">
+                <h3 className={`font-serif text-base sm:text-lg font-semibold leading-tight transition-colors ${cat.image ? "text-[#FBF6EC]" : "text-[#2A0A0F] group-hover:text-[#8B1E3E]"}`}>
                   {cat.name}
                 </h3>
-                <p className="text-[10px] tracking-elegant uppercase text-[#C9A24B] mt-2 font-semibold">
+                <p className={`text-[10px] tracking-elegant uppercase mt-1.5 font-semibold ${cat.image ? "text-[#C9A24B]" : "text-[#C9A24B]"}`}>
                   {cat.productCount} {cat.productCount === 1 ? "Item" : "Items"}
                 </p>
-                <div className="mt-3 flex items-center gap-1 text-xs text-[#8B1E3E] opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="mt-2 flex items-center gap-1 text-xs text-[#C9A24B] opacity-0 group-hover:opacity-100 transition-opacity">
                   Explore <ArrowRight size={12} />
                 </div>
               </div>

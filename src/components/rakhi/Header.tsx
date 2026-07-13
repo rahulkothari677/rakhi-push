@@ -152,7 +152,15 @@ export function Header() {
                           onClick={() => navToCategory(cat.name)}
                           className="flex items-start gap-3 p-3 rounded-md hover:bg-[#FBF6EC] transition-colors text-left group"
                         >
-                          <span className="text-2xl">{cat.icon || "🪔"}</span>
+                          <div className="w-10 h-10 rounded-md overflow-hidden bg-[#F4EAD5] flex-shrink-0">
+                            {cat.image ? (
+                              <img src={cat.image} alt={cat.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-[#8B1E3E] font-serif font-bold text-lg">
+                                {cat.name.charAt(0)}
+                              </div>
+                            )}
+                          </div>
                           <div>
                             <div className="text-sm font-semibold text-[#2A0A0F] group-hover:text-[#8B1E3E]">
                               {cat.name}
@@ -302,7 +310,15 @@ export function Header() {
                       onClick={() => navToCategory(cat.name)}
                       className="flex items-center gap-2 w-full text-left px-3 py-2 text-sm text-[#2A0A0F] hover:bg-white rounded-md"
                     >
-                      <span>{cat.icon}</span>
+                      <div className="w-7 h-7 rounded overflow-hidden bg-[#F4EAD5] flex-shrink-0">
+                        {cat.image ? (
+                          <img src={cat.image} alt={cat.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-[#8B1E3E] font-serif font-bold text-sm">
+                            {cat.name.charAt(0)}
+                          </div>
+                        )}
+                      </div>
                       {cat.name}
                     </button>
                   ))}

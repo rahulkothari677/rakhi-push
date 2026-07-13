@@ -705,25 +705,35 @@ function CategoriesTab() {
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {categories.map((c) => (
-            <div key={c.id} className="bg-white p-4 rounded-lg border border-[#E8D9B8] shadow-luxe">
-              <div className="flex items-start justify-between mb-2">
-                <span className="text-3xl">{c.icon}</span>
-                <div className="flex gap-1">
-                  <button onClick={() => setEditing(c)} className="w-7 h-7 rounded-md hover:bg-[#F4EAD5] flex items-center justify-center text-[#8B1E3E]">
+            <div key={c.id} className="bg-white rounded-lg border border-[#E8D9B8] shadow-luxe overflow-hidden">
+              {/* Category image */}
+              <div className="aspect-[16/10] bg-[#FBF6EC] relative overflow-hidden">
+                {c.image ? (
+                  <img src={c.image} alt={c.name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-[#6B5544] text-xs">
+                    No image uploaded
+                  </div>
+                )}
+                {/* Action buttons overlay */}
+                <div className="absolute top-2 right-2 flex gap-1">
+                  <button onClick={() => setEditing(c)} className="w-7 h-7 rounded-md bg-white/90 backdrop-blur-sm hover:bg-white flex items-center justify-center text-[#8B1E3E]">
                     <Pencil size={13} />
                   </button>
-                  <button onClick={() => handleDelete(c.id)} className="w-7 h-7 rounded-md hover:bg-[#B3324A]/10 flex items-center justify-center text-[#B3324A]">
+                  <button onClick={() => handleDelete(c.id)} className="w-7 h-7 rounded-md bg-white/90 backdrop-blur-sm hover:bg-white flex items-center justify-center text-[#B3324A]">
                     <Trash2 size={13} />
                   </button>
                 </div>
               </div>
-              <h3 className="font-serif text-base font-bold text-[#2A0A0F]">{c.name}</h3>
-              <p className="text-xs text-[#6B5544] mt-1 line-clamp-2">{c.description}</p>
-              <div className="mt-2 flex items-center gap-3 text-xs">
-                <span className="text-[#C9A24B] font-semibold">{c.productCount} items</span>
-                <span className={c.isActive ? "text-[#5C8C3E]" : "text-[#6B5544]"}>
-                  {c.isActive ? "Active" : "Inactive"}
-                </span>
+              <div className="p-4">
+                <h3 className="font-serif text-base font-bold text-[#2A0A0F]">{c.name}</h3>
+                <p className="text-xs text-[#6B5544] mt-1 line-clamp-2">{c.description}</p>
+                <div className="mt-2 flex items-center gap-3 text-xs">
+                  <span className="text-[#C9A24B] font-semibold">{c.productCount} items</span>
+                  <span className={c.isActive ? "text-[#5C8C3E]" : "text-[#6B5544]"}>
+                    {c.isActive ? "Active" : "Inactive"}
+                  </span>
+                </div>
               </div>
             </div>
           ))}
@@ -741,11 +751,34 @@ function CategoryForm({ category, onClose, onSaved }: {
   const [form, setForm] = useState({
     name: category?.name || "",
     description: category?.description || "",
-    icon: category?.icon || "🪔",
+    image: category?.image || "",
     order: category?.order?.toString() || "0",
     isActive: category?.isActive ?? true,
   })
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
+
+  const handleUpload = async (files: FileList) => {
+    if (!files.length) return
+    setUploading(true)
+    const fd = new FormData()
+    for (const f of Array.from(files)) fd.append("files", f)
+    try {
+      const res = await fetch("/api/admin/upload", { method: "POST", body: fd })
+      const data = await res.json()
+      if (data.urls?.[0]) {
+        setForm((f) => ({ ...f, image: data.urls[0] }))
+      } else if (data.needsCloudinary) {
+        alert("⚠️ Image upload requires Cloudinary on Vercel.\n\nPlease set these env vars in Vercel:\n• CLOUDINARY_CLOUD_NAME\n• CLOUDINARY_API_KEY\n• CLOUDINARY_API_SECRET\n\nSign up free at https://cloudinary.com")
+      } else {
+        alert("Upload failed: " + (data.error || "Unknown error"))
+      }
+    } catch (e: any) {
+      alert("Upload failed: " + (e.message || "Network error"))
+    } finally {
+      setUploading(false)
+    }
+  }
 
   const handleSave = async () => {
     setSaving(true)
@@ -774,29 +807,61 @@ function CategoryForm({ category, onClose, onSaved }: {
       </div>
 
       <div className="bg-white rounded-lg border border-[#E8D9B8] p-6 space-y-4 max-w-xl">
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div>
-            <label className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-1.5 block">
-              Category Name *
-            </label>
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="w-full px-3 py-2 border border-[#E8D9B8] rounded-md text-sm bg-[#FBF6EC] outline-none focus:border-[#C9A24B]"
-            />
+        {/* Category Image Upload */}
+        <div>
+          <label className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-2 block">
+            Category Image
+          </label>
+          <div className="flex items-center gap-4">
+            <div className="w-28 h-28 rounded-lg overflow-hidden border border-[#E8D9B8] bg-[#FBF6EC] flex-shrink-0">
+              {form.image ? (
+                <img src={form.image} alt="Category" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-[#6B5544] text-xs text-center px-2">
+                  No image
+                </div>
+              )}
+            </div>
+            <div className="flex-1">
+              <label className="inline-flex items-center gap-2 px-4 py-2 border border-[#E8D9B8] text-sm rounded-md cursor-pointer hover:bg-[#F4EAD5] transition-colors">
+                {uploading ? (
+                  <><Loader2 size={14} className="animate-spin" /> Uploading...</>
+                ) : (
+                  <><Upload size={14} /> {form.image ? "Change Image" : "Upload Image"}</>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => e.target.files && handleUpload(e.target.files)}
+                />
+              </label>
+              {form.image && (
+                <button
+                  onClick={() => setForm({ ...form, image: "" })}
+                  className="ml-2 text-xs text-[#B3324A] hover:underline"
+                >
+                  Remove
+                </button>
+              )}
+              <p className="text-xs text-[#6B5544] mt-1.5">
+                Upload a beautiful photo representing this category. Recommended: 800×800px, JPG/PNG.
+              </p>
+            </div>
           </div>
-          <div>
-            <label className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-1.5 block">
-              Icon (emoji)
-            </label>
-            <input
-              type="text"
-              value={form.icon}
-              onChange={(e) => setForm({ ...form, icon: e.target.value })}
-              className="w-full px-3 py-2 border border-[#E8D9B8] rounded-md text-sm bg-[#FBF6EC] outline-none focus:border-[#C9A24B]"
-            />
-          </div>
+        </div>
+
+        <div>
+          <label className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-1.5 block">
+            Category Name *
+          </label>
+          <input
+            type="text"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            placeholder="e.g. Premium Gold Rakhi"
+            className="w-full px-3 py-2 border border-[#E8D9B8] rounded-md text-sm bg-[#FBF6EC] outline-none focus:border-[#C9A24B]"
+          />
         </div>
 
         <div>
@@ -807,6 +872,7 @@ function CategoryForm({ category, onClose, onSaved }: {
             rows={3}
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
+            placeholder="Brief description of this category..."
             className="w-full px-3 py-2 border border-[#E8D9B8] rounded-md text-sm bg-[#FBF6EC] outline-none focus:border-[#C9A24B] resize-none"
           />
         </div>

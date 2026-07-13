@@ -99,13 +99,24 @@ export function ShopView() {
               key={cat.id}
               onClick={() => setCategory(cat.name)}
               className={cn(
-                "px-4 py-2 rounded-full text-xs tracking-elegant uppercase font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5",
+                "px-4 py-2 rounded-full text-xs tracking-elegant uppercase font-semibold whitespace-nowrap transition-colors flex items-center gap-2",
                 selectedCategory === cat.name
                   ? "bg-[#8B1E3E] text-[#FBF6EC]"
                   : "bg-white text-[#2A0A0F] hover:bg-[#F4EAD5] border border-[#E8D9B8]"
               )}
             >
-              <span>{cat.icon}</span>
+              <div className={cn(
+                "w-5 h-5 rounded-full overflow-hidden flex-shrink-0",
+                selectedCategory === cat.name ? "bg-[#FBF6EC]/20" : "bg-[#F4EAD5]"
+              )}>
+                {cat.image ? (
+                  <img src={cat.image} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-[#8B1E3E]">
+                    {cat.name.charAt(0)}
+                  </div>
+                )}
+              </div>
               {cat.name}
             </button>
           ))}
@@ -225,7 +236,15 @@ export function ShopView() {
                               : "text-[#6B5544] hover:bg-[#FBF6EC]"
                           )}
                         >
-                          <span>{cat.icon}</span>
+                          <div className="w-6 h-6 rounded overflow-hidden bg-[#F4EAD5] flex-shrink-0">
+                            {cat.image ? (
+                              <img src={cat.image} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-[#8B1E3E]">
+                                {cat.name.charAt(0)}
+                              </div>
+                            )}
+                          </div>
                           <span>{cat.name}</span>
                           <span className="ml-auto text-xs text-[#C9A24B]">{cat.productCount}</span>
                         </button>
