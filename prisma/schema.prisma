@@ -1,13 +1,17 @@
-// House of Neelam — Rakhi Collection
-// Premium Rakhi e-commerce with WhatsApp ordering + admin panel
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  // Static fallback URL for schema validation only.
+  // The actual database connection is handled by the adapter in src/lib/db.ts
+  // which reads DATABASE_URL at runtime (works on Vercel + Turso).
+  url = "file:./prisma/dev.db"
 }
 
 // ─── AUTH ────────────────────────────────────────────────────────────────────

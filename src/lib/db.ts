@@ -2,32 +2,34 @@ import { PrismaClient } from '@prisma/client'
 import { PrismaLibSql } from '@prisma/adapter-libsql'
 import { createClient } from '@libsql/client'
 
-// Works with both local SQLite (file:) and Turso (libsql://) via env vars
+// Lazy singleton — PrismaClient is created on first use, NOT at module load time
+// This ensures env vars are read at runtime (works on Vercel serverless)
+let _prisma: PrismaClient | null = null
+
 function createPrismaClient(): PrismaClient {
   const databaseUrl = process.env.DATABASE_URL
+  const isVercel = process.env.VERCEL === '1' || process.env.CONTEXT === 'production'
 
   // On Vercel, DATABASE_URL MUST be set to a Turso libsql URL
-  // Local SQLite file paths don't work on Vercel's serverless functions
-  if (process.env.VERCEL === '1' || process.env.CONTEXT === 'production') {
-    if (!databaseUrl || databaseUrl.startsWith('file:')) {
-      console.error(`
+  if (isVercel && (!databaseUrl || databaseUrl.startsWith('file:'))) {
+    console.error(`
 ╔══════════════════════════════════════════════════════════════════╗
 ║  DATABASE NOT CONFIGURED FOR PRODUCTION                           ║
 ║                                                                   ║
 ║  On Vercel/production, you MUST set these env vars:               ║
-║  - DATABASE_URL       (libsql://... from Turso)                   ║
-║  - DATABASE_AUTH_TOKEN (Turso auth token)                         ║
+║  - DATABASE_URL        (libsql://... from Turso)                  ║
+║  - DATABASE_AUTH_TOKEN  (Turso auth token)                        ║
 ║                                                                   ║
 ║  Sign up free at https://turso.tech                               ║
 ╚══════════════════════════════════════════════════════════════════╝
 `)
-    }
   }
 
   const url = databaseUrl || 'file:./db/custom.db'
 
-  // If using Turso (libsql://), use the adapter
+  // If using Turso (libsql://), use the adapter pattern
   if (url.startsWith('libsql://') || url.startsWith('http://') || url.startsWith('https://')) {
+    console.log('[db] Using Turso/libsql adapter with URL prefix:', url.slice(0, 25) + '...')
     const libsql = createClient({
       url,
       authToken: process.env.DATABASE_AUTH_TOKEN,
@@ -36,16 +38,28 @@ function createPrismaClient(): PrismaClient {
     return new PrismaClient({ adapter } as any)
   }
 
-  // Local SQLite file — direct Prisma connection
+  // Local SQLite file — direct Prisma connection (dev only)
+  console.log('[db] Using local SQLite file')
   return new PrismaClient({
     log: ['error', 'warn'],
   })
 }
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
+export const db = new Proxy({} as PrismaClient, {
+  get(_target, prop) {
+    if (!_prisma) {
+      _prisma = createPrismaClient()
+    }
+    // @ts-ignore — forward property access to the real client
+    const value = (_prisma as any)[prop]
+    return typeof value === 'function' ? value.bind(_prisma) : value
+  },
+})
+
+// For tests / scripts that need direct access to the real client
+export function getDb(): PrismaClient {
+  if (!_prisma) {
+    _prisma = createPrismaClient()
+  }
+  return _prisma
 }
-
-export const db = globalForPrisma.prisma ?? createPrismaClient()
-
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = db
