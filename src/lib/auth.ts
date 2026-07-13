@@ -2,6 +2,7 @@ import type { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 import { db } from "./db"
+import { ensureDB } from "./ensure-db"
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -13,6 +14,13 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
+        // Ensure DB is initialized before querying
+        try {
+          await ensureDB()
+        } catch (e) {
+          console.error("[auth] DB init failed:", e)
+          return null
+        }
         const user = await db.user.findUnique({
           where: { email: credentials.email.toLowerCase() },
         })

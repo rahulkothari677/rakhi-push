@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { generateOrderNumber } from "@/lib/utils"
+import { ensureDB } from "@/lib/ensure-db"
 
 export async function POST(req: Request) {
   try {
+    await ensureDB()
     const body = await req.json()
     const {
       customerName,

@@ -1,7 +1,18 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
+import { ensureDB } from "@/lib/ensure-db"
 
 export async function GET(req: Request) {
+  try {
+    await ensureDB()
+  } catch (e: any) {
+    console.error("[/api/products] DB init error:", e.message)
+    return NextResponse.json(
+      { error: "Database initialization failed. Please check DATABASE_URL env var.", details: e.message },
+      { status: 500 }
+    )
+  }
+
   const { searchParams } = new URL(req.url)
   const category = searchParams.get("category")
   const featured = searchParams.get("featured")
