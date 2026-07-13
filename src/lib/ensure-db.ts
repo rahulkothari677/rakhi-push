@@ -2,10 +2,8 @@
 // Works with both local SQLite and Turso (libsql)
 // Called automatically on first API request
 
-import { db } from "./db"
-import { createClient } from '@libsql/client'
+import { db, getLibsqlClient, generateId, slugify, generateSKU } from "./db"
 import bcrypt from "bcryptjs"
-import { slugify, generateSKU } from "./utils"
 
 let initPromise: Promise<void> | null = null
 let isInitialized = false
@@ -188,39 +186,19 @@ async function createTablesViaRawSQL(): Promise<void> {
     `CREATE UNIQUE INDEX IF NOT EXISTS "SiteContent_section_key" ON "SiteContent"("section")`,
   ]
 
-  // Use direct libsql client if DATABASE_URL is a libsql URL (more reliable on Vercel)
-  // Otherwise use Prisma's $executeRawUnsafe (works for local SQLite)
-  const databaseUrl = process.env.DATABASE_URL
-
-  if (databaseUrl && (databaseUrl.startsWith('libsql://') || databaseUrl.startsWith('http'))) {
-    console.log("[ensureDB] Using direct libsql client for table creation...")
-    const libsql = createClient({
-      url: databaseUrl,
-      authToken: process.env.DATABASE_AUTH_TOKEN,
-    })
-    for (const sql of statements) {
-      try {
-        await libsql.execute(sql)
-      } catch (err: any) {
-        if (!err.message?.includes("already exists")) {
-          console.error("[ensureDB] libsql SQL error:", err.message?.slice(0, 200))
-        }
-      }
-    }
-    console.log("[ensureDB] Tables created via libsql")
-  } else {
-    // Local SQLite via Prisma
-    console.log("[ensureDB] Using Prisma raw SQL for table creation...")
-    for (const sql of statements) {
-      try {
-        await db.$executeRawUnsafe(sql)
-      } catch (err: any) {
-        if (!err.message?.includes("already exists")) {
-          console.error("[ensureDB] Prisma SQL error:", err.message?.slice(0, 200))
-        }
+  // Use direct libsql client for ALL table creation (works on both local + Vercel)
+  console.log("[ensureDB] Creating tables via libsql client...")
+  const client = getLibsqlClient()
+  for (const sql of statements) {
+    try {
+      await client.execute(sql)
+    } catch (err: any) {
+      if (!err.message?.includes("already exists")) {
+        console.error("[ensureDB] SQL error:", err.message?.slice(0, 200))
       }
     }
   }
+  console.log("[ensureDB] Tables created")
 }
 
 async function seedDemoData(): Promise<void> {
