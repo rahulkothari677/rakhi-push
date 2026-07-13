@@ -47,9 +47,14 @@ export function HomeView() {
     <div>
       <HeroCarousel />
 
-      {/* Trust badges strip */}
-      <section className="bg-[#2A0A0F] text-[#FBF6EC] py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-6">
+      {/* Trust badges strip — premium dark with gold accents */}
+      <section className="bg-gradient-to-r from-[#2A0A0F] via-[#1A0508] to-[#2A0A0F] text-[#FBF6EC] py-6 border-y-2 border-[#C9A24B]/30 relative overflow-hidden">
+        {/* Decorative pattern overlay */}
+        <div className="absolute inset-0 opacity-5" style={{
+          backgroundImage: `radial-gradient(circle at 20% 50%, #C9A24B 1px, transparent 1px), radial-gradient(circle at 80% 50%, #C9A24B 1px, transparent 1px)`,
+          backgroundSize: '40px 40px',
+        }} />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-6 relative">
           {[
             { icon: Crown, title: "Premium Quality", sub: "Handcrafted with care" },
             { icon: Truck, title: "Free Shipping", sub: "On orders above ₹999" },
@@ -64,12 +69,12 @@ export function HomeView() {
               transition={{ delay: i * 0.1 }}
               className="flex items-center gap-3"
             >
-              <div className="w-10 h-10 rounded-full bg-[#C9A24B]/20 flex items-center justify-center flex-shrink-0">
-                <b.icon size={18} className="text-[#C9A24B]" />
+              <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#C9A24B] to-[#B5862D] flex items-center justify-center flex-shrink-0 shadow-lg">
+                <b.icon size={18} className="text-[#2A0A0F]" />
               </div>
               <div>
-                <div className="text-sm font-semibold">{b.title}</div>
-                <div className="text-xs text-[#FBF6EC]/60">{b.sub}</div>
+                <div className="text-sm font-semibold text-[#FBF6EC]">{b.title}</div>
+                <div className="text-xs text-[#C9A24B]">{b.sub}</div>
               </div>
             </motion.div>
           ))}
@@ -77,19 +82,25 @@ export function HomeView() {
       </section>
 
       {/* Categories Grid */}
-      <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center gap-3 mb-3">
-            <div className="h-px w-12 bg-[#C9A24B]" />
-            <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-[#C9A24B] font-medium">
+      <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z' fill='%238B1E3E'/%3E%3C/svg%3E")`,
+        }} />
+        <div className="text-center mb-12 relative">
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <div className="h-px w-16 bg-gradient-to-r from-transparent to-[#C9A24B]" />
+            <span className="text-[#C9A24B] text-lg">❖</span>
+            <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-[#C9A24B] font-semibold">
               Explore Our Collections
             </p>
-            <div className="h-px w-12 bg-[#C9A24B]" />
+            <span className="text-[#C9A24B] text-lg">❖</span>
+            <div className="h-px w-16 bg-gradient-to-l from-transparent to-[#C9A24B]" />
           </div>
-          <h2 className="font-serif text-3xl sm:text-5xl font-bold text-[#2A0A0F] mb-3">
+          <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2A0A0F] mb-4 tracking-tight">
             Curated <span className="text-gradient-burgundy italic">Collections</span>
           </h2>
-          <p className="text-[#6B5544] max-w-2xl mx-auto">
+          <p className="text-[#6B5544] max-w-2xl mx-auto text-base sm:text-lg leading-relaxed">
             From traditional moli to diamond-studded luxury — discover Rakhis for every bond and every story.
           </p>
         </div>
