@@ -271,7 +271,7 @@ export function HomeView() {
                 <img
                   src={ctaImage(ctaContent?.image || "/images/thali-marigold-1.svg")}
                   alt={ctaContent?.titleAccent || "Roli Chawal Thali"}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-cover"
                 />
               </div>
             </div>
