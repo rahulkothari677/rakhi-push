@@ -432,6 +432,13 @@ export const db = {
       const result = await client.execute({ sql: 'SELECT * FROM SiteSetting WHERE key = ?', args: [opts.where.key] })
       return (result.rows[0] as any) || null
     },
+    async create(opts: { data: any }) {
+      const client = getLibsqlClient()
+      const id = generateId()
+      const value = typeof opts.data.value === 'string' ? opts.data.value : JSON.stringify(opts.data.value)
+      await client.execute({ sql: 'INSERT INTO SiteSetting (id, key, value) VALUES (?, ?, ?)', args: [id, opts.data.key, value] })
+      return { id, ...opts.data, value }
+    },
     async upsert(opts: { where: { key: string }; create: any; update: any }) {
       const client = getLibsqlClient()
       const existing = await client.execute({ sql: 'SELECT id FROM SiteSetting WHERE key = ?', args: [opts.where.key] })
@@ -457,6 +464,14 @@ export const db = {
       const client = getLibsqlClient()
       const result = await client.execute({ sql: 'SELECT * FROM SiteContent WHERE section = ?', args: [opts.where.section] })
       return (result.rows[0] as any) || null
+    },
+    async create(opts: { data: any }) {
+      const client = getLibsqlClient()
+      const id = generateId()
+      const now = new Date().toISOString()
+      const data = typeof opts.data.data === 'string' ? opts.data.data : JSON.stringify(opts.data.data)
+      await client.execute({ sql: 'INSERT INTO SiteContent (id, section, data, updatedAt, createdAt) VALUES (?, ?, ?, ?, ?)', args: [id, opts.data.section, data, now, now] })
+      return { id, ...opts.data, data, createdAt: now, updatedAt: now }
     },
     async upsert(opts: { where: { section: string }; create: any; update: any }) {
       const client = getLibsqlClient()
