@@ -18,22 +18,22 @@ export function BackButton() {
         onClick={goBack}
         disabled={!canGoBack}
         className={cn(
-          "flex items-center justify-center w-10 h-10 rounded-full shadow-lg transition-all backdrop-blur-sm",
+          "flex items-center justify-center w-11 h-11 rounded-full shadow-lg transition-all backdrop-blur-sm border-2",
           canGoBack
-            ? "bg-white/90 text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white hover:scale-110 border border-[var(--border)]"
-            : "bg-white/50 text-[var(--muted-foreground)]/40 cursor-not-allowed border border-[var(--border)]/50"
+            ? "bg-white text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white hover:scale-110 border-[var(--accent)]"
+            : "bg-white/70 text-[var(--muted-foreground)] cursor-not-allowed border-[var(--border)]"
         )}
         aria-label="Go back"
       >
-        <ArrowLeft size={18} />
+        <ArrowLeft size={20} />
       </button>
 
       <button
         onClick={goHome}
-        className="flex items-center justify-center w-10 h-10 rounded-full bg-white/90 text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:scale-110 shadow-lg border border-[var(--border)] backdrop-blur-sm transition-all"
+        className="flex items-center justify-center w-11 h-11 rounded-full bg-white text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white hover:scale-110 shadow-lg border-2 border-[var(--accent)] backdrop-blur-sm transition-all"
         aria-label="Go to home"
       >
-        <Home size={16} />
+        <Home size={18} />
       </button>
     </div>
   )

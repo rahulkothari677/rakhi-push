@@ -47,11 +47,11 @@ export function HomeView() {
     <div>
       <HeroCarousel />
 
-      {/* Trust badges strip — premium dark with gold accents */}
-      <section className="bg-gradient-to-r from-[var(--foreground)] via-[var(--foreground)] to-[var(--foreground)] text-[var(--background)] py-6 border-y-2 border-[var(--accent)]/30 relative overflow-hidden">
-        {/* Decorative pattern overlay */}
-        <div className="absolute inset-0 opacity-5" style={{
-          backgroundImage: `radial-gradient(circle at 20% 50%, var(--accent) 1px, transparent 1px), radial-gradient(circle at 80% 50%, var(--accent) 1px, transparent 1px)`,
+      {/* Trust badges strip — VIBRANT festive gradient (not dark) */}
+      <section className="bg-gradient-to-r from-[var(--primary)] via-[var(--primary-dark)] to-[var(--primary)] text-white py-7 border-y-2 border-[var(--accent)] relative overflow-hidden">
+        {/* Festive dot pattern */}
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: `radial-gradient(circle at 20% 50%, #FFD700 1.5px, transparent 1.5px), radial-gradient(circle at 80% 50%, #FFD700 1.5px, transparent 1.5px)`,
           backgroundSize: '40px 40px',
         }} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-6 relative">
@@ -69,23 +69,23 @@ export function HomeView() {
               transition={{ delay: i * 0.1 }}
               className="flex items-center gap-3"
             >
-              <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dark)] flex items-center justify-center flex-shrink-0 shadow-lg">
-                <b.icon size={18} className="text-[var(--foreground)]" />
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center flex-shrink-0 shadow-lg">
+                <b.icon size={20} className="text-[var(--primary-dark)]" />
               </div>
               <div>
-                <div className="text-sm font-semibold text-[var(--background)]">{b.title}</div>
-                <div className="text-xs text-[var(--accent)]">{b.sub}</div>
+                <div className="text-sm font-bold text-white">{b.title}</div>
+                <div className="text-xs text-[#FFD700]">{b.sub}</div>
               </div>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* Categories Grid */}
+      {/* Categories Grid — paisley pattern background */}
       <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        {/* Subtle background pattern */}
+        {/* Paisley pattern background */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z' fill='%238B1E3E'/%3E%3C/svg%3E")`,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 10 Q60 10 60 30 Q60 50 40 50 Q20 50 20 30 Q20 10 40 10 Z' fill='none' stroke='%238B1E3E' stroke-width='1'/%3E%3C/svg%3E")`,
         }} />
         <div className="text-center mb-12 relative">
           <div className="flex items-center justify-center gap-4 mb-4">
@@ -131,10 +131,10 @@ export function HomeView() {
                   </span>
                 </div>
               )}
-              {/* Dark gradient overlay for text contrast (always present) */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+              {/* Light gradient overlay for text contrast — VIBRANT, not dark */}
+              <div className="absolute inset-0 bg-gradient-to-t from-white/90 via-white/30 to-transparent" />
               <div className="absolute inset-0 flex flex-col items-center justify-end p-4 text-center">
-                <h3 className="font-serif text-base sm:text-lg font-semibold leading-tight text-background drop-shadow-lg">
+                <h3 className="font-serif text-base sm:text-lg font-semibold leading-tight text-[var(--foreground)] drop-shadow-sm">
                   {cat.name}
                 </h3>
                 <p className="text-[10px] tracking-elegant uppercase mt-1.5 font-semibold text-accent">
@@ -158,11 +158,12 @@ export function HomeView() {
         </div>
       </section>
 
-      {/* Featured Rakhis */}
+      {/* Featured Rakhis — dot grid pattern */}
       <section className="py-20 bg-gradient-to-b from-[var(--background)] to-[var(--cream)]/50 relative overflow-hidden">
-        {/* Subtle background pattern */}
-        <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 0 L80 40 L40 80 L0 40 Z' fill='%238B1E3E'/%3E%3C/svg%3E")`,
+        {/* Dot grid pattern */}
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{
+          backgroundImage: `radial-gradient(circle, var(--primary) 1.5px, transparent 1.5px)`,
+          backgroundSize: '30px 30px',
         }} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center mb-12">
@@ -189,14 +190,14 @@ export function HomeView() {
         </div>
       </section>
 
-      {/* Quote / Story section — premium with decorative elements */}
+      {/* Quote / Story section — VIBRANT festive gradient (not dark/moody) */}
       <section className="py-28 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary)] via-[var(--primary-dark)] to-[var(--foreground)]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700] via-[#FFA500] to-[#FF8C00]" />
         {/* Decorative mandala pattern */}
-        <div className="absolute inset-0 opacity-[0.04]" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='120' height='120' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='60' cy='60' r='50' fill='none' stroke='%23C9A24B' stroke-width='1'/%3E%3Ccircle cx='60' cy='60' r='30' fill='none' stroke='%23C9A24B' stroke-width='1'/%3E%3Cpath d='M60 10 L60 110 M10 60 L110 60' stroke='%23C9A24B' stroke-width='1'/%3E%3C/svg%3E")`,
+        <div className="absolute inset-0 opacity-[0.08]" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='120' height='120' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='60' cy='60' r='50' fill='none' stroke='%238B1E3E' stroke-width='1'/%3E%3Ccircle cx='60' cy='60' r='30' fill='none' stroke='%238B1E3E' stroke-width='1'/%3E%3Cpath d='M60 10 L60 110 M10 60 L110 60' stroke='%238B1E3E' stroke-width='1'/%3E%3C/svg%3E")`,
         }} />
-        <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0 opacity-20">
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
@@ -207,26 +208,26 @@ export function HomeView() {
                 animationDelay: `${i * 0.4}s`,
               }}
             >
-              <Sparkles size={20} className="text-[var(--accent)]" />
+              <Sparkles size={24} className="text-[var(--primary)]" />
             </div>
           ))}
         </div>
 
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <div className="flex items-center justify-center gap-4 mb-6">
-            <span className="text-[var(--accent)] text-2xl">❖</span>
-            <span className="text-[var(--accent)] text-3xl font-serif">&ldquo;</span>
-            <span className="text-[var(--accent)] text-2xl">❖</span>
+            <span className="text-[var(--primary)] text-2xl">❖</span>
+            <span className="text-[var(--primary)] text-3xl font-serif">&ldquo;</span>
+            <span className="text-[var(--primary)] text-2xl">❖</span>
           </div>
-          <p className="font-serif text-2xl sm:text-4xl lg:text-5xl text-[var(--background)] italic leading-relaxed mb-8">
+          <p className="font-serif text-2xl sm:text-4xl lg:text-5xl text-[var(--primary-dark)] italic leading-relaxed mb-8">
             A brother may not be a friend, but a friend will always be a brother. The sacred thread of Rakhi binds not just wrists, but hearts across lifetimes.
           </p>
           <div className="flex items-center justify-center gap-4">
-            <div className="h-px w-12 bg-[var(--accent)]" />
-            <p className="text-sm tracking-[0.3em] uppercase text-[var(--accent)] font-semibold">
+            <div className="h-px w-12 bg-[var(--primary)]" />
+            <p className="text-sm tracking-[0.3em] uppercase text-[var(--primary)] font-bold">
               House of Neelam
             </p>
-            <div className="h-px w-12 bg-[var(--accent)]" />
+            <div className="h-px w-12 bg-[var(--primary)]" />
           </div>
         </div>
       </section>
@@ -297,11 +298,11 @@ export function HomeView() {
         </div>
       </section>
 
-      {/* New Arrivals */}
+      {/* New Arrivals — diagonal lines pattern */}
       <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        {/* Subtle background pattern */}
-        <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 0 L80 40 L40 80 L0 40 Z' fill='%23C9A24B'/%3E%3C/svg%3E")`,
+        {/* Diagonal lines pattern */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
+          backgroundImage: `repeating-linear-gradient(45deg, var(--accent) 0, var(--accent) 1px, transparent 1px, transparent 20px)`,
         }} />
         <div className="relative">
         <div className="text-center mb-12">
@@ -337,11 +338,15 @@ export function HomeView() {
         </div>
       </section>
 
-      {/* Festive / Gift box CTA */}
+      {/* Festive / Gift box CTA — VIBRANT (not dark) */}
       <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-gradient-to-r from-[var(--cream)] to-[var(--background)] rounded-2xl p-8 sm:p-12 lg:p-16 border border-[var(--accent)]/30 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--accent)]/10 rounded-full -translate-y-1/3 translate-x-1/3" />
+        <div className="bg-gradient-to-br from-[#FFF8DC] via-[#FFE4B5] to-[#FFD700] rounded-2xl p-8 sm:p-12 lg:p-16 border-2 border-[var(--accent)] relative overflow-hidden shadow-luxe">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#FF8C00]/15 rounded-full -translate-y-1/3 translate-x-1/3" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-[var(--primary)]/10 rounded-full translate-y-1/3 -translate-x-1/3" />
+          {/* Festive star pattern */}
+          <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 5 L60 35 L90 35 L65 55 L75 85 L50 65 L25 85 L35 55 L10 35 L40 35 Z' fill='%238B1E3E'/%3E%3C/svg%3E")`,
+          }} />
 
           <div className="relative grid lg:grid-cols-2 gap-8 items-center">
             <div>

@@ -73,9 +73,9 @@ export function HeroCarousel() {
               alt={slide.title}
               className="w-full h-full object-cover animate-kenburns"
             />
-            {/* Overlay for text contrast */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[var(--foreground)]/60 via-[var(--foreground)]/30 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[var(--foreground)]/40 via-transparent to-[var(--foreground)]/10" />
+            {/* Light overlay for text contrast — VIBRANT, not dark */}
+            <div className="absolute inset-0 bg-gradient-to-r from-white/40 via-white/10 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-white/30 via-transparent to-transparent" />
           </div>
 
           {/* Content */}
@@ -84,7 +84,7 @@ export function HeroCarousel() {
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="max-w-2xl text-[var(--background)]"
+              className="max-w-2xl text-[var(--foreground)]"
             >
               <div className="flex items-center gap-3 mb-4">
                 <div className="h-px w-12 bg-[var(--accent)]" />
