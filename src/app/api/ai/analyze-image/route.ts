@@ -17,6 +17,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Image URL required" }, { status: 400 })
     }
 
+    // If image URL is a relative path (like /uploads/...), convert to full URL
+    let fullImageUrl = imageUrl
+    if (imageUrl.startsWith("/")) {
+      const baseURL = req.headers.get("host")
+        ? `https://${req.headers.get("host")}`
+        : "http://localhost:3000"
+      fullImageUrl = `${baseURL}${imageUrl}`
+    }
+
+    console.log("[AI] Analyzing image:", fullImageUrl.slice(0, 80))
+
     const prompt = `You are an expert Rakhi product catalog manager for "House of Neelam" — a premium Rakhi e-commerce store.
 
 Analyze this Rakhi product image and provide ALL the following details:
@@ -46,35 +57,34 @@ Return ONLY valid JSON (no markdown, no code blocks). Format:
     let providerUsed = ""
     let lastError = ""
 
-    // Check which providers are configured
     const geminiKey = process.env.GEMINI_API_KEY
     const grokKey = process.env.XAI_API_KEY
-    const zaiEnabled = true // z-ai SDK is always available on the server
 
-    console.log("[AI] Providers configured:", {
-      gemini: !!geminiKey,
-      grok: !!grokKey,
-      zai: zaiEnabled,
+    console.log("[AI] Providers:", {
+      gemini: geminiKey ? `key starts with ${geminiKey.slice(0, 8)}...` : "not set",
+      grok: grokKey ? "set" : "not set",
     })
 
-    // ─── Try Google Gemini first ─────────────────────────────────────────
+    // ─── Try Google Gemini ───────────────────────────────────────────────
     if (!analysis && geminiKey) {
       try {
         console.log("[AI] Trying Google Gemini...")
-        analysis = await analyzeWithGemini(imageUrl, prompt, geminiKey)
+        analysis = await analyzeWithGemini(fullImageUrl, prompt, geminiKey)
         providerUsed = "Google Gemini"
+        console.log("[AI] Gemini success!")
       } catch (e: any) {
         lastError = `Gemini: ${e.message}`
         console.error("[AI] Gemini failed:", e.message)
       }
     }
 
-    // ─── Try xAI Grok second ─────────────────────────────────────────────
+    // ─── Try xAI Grok ────────────────────────────────────────────────────
     if (!analysis && grokKey) {
       try {
         console.log("[AI] Trying xAI Grok...")
-        analysis = await analyzeWithGrok(imageUrl, prompt, grokKey)
+        analysis = await analyzeWithGrok(fullImageUrl, prompt, grokKey)
         providerUsed = "xAI Grok"
+        console.log("[AI] Grok success!")
       } catch (e: any) {
         lastError = `${lastError} | Grok: ${e.message}`
         console.error("[AI] Grok failed:", e.message)
@@ -84,7 +94,7 @@ Return ONLY valid JSON (no markdown, no code blocks). Format:
     // ─── Try z-ai-web-dev-sdk as fallback ────────────────────────────────
     if (!analysis) {
       try {
-        console.log("[AI] Trying z-ai-web-dev-sdk (default)...")
+        console.log("[AI] Trying built-in AI...")
         const ZAI = (await import("z-ai-web-dev-sdk")).default
         const zai = await ZAI.create()
 
@@ -94,7 +104,7 @@ Return ONLY valid JSON (no markdown, no code blocks). Format:
               role: "user",
               content: [
                 { type: "text", text: prompt },
-                { type: "image_url", image_url: { url: imageUrl } },
+                { type: "image_url", image_url: { url: fullImageUrl } },
               ],
             },
           ],
@@ -108,161 +118,176 @@ Return ONLY valid JSON (no markdown, no code blocks). Format:
           analysis = JSON.parse(content)
         } catch {
           const jsonMatch = content.match(/\{[\s\S]*\}/)
-          if (jsonMatch) {
-            analysis = JSON.parse(jsonMatch[0])
-          }
+          if (jsonMatch) analysis = JSON.parse(jsonMatch[0])
         }
 
         if (analysis) {
           providerUsed = "Built-in AI"
-        } else {
-          lastError = `${lastError} | Built-in AI: No valid response`
+          console.log("[AI] Built-in AI success!")
         }
       } catch (e: any) {
-        lastError = `${lastError} | Built-in AI: ${e.message}`
-        console.error("[AI] z-ai failed:", e.message)
+        lastError = `${lastError} | Built-in: ${e.message}`
+        console.error("[AI] Built-in failed:", e.message)
       }
     }
 
     if (!analysis) {
       return NextResponse.json(
-        {
-          error: `AI analysis failed. ${lastError || "No providers configured."} 
-
-To fix:
-1. Get a FREE Gemini API key from https://aistudio.google.com/app/apikey
-   (Key must start with "AIza" — if yours starts with "AQ." you're in the wrong place)
-2. In Vercel: Settings → Environment Variables → Add GEMINI_API_KEY
-3. Make sure to check ALL 3 boxes: Production, Preview, Development
-4. Click Save, then Redeploy
-
-OR get Grok key from https://console.x.ai and add XAI_API_KEY`,
-          debug: lastError,
-        },
+        { error: `All AI providers failed. Errors: ${lastError}` },
         { status: 500 }
       )
     }
 
     return NextResponse.json({ analysis, provider: providerUsed })
   } catch (e: any) {
-    console.error("AI analyze error:", e)
-    return NextResponse.json(
-      { error: e.message || "AI analysis failed" },
-      { status: 500 }
-    )
+    console.error("[AI] Fatal error:", e)
+    return NextResponse.json({ error: e.message }, { status: 500 })
   }
 }
 
 // ─── Google Gemini ───────────────────────────────────────────────────────────
-// Works with keys from https://aistudio.google.com/app/apikey (starts with "AIza")
+// Works with BOTH old format (AIza...) and new format (AQ.Ab8...) keys
 async function analyzeWithGemini(imageUrl: string, prompt: string, apiKey: string): Promise<any> {
-  // Fetch the image and convert to base64
-  const imageRes = await fetch(imageUrl)
+  // Fetch image and convert to base64
+  const imageRes = await fetch(imageUrl, { redirect: "follow" })
   if (!imageRes.ok) {
-    throw new Error(`Failed to fetch image: ${imageRes.status}`)
+    throw new Error(`Image fetch failed: ${imageRes.status}`)
   }
   const imageBuffer = await imageRes.arrayBuffer()
   const base64 = Buffer.from(imageBuffer).toString("base64")
   const mimeType = imageRes.headers.get("content-type") || "image/jpeg"
 
-  // Use gemini-1.5-flash (fast, free tier)
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              { text: prompt },
-              {
-                inline_data: {
-                  mime_type: mimeType,
-                  data: base64,
-                },
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 1000,
-        },
-      }),
-    }
-  )
+  // Try multiple Gemini models (some might not be available in all regions)
+  const models = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
+  let lastErr = ""
 
-  if (!res.ok) {
-    const errText = await res.text()
-    let errMsg = `Gemini API ${res.status}`
+  for (const model of models) {
     try {
-      const errJson = JSON.parse(errText)
-      errMsg += `: ${errJson.error?.message || errText.slice(0, 150)}`
-    } catch {
-      errMsg += `: ${errText.slice(0, 150)}`
+      // Pass API key BOTH as header AND query param for max compatibility
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": apiKey,
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                { text: prompt },
+                {
+                  inline_data: {
+                    mime_type: mimeType,
+                    data: base64,
+                  },
+                },
+              ],
+            },
+          ],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 1000,
+          },
+        }),
+      })
+
+      if (!res.ok) {
+        const errText = await res.text()
+        let errMsg = `${res.status}`
+        try {
+          const errJson = JSON.parse(errText)
+          errMsg = `${res.status}: ${errJson.error?.message || errText.slice(0, 100)}`
+        } catch {
+          errMsg = `${res.status}: ${errText.slice(0, 100)}`
+        }
+        lastErr = `${model} → ${errMsg}`
+        console.error(`[AI] Gemini ${model} failed:`, errMsg)
+        continue // Try next model
+      }
+
+      const data = await res.json()
+      const content = data.candidates?.[0]?.content?.parts?.[0]?.text || ""
+
+      if (!content) {
+        lastErr = `${model} → empty response`
+        continue
+      }
+
+      // Parse JSON from response
+      const cleaned = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
+      try {
+        return JSON.parse(cleaned)
+      } catch {
+        const jsonMatch = cleaned.match(/\{[\s\S]*\}/)
+        if (jsonMatch) return JSON.parse(jsonMatch[0])
+        lastErr = `${model} → invalid JSON`
+      }
+    } catch (e: any) {
+      lastErr = `${model} → ${e.message}`
     }
-    throw new Error(errMsg)
   }
 
-  const data = await res.json()
-  let content = data.candidates?.[0]?.content?.parts?.[0]?.text || ""
-
-  if (!content) {
-    throw new Error("Gemini returned empty response")
-  }
-
-  // Strip markdown
-  content = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
-
-  try {
-    return JSON.parse(content)
-  } catch {
-    const jsonMatch = content.match(/\{[\s\S]*\}/)
-    if (jsonMatch) return JSON.parse(jsonMatch[0])
-    throw new Error("Gemini returned invalid JSON: " + content.slice(0, 100))
-  }
+  throw new Error(lastErr || "All Gemini models failed")
 }
 
 // ─── xAI Grok ────────────────────────────────────────────────────────────────
 async function analyzeWithGrok(imageUrl: string, prompt: string, apiKey: string): Promise<any> {
-  const res = await fetch("https://api.x.ai/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: "grok-vision-beta",
-      messages: [
-        {
-          role: "user",
-          content: [
-            { type: "text", text: prompt },
-            { type: "image_url", image_url: { url: imageUrl } },
-          ],
+  // Grok vision model — try both available model names
+  const models = ["grok-2-vision-1212", "grok-vision-beta"]
+  let lastErr = ""
+
+  for (const model of models) {
+    try {
+      const res = await fetch("https://api.x.ai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
         },
-      ],
-      temperature: 0.7,
-      max_tokens: 1000,
-    }),
-  })
+        body: JSON.stringify({
+          model: model,
+          messages: [
+            {
+              role: "user",
+              content: [
+                { type: "text", text: prompt },
+                { type: "image_url", image_url: { url: imageUrl } },
+              ],
+            },
+          ],
+          temperature: 0.7,
+          max_tokens: 1000,
+        }),
+      })
 
-  if (!res.ok) {
-    const errText = await res.text()
-    throw new Error(`Grok API ${res.status}: ${errText.slice(0, 150)}`)
+      if (!res.ok) {
+        const errText = await res.text()
+        lastErr = `${model} → ${res.status}: ${errText.slice(0, 100)}`
+        console.error(`[AI] Grok ${model} failed:`, lastErr)
+        continue
+      }
+
+      const data = await res.json()
+      const content = data.choices?.[0]?.message?.content || ""
+
+      if (!content) {
+        lastErr = `${model} → empty response`
+        continue
+      }
+
+      const cleaned = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
+      try {
+        return JSON.parse(cleaned)
+      } catch {
+        const jsonMatch = cleaned.match(/\{[\s\S]*\}/)
+        if (jsonMatch) return JSON.parse(jsonMatch[0])
+        lastErr = `${model} → invalid JSON`
+      }
+    } catch (e: any) {
+      lastErr = `${model} → ${e.message}`
+    }
   }
 
-  const data = await res.json()
-  let content = data.choices?.[0]?.message?.content || ""
-
-  content = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
-
-  try {
-    return JSON.parse(content)
-  } catch {
-    const jsonMatch = content.match(/\{[\s\S]*\}/)
-    if (jsonMatch) return JSON.parse(jsonMatch[0])
-    throw new Error("Grok returned invalid JSON")
-  }
+  throw new Error(lastErr || "All Grok models failed")
 }
