@@ -116,12 +116,6 @@ export function AdminLogin({ onClose }: { onClose: () => void }) {
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
-
-        <div className="mt-6 p-3 bg-[var(--cream)] rounded-md text-xs text-[var(--muted-foreground)] text-center">
-          <p className="font-semibold text-[var(--foreground)] mb-1">Admin Access:</p>
-          <p>Email: <span className="font-mono text-[var(--primary)]">admin@houseofneelam.com</span></p>
-          <p>Password: <span className="font-mono text-[var(--primary)]">Neelam@Admin2026</span></p>
-        </div>
       </motion.div>
     </motion.div>
   )

@@ -12,7 +12,6 @@ import {
 import { cn, formatINR, slugify, generateSKU, parseJSON } from "@/lib/utils"
 import { thumbnailImage, categoryImage, heroImage, ctaImage } from "@/lib/images"
 import { PRESET_THEMES, FONT_OPTIONS } from "@/lib/themes"
-import { AdminLogin } from "./AdminLogin"
 
 type Tab = "dashboard" | "products" | "categories" | "hero" | "content" | "settings" | "orders" | "themes"
 
@@ -62,10 +61,7 @@ export function AdminView() {
         </div>
       </header>
 
-      {showLogin ? (
-        <AdminLogin onClose={() => setAdminOpen(false)} />
-      ) : (
-        <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden">
           {/* Sidebar */}
           <aside className="w-16 sm:w-56 bg-[#2A0A0F] text-[#FBF6EC] flex-shrink-0 flex flex-col">
             <nav className="flex-1 p-2 sm:p-3 space-y-1">
@@ -108,7 +104,6 @@ export function AdminView() {
             {tab === "themes" && <ThemesTab />}
           </main>
         </div>
-      )}
     </div>
   )
 }
