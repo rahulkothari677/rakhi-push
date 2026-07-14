@@ -1,32 +1,19 @@
 import { NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/admin-guard"
 
-// AI-powered image analysis — supports multiple AI providers
-// Priority: 1. Google Gemini, 2. xAI Grok, 3. z-ai-web-dev-sdk (default)
-
 export async function POST(req: Request) {
   const session = await requireAdmin()
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
   try {
     const { imageUrl } = await req.json()
+    if (!imageUrl) return NextResponse.json({ error: "Image URL required" }, { status: 400 })
 
-    if (!imageUrl) {
-      return NextResponse.json({ error: "Image URL required" }, { status: 400 })
-    }
-
-    // If image URL is a relative path (like /uploads/...), convert to full URL
     let fullImageUrl = imageUrl
     if (imageUrl.startsWith("/")) {
-      const baseURL = req.headers.get("host")
-        ? `https://${req.headers.get("host")}`
-        : "http://localhost:3000"
+      const baseURL = req.headers.get("host") ? `https://${req.headers.get("host")}` : "http://localhost:3000"
       fullImageUrl = `${baseURL}${imageUrl}`
     }
-
-    console.log("[AI] Analyzing image:", fullImageUrl.slice(0, 80))
 
     const prompt = `You are an expert Rakhi product catalog manager for "House of Neelam" — a premium Rakhi e-commerce store.
 
@@ -34,46 +21,37 @@ Analyze this Rakhi product image and provide ALL the following details:
 
 1. name: A premium, elegant product name (2-6 words, capitalize each word)
 2. category: Choose the BEST match from these exact options:
-   - "Traditional Rakhi"
-   - "Designer Rakhi"
-   - "Kids Rakhi"
-   - "Bhaiya-Bhabhi (Lumba)"
-   - "Premium Gold Rakhi"
-   - "Silver Rakhi"
-   - "Handmade Rakhi"
-   - "Personalized Rakhi"
+   - "Traditional Rakhi", "Designer Rakhi", "Kids Rakhi", "Bhaiya-Bhabhi (Lumba)",
+   - "Premium Gold Rakhi", "Silver Rakhi", "Handmade Rakhi", "Personalized Rakhi",
    - "Roli-Chawal & Thali"
 3. shortDescription: One-line description (max 80 characters, compelling)
-4. description: Full 2-3 sentence description with details about design, materials, and significance
-5. materials: Array of materials used (e.g., ["Pearl", "Silk thread", "Gold-tone metal"])
-6. features: Array of 3-4 key features (e.g., ["Handcrafted", "Premium quality", "Comes in gift box"])
-7. suggestedPrice: Suggested price in INR (integer, based on materials and design quality)
-8. badge: Choose one — "New", "Bestseller", "Premium", "Luxury", "Handmade", or null if none apply
+4. description: Full 2-3 sentence description
+5. materials: Array of materials used
+6. features: Array of 3-4 key features
+7. suggestedPrice: Suggested price in INR (integer)
+8. badge: Choose one — "New", "Bestseller", "Premium", "Luxury", "Handmade", or null
 
-Return ONLY valid JSON (no markdown, no code blocks). Format:
+Return ONLY valid JSON. Format:
 {"name":"...","category":"...","shortDescription":"...","description":"...","materials":["..."],"features":["..."],"suggestedPrice":599,"badge":"Premium"}`
 
     let analysis = null
     let providerUsed = ""
-    let lastError = ""
+    const allErrors: string[] = []
 
     const geminiKey = process.env.GEMINI_API_KEY
     const grokKey = process.env.XAI_API_KEY
 
-    console.log("[AI] Providers:", {
-      gemini: geminiKey ? `key starts with ${geminiKey.slice(0, 8)}...` : "not set",
-      grok: grokKey ? "set" : "not set",
-    })
-
     // ─── Try Google Gemini ───────────────────────────────────────────────
-    if (!analysis && geminiKey) {
+    if (geminiKey) {
       try {
-        console.log("[AI] Trying Google Gemini...")
-        analysis = await analyzeWithGemini(fullImageUrl, prompt, geminiKey)
-        providerUsed = "Google Gemini"
-        console.log("[AI] Gemini success!")
+        console.log("[AI] Trying Gemini...")
+        const result = await analyzeWithGemini(fullImageUrl, prompt, geminiKey)
+        if (result) {
+          analysis = result
+          providerUsed = "Google Gemini"
+        }
       } catch (e: any) {
-        lastError = `Gemini: ${e.message}`
+        allErrors.push(`Gemini: ${e.message}`)
         console.error("[AI] Gemini failed:", e.message)
       }
     }
@@ -81,143 +59,143 @@ Return ONLY valid JSON (no markdown, no code blocks). Format:
     // ─── Try xAI Grok ────────────────────────────────────────────────────
     if (!analysis && grokKey) {
       try {
-        console.log("[AI] Trying xAI Grok...")
-        analysis = await analyzeWithGrok(fullImageUrl, prompt, grokKey)
-        providerUsed = "xAI Grok"
-        console.log("[AI] Grok success!")
+        console.log("[AI] Trying Grok...")
+        const result = await analyzeWithGrok(fullImageUrl, prompt, grokKey)
+        if (result) {
+          analysis = result
+          providerUsed = "xAI Grok"
+        }
       } catch (e: any) {
-        lastError = `${lastError} | Grok: ${e.message}`
+        allErrors.push(`Grok: ${e.message}`)
         console.error("[AI] Grok failed:", e.message)
       }
     }
 
-    // ─── Try z-ai-web-dev-sdk as fallback ────────────────────────────────
+    // ─── Try built-in AI ────────────────────────────────────────────────
     if (!analysis) {
       try {
-        console.log("[AI] Trying built-in AI...")
+        console.log("[AI] Trying built-in...")
         const ZAI = (await import("z-ai-web-dev-sdk")).default
         const zai = await ZAI.create()
-
         const response = await zai.chat.completions.createVision({
-          messages: [
-            {
-              role: "user",
-              content: [
-                { type: "text", text: prompt },
-                { type: "image_url", image_url: { url: fullImageUrl } },
-              ],
-            },
-          ],
+          messages: [{ role: "user", content: [
+            { type: "text", text: prompt },
+            { type: "image_url", image_url: { url: fullImageUrl } },
+          ]}],
           thinking: { type: "disabled" },
         })
-
         let content = response.choices[0]?.message?.content || ""
         content = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
-
-        try {
-          analysis = JSON.parse(content)
-        } catch {
-          const jsonMatch = content.match(/\{[\s\S]*\}/)
-          if (jsonMatch) analysis = JSON.parse(jsonMatch[0])
+        try { analysis = JSON.parse(content) } catch {
+          const m = content.match(/\{[\s\S]*\}/)
+          if (m) analysis = JSON.parse(m[0])
         }
-
-        if (analysis) {
-          providerUsed = "Built-in AI"
-          console.log("[AI] Built-in AI success!")
-        }
+        if (analysis) providerUsed = "Built-in AI"
       } catch (e: any) {
-        lastError = `${lastError} | Built-in: ${e.message}`
-        console.error("[AI] Built-in failed:", e.message)
+        allErrors.push(`Built-in: ${e.message}`)
       }
     }
 
     if (!analysis) {
-      return NextResponse.json(
-        { error: `All AI providers failed. Errors: ${lastError}` },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: `All AI failed: ${allErrors.join(" | ")}` }, { status: 500 })
     }
 
     return NextResponse.json({ analysis, provider: providerUsed })
   } catch (e: any) {
-    console.error("[AI] Fatal error:", e)
     return NextResponse.json({ error: e.message }, { status: 500 })
   }
 }
 
-// ─── Google Gemini (using official SDK) ──────────────────────────────────────
+// ─── Gemini: Try REST API with multiple auth methods ─────────────────────────
 async function analyzeWithGemini(imageUrl: string, prompt: string, apiKey: string): Promise<any> {
-  const { GoogleGenerativeAI } = await import("@google/generative-ai")
-  const genAI = new GoogleGenerativeAI(apiKey)
-
-  // Fetch image and convert to base64
+  // Fetch image
   const imageRes = await fetch(imageUrl, { redirect: "follow" })
-  if (!imageRes.ok) {
-    throw new Error(`Image fetch failed: ${imageRes.status}`)
-  }
-  const imageBuffer = await imageRes.arrayBuffer()
-  const base64 = Buffer.from(imageBuffer).toString("base64")
+  if (!imageRes.ok) throw new Error(`Image fetch: ${imageRes.status}`)
+  const base64 = Buffer.from(await imageRes.arrayBuffer()).toString("base64")
   const mimeType = imageRes.headers.get("content-type") || "image/jpeg"
 
-  // First, list available models to find what works with this key
-  let availableModels: string[] = []
-  try {
-    const modelList = await genAI.listModels()
-    for await (const m of modelList) {
-      if (m.supportedGenerationMethods?.includes("generateContent")) {
-        availableModels.push(m.name.replace("models/", ""))
-      }
-    }
-    console.log("[AI] Available Gemini models:", availableModels.slice(0, 10))
-  } catch (e: any) {
-    console.error("[AI] Could not list models:", e.message)
-  }
-
-  // If we found models, use the first flash model. Otherwise try common names.
-  const modelsToTry = availableModels.length > 0
-    ? availableModels.filter(m => m.includes("flash")).concat(availableModels)
-    : ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-flash", "gemini-pro", "gemini-1.5-pro"]
-
-  let lastErr = ""
-
-  for (const modelName of modelsToTry.slice(0, 5)) {
-    try {
-      const model = genAI.getGenerativeModel({ model: modelName })
-      const result = await model.generateContent([
-        prompt,
-        { inlineData: { data: base64, mimeType } },
-      ])
-
-      const content = result.response.text()
-      if (!content) {
-        lastErr = `${modelName} → empty`
-        continue
-      }
-
-      const cleaned = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
-      try {
-        return JSON.parse(cleaned)
-      } catch {
-        const jsonMatch = cleaned.match(/\{[\s\S]*\}/)
-        if (jsonMatch) return JSON.parse(jsonMatch[0])
-        lastErr = `${modelName} → bad JSON`
-      }
-    } catch (e: any) {
-      lastErr = `${modelName} → ${e.message?.slice(0, 80)}`
-      console.error(`[AI] Gemini ${modelName}:`, e.message?.slice(0, 100))
-    }
-  }
-
-  throw new Error(lastErr || "Gemini failed")
-}
-
-// ─── xAI Grok ────────────────────────────────────────────────────────────────
-async function analyzeWithGrok(imageUrl: string, prompt: string, apiKey: string): Promise<any> {
-  // Grok vision model — try available model names
-  const models = ["grok-2-vision-1212", "grok-2-vision", "grok-vision-beta", "grok-2-1212"]
-  let lastErr = ""
+  // Try different models and auth methods
+  const models = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-flash-latest", "gemini-pro"]
+  const errors: string[] = []
 
   for (const model of models) {
+    // Method 1: key as query param (v1beta)
+    for (const version of ["v1beta", "v1"]) {
+      for (const authMethod of ["query", "header"] as const) {
+        try {
+          const url = authMethod === "query"
+            ? `https://generativelanguage.googleapis.com/${version}/models/${model}:generateContent?key=${apiKey}`
+            : `https://generativelanguage.googleapis.com/${version}/models/${model}:generateContent`
+
+          const headers: Record<string, string> = { "Content-Type": "application/json" }
+          if (authMethod === "header") headers["x-goog-api-key"] = apiKey
+
+          const res = await fetch(url, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              contents: [{ parts: [
+                { text: prompt },
+                { inline_data: { mime_type: mimeType, data: base64 } },
+              ]}],
+              generationConfig: { temperature: 0.7, maxOutputTokens: 1000 },
+            }),
+          })
+
+          if (res.ok) {
+            const data = await res.json()
+            const content = data.candidates?.[0]?.content?.parts?.[0]?.text || ""
+            if (content) {
+              const cleaned = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
+              try { return JSON.parse(cleaned) } catch {}
+              const m = cleaned.match(/\{[\s\S]*\}/)
+              if (m) return JSON.parse(m[0])
+            }
+          } else {
+            const errText = await res.text()
+            try {
+              const errJson = JSON.parse(errText)
+              const msg = errJson.error?.message || errText.slice(0, 80)
+              errors.push(`${model}/${version}/${authMethod}: ${res.status} ${msg.slice(0, 60)}`)
+            } catch {
+              errors.push(`${model}/${version}/${authMethod}: ${res.status}`)
+            }
+          }
+        } catch (e: any) {
+          errors.push(`${model}/${version}/${authMethod}: ${e.message?.slice(0, 60)}`)
+        }
+      }
+    }
+  }
+
+  throw new Error(errors.join("; "))
+}
+
+// ─── Grok: List models first, then try each ──────────────────────────────────
+async function analyzeWithGrok(imageUrl: string, prompt: string, apiKey: string): Promise<any> {
+  // First, list available models
+  let availableModels: string[] = []
+  try {
+    const listRes = await fetch("https://api.x.ai/v1/models", {
+      headers: { Authorization: `Bearer ${apiKey}` },
+    })
+    if (listRes.ok) {
+      const listData = await listRes.json()
+      availableModels = (listData.data || []).map((m: any) => m.id)
+      console.log("[AI] Grok available models:", availableModels)
+    }
+  } catch {}
+
+  // Try all models that support vision, plus fallback names
+  const visionModels = availableModels.filter(m =>
+    m.includes("vision") || m.includes("vl")
+  )
+  const fallbackModels = ["grok-2-vision-1212", "grok-vision-beta", "grok-2-vision"]
+  const modelsToTry = [...visionModels, ...fallbackModels].filter((v, i, a) => a.indexOf(v) === i)
+
+  const errors: string[] = []
+
+  for (const model of modelsToTry) {
     try {
       const res = await fetch("https://api.x.ai/v1/chat/completions", {
         method: "POST",
@@ -226,48 +204,33 @@ async function analyzeWithGrok(imageUrl: string, prompt: string, apiKey: string)
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: model,
-          messages: [
-            {
-              role: "user",
-              content: [
-                { type: "text", text: prompt },
-                { type: "image_url", image_url: { url: imageUrl } },
-              ],
-            },
-          ],
+          model,
+          messages: [{ role: "user", content: [
+            { type: "text", text: prompt },
+            { type: "image_url", image_url: { url: imageUrl } },
+          ]}],
           temperature: 0.7,
           max_tokens: 1000,
         }),
       })
 
-      if (!res.ok) {
+      if (res.ok) {
+        const data = await res.json()
+        const content = data.choices?.[0]?.message?.content || ""
+        if (content) {
+          const cleaned = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
+          try { return JSON.parse(cleaned) } catch {}
+          const m = cleaned.match(/\{[\s\S]*\}/)
+          if (m) return JSON.parse(m[0])
+        }
+      } else {
         const errText = await res.text()
-        lastErr = `${model} → ${res.status}: ${errText.slice(0, 100)}`
-        console.error(`[AI] Grok ${model} failed:`, lastErr)
-        continue
-      }
-
-      const data = await res.json()
-      const content = data.choices?.[0]?.message?.content || ""
-
-      if (!content) {
-        lastErr = `${model} → empty response`
-        continue
-      }
-
-      const cleaned = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
-      try {
-        return JSON.parse(cleaned)
-      } catch {
-        const jsonMatch = cleaned.match(/\{[\s\S]*\}/)
-        if (jsonMatch) return JSON.parse(jsonMatch[0])
-        lastErr = `${model} → invalid JSON`
+        errors.push(`${model}: ${res.status} ${errText.slice(0, 60)}`)
       }
     } catch (e: any) {
-      lastErr = `${model} → ${e.message}`
+      errors.push(`${model}: ${e.message?.slice(0, 60)}`)
     }
   }
 
-  throw new Error(lastErr || "All Grok models failed")
+  throw new Error(errors.join("; "))
 }
