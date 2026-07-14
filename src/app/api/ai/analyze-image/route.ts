@@ -97,7 +97,17 @@ Return ONLY valid JSON. Format:
     }
 
     if (!analysis) {
-      return NextResponse.json({ error: `All AI failed: ${allErrors.join(" | ")}` }, { status: 500 })
+      // Check for specific errors and give helpful messages
+      const errorStr = allErrors.join(" | ")
+      let helpfulError = errorStr
+
+      if (errorStr.includes("429") && errorStr.includes("quota")) {
+        helpfulError = "Gemini API rate limit exceeded (free tier). Your key WORKS! But you've used up the free quota for this minute. Try again in 1-2 minutes, or enable billing on your Google Cloud project for higher limits. Go to: https://console.cloud.google.com/billing"
+      } else if (errorStr.includes("API_KEY_SERVICE_BLOCKED") || errorStr.includes("ACCESS_TOKEN_TYPE_UNSUPPORTED")) {
+        helpfulError = "Gemini API key is not properly configured. Go to https://aistudio.google.com/app/apikey and create a NEW key. Make sure the Generative Language API is enabled."
+      }
+
+      return NextResponse.json({ error: helpfulError, debug: errorStr.slice(0, 500) }, { status: 500 })
     }
 
     return NextResponse.json({ analysis, provider: providerUsed })
