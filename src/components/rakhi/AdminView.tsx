@@ -360,6 +360,49 @@ function ProductForm({ product, categories, onClose, onSaved }: {
   const [uploading, setUploading] = useState(false)
   const [uploadingMobile, setUploadingMobile] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [aiAnalyzing, setAiAnalyzing] = useState(false)
+
+  // AI auto-fill — analyzes the first uploaded image and fills all fields
+  const handleAiAnalyze = async () => {
+    if (!form.images.length) {
+      alert("Please upload at least one desktop image first, then click AI Auto-Fill.")
+      return
+    }
+    setAiAnalyzing(true)
+    try {
+      const res = await fetch("/api/ai/analyze-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl: form.images[0] }),
+      })
+      const data = await res.json()
+      if (data.analysis) {
+        const a = data.analysis
+        setForm((f: any) => ({
+          ...f,
+          name: a.name || f.name,
+          category: a.category || f.category,
+          shortDescription: a.shortDescription || f.shortDescription,
+          description: a.description || f.description,
+          materials: Array.isArray(a.materials) ? a.materials.join(", ") : f.materials,
+          features: Array.isArray(a.features) ? a.features.join(", ") : f.features,
+          price: a.suggestedPrice ? a.suggestedPrice.toString() : f.price,
+          badge: a.badge || f.badge,
+        }))
+        // Auto-select matching category
+        const matchingCat = categories.find((c: any) => c.name === a.category)
+        if (matchingCat) {
+          setForm((f: any) => ({ ...f, categoryId: matchingCat.id }))
+        }
+      } else {
+        alert("AI analysis failed: " + (data.error || "Unknown error"))
+      }
+    } catch (e: any) {
+      alert("AI analysis failed: " + (e.message || "Network error"))
+    } finally {
+      setAiAnalyzing(false)
+    }
+  }
 
   const handleUpload = async (files: FileList) => {
     if (!files.length) return
@@ -496,6 +539,24 @@ function ProductForm({ product, categories, onClose, onSaved }: {
             </label>
           </div>
           <p className="text-xs text-[#6B5544]">📐 <strong>Recommended: 800 × 1200 px (2:3 portrait)</strong> for mobile screens. If empty, desktop image will be used as fallback. JPG/PNG, max 5MB.</p>
+        </div>
+
+        {/* AI Auto-Fill Button */}
+        <div className="border-t border-[#E8D9B8] pt-4">
+          <button
+            onClick={handleAiAnalyze}
+            disabled={aiAnalyzing || !form.images.length}
+            className="w-full py-3 bg-gradient-to-r from-[#8B1E3E] to-[#6B0E2A] text-white text-sm tracking-elegant uppercase font-semibold rounded-md hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            {aiAnalyzing ? (
+              <><Loader2 size={16} className="animate-spin" /> AI is analyzing image...</>
+            ) : (
+              <><Sparkles size={16} /> ✨ AI Auto-Fill from Image</>
+            )}
+          </button>
+          <p className="text-xs text-[#6B5544] mt-2 text-center">
+            Upload an image first, then click this button. AI will analyze the image and auto-fill product name, category, description, materials, features, price, and badge. You can edit any field afterward.
+          </p>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
