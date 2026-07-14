@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { cn, formatINR } from "@/lib/utils"
 import { productImage } from "@/lib/images"
 import { buildWhatsAppUrl, buildSingleProductMessage } from "@/lib/whatsapp"
+import { showAddedToCart, showAddedToWishlist, showRemovedFromWishlist } from "@/lib/toast-helpers"
 import { useEffect, useState } from "react"
 
 export type Product = {
@@ -63,6 +64,7 @@ export function ProductCard({ product, index = 0 }: Props) {
       sku: product.sku,
     })
     setAdded(true)
+    showAddedToCart(product.name)
     setTimeout(() => setAdded(false), 1500)
   }
 
@@ -82,6 +84,7 @@ export function ProductCard({ product, index = 0 }: Props) {
 
   const handleWishlist = (e: React.MouseEvent) => {
     e.stopPropagation()
+    const wasWishlisted = wishlisted
     toggleWishlist({
       productId: product.id,
       slug: product.slug,
@@ -90,6 +93,11 @@ export function ProductCard({ product, index = 0 }: Props) {
       price: product.price,
       sku: product.sku,
     })
+    if (wasWishlisted) {
+      showRemovedFromWishlist(product.name)
+    } else {
+      showAddedToWishlist(product.name)
+    }
   }
 
   return (
@@ -158,19 +166,7 @@ export function ProductCard({ product, index = 0 }: Props) {
           </button>
         </div>
 
-        {/* Desktop: hover overlay with larger Add button only */}
-        <div className="hidden md:flex absolute inset-x-0 bottom-0 p-2.5 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-          <button
-            onClick={handleAddToCart}
-            className={cn(
-              "w-full h-9 backdrop-blur-md text-[10px] tracking-elegant uppercase font-semibold rounded-md transition-all flex items-center justify-center gap-1 shadow-lg",
-              added ? "bg-[#5C8C3E] text-white" : "bg-foreground/90 text-background hover:bg-primary"
-            )}
-            aria-label="Add to cart"
-          >
-            {added ? <><Check size={13} /> Added!</> : <><ShoppingBag size={13} /> Add to Cart</>}
-          </button>
-        </div>
+        {/* Desktop: NO hover overlay — removed as requested */}
       </div>
 
       {/* Info — compact text section (~25% of card, Myntra style) */}

@@ -122,8 +122,8 @@ export function HeroCarousel() {
                 </p>
               </div>
 
-              {/* Hero title — Great Vibes font, golden color on mobile, burgundy on desktop */}
-              <h1 className="font-hero text-5xl sm:text-7xl lg:text-8xl leading-[1.1] mb-4 drop-shadow-lg text-[var(--accent)] sm:text-[var(--primary)]" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>
+              {/* Hero title — Great Vibes font, burgundy on all devices */}
+              <h1 className="font-hero text-5xl sm:text-7xl lg:text-8xl leading-[1.1] mb-4 drop-shadow-lg text-[var(--primary)]" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>
                 {slide.title}
               </h1>
 

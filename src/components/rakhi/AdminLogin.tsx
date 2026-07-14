@@ -60,10 +60,10 @@ export function AdminLogin({ onClose }: { onClose: () => void }) {
             <Sparkles size={24} className="text-[var(--accent)]" />
           </div>
           <h2 className="font-serif text-2xl font-bold text-[var(--foreground)]">
-            Admin <span className="text-gradient-burgundy italic">Login</span>
+            Welcome Back
           </h2>
           <p className="text-sm text-[var(--muted-foreground)] mt-1">
-            House of Neelam — Management Portal
+            Sign in to your account
           </p>
         </div>
 
@@ -79,7 +79,7 @@ export function AdminLogin({ onClose }: { onClose: () => void }) {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@houseofneelam.com"
+                placeholder="your@email.com"
                 className="w-full pl-10 pr-3 py-2.5 border border-[var(--border)] rounded-md text-sm bg-white outline-none focus:border-[var(--accent)]"
               />
             </div>
@@ -111,14 +111,14 @@ export function AdminLogin({ onClose }: { onClose: () => void }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-[var(--primary)] text-[var(--background)] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors disabled:opacity-50"
+            className="w-full py-3 bg-[var(--primary)] text-white text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors disabled:opacity-50"
           >
-            {loading ? "Signing in..." : "Sign In to Admin"}
+            {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
 
         <div className="mt-6 p-3 bg-[var(--cream)] rounded-md text-xs text-[var(--muted-foreground)] text-center">
-          <p className="font-semibold text-[var(--foreground)] mb-1">Demo Admin Credentials:</p>
+          <p className="font-semibold text-[var(--foreground)] mb-1">Admin Access:</p>
           <p>Email: <span className="font-mono text-[var(--primary)]">admin@houseofneelam.com</span></p>
           <p>Password: <span className="font-mono text-[var(--primary)]">Neelam@Admin2026</span></p>
         </div>

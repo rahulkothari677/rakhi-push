@@ -107,10 +107,10 @@ export function Header() {
               className="flex flex-col items-center group"
             >
               <span className="font-hero text-3xl sm:text-4xl leading-none tracking-tight">
-                <span className="text-[var(--accent)]">House of </span>
+                <span className="text-[var(--primary)]">House of </span>
                 <span className="text-[var(--primary)]">Neelam</span>
               </span>
-              <span className="text-[9px] sm:text-[10px] tracking-[0.3em] text-[var(--accent)] uppercase mt-1 font-semibold">
+              <span className="text-[9px] sm:text-[10px] tracking-[0.3em] text-[var(--primary)] uppercase mt-1 font-semibold">
                 ✦ Rakhi Collection ✦
               </span>
             </button>

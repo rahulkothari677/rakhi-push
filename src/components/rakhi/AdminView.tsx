@@ -17,20 +17,12 @@ import { AdminLogin } from "./AdminLogin"
 type Tab = "dashboard" | "products" | "categories" | "hero" | "content" | "settings" | "orders" | "themes"
 
 export function AdminView() {
-  const { isAdminOpen, setAdminOpen } = useStore()
+  const { isAdminPanelOpen, setAdminPanelOpen } = useStore()
   const { data: session } = useSession()
-  const [showLogin, setShowLogin] = useState(false)
   const [tab, setTab] = useState<Tab>("dashboard")
 
-  useEffect(() => {
-    if (isAdminOpen && !session) {
-      setShowLogin(true)
-    } else if (isAdminOpen && session) {
-      setShowLogin(false)
-    }
-  }, [isAdminOpen, session])
-
-  if (!isAdminOpen) return null
+  // AdminView only renders when isAdminPanelOpen AND user is admin
+  if (!isAdminPanelOpen || !session || session.user?.role !== "ADMIN") return null
 
   return (
     <div className="fixed inset-0 z-[90] bg-[#FBF6EC] flex flex-col">
@@ -61,7 +53,7 @@ export function AdminView() {
             </>
           )}
           <button
-            onClick={() => setAdminOpen(false)}
+            onClick={() => setAdminPanelOpen(false)}
             className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center"
             aria-label="Close admin"
           >

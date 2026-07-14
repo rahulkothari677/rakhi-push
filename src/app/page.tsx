@@ -12,6 +12,7 @@ import { WishlistView } from "@/components/rakhi/WishlistView"
 import { InfoPage } from "@/components/rakhi/InfoPage"
 import { CartDrawer } from "@/components/rakhi/CartDrawer"
 import { AdminView } from "@/components/rakhi/AdminView"
+import { AccountModal } from "@/components/rakhi/AccountModal"
 import { FloatingActions } from "@/components/rakhi/FloatingActions"
 import { BackButton, BrowserHistorySync } from "@/components/rakhi/BackButton"
 import { ThemeLoader } from "@/components/rakhi/ThemeLoader"
@@ -25,15 +26,15 @@ const pageTransitions = {
 }
 
 export default function Home() {
-  const { view, infoPageId, isAdminOpen } = useStore()
+  const { view, infoPageId, isAdminOpen, isAdminPanelOpen } = useStore()
 
   // Scroll to top on view change (handled in store too, but as backup)
   useEffect(() => {
-    if (!isAdminOpen) window.scrollTo({ top: 0, behavior: "smooth" })
-  }, [view, isAdminOpen])
+    if (!isAdminPanelOpen) window.scrollTo({ top: 0, behavior: "smooth" })
+  }, [view, isAdminPanelOpen])
 
-  // Don't render storefront when admin is open
-  if (isAdminOpen) {
+  // Don't render storefront when admin panel is open
+  if (isAdminPanelOpen) {
     return (
       <div className="min-h-screen bg-[#FBF6EC]">
         <AdminView />
@@ -65,6 +66,7 @@ export default function Home() {
 
       {/* Overlays */}
       <CartDrawer />
+      <AccountModal />
       <AdminView />
       <FloatingActions />
     </div>

@@ -28,10 +28,10 @@ export function FloatingActions() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.5 }}
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="w-12 h-12 rounded-full bg-[var(--foreground)] text-[var(--accent)] shadow-luxe-hover flex items-center justify-center hover:bg-[var(--primary)] hover:text-[var(--background)] transition-colors"
+            className="w-11 h-11 rounded-full bg-white/90 backdrop-blur-md text-[var(--primary)] shadow-lg border border-[var(--accent)]/30 flex items-center justify-center hover:bg-[var(--accent)] hover:text-white transition-all"
             aria-label="Back to top"
           >
-            <ChevronUp size={20} />
+            <ChevronUp size={18} />
           </motion.button>
         )}
       </AnimatePresence>

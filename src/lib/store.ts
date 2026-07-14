@@ -66,6 +66,7 @@ type StoreState = NavState & {
 
   // Admin
   isAdminOpen: boolean
+  isAdminPanelOpen: boolean
 
   // UI
   isMenuOpen: boolean
@@ -90,6 +91,7 @@ type StoreState = NavState & {
   isWishlisted: (productId: string) => boolean
 
   setAdminOpen: (open: boolean) => void
+  setAdminPanelOpen: (open: boolean) => void
   setMenuOpen: (open: boolean) => void
 }
 
@@ -149,6 +151,7 @@ export const useStore = create<StoreState>()(
       wishlist: [],
 
       isAdminOpen: false,
+      isAdminPanelOpen: false,
       isMenuOpen: false,
 
       setView: (v) => navigate(set, get, { view: v }),
@@ -234,6 +237,7 @@ export const useStore = create<StoreState>()(
       isWishlisted: (productId) => !!get().wishlist.find((w) => w.productId === productId),
 
       setAdminOpen: (open) => set({ isAdminOpen: open }),
+      setAdminPanelOpen: (open) => set({ isAdminPanelOpen: open }),
       setMenuOpen: (open) => set({ isMenuOpen: open }),
     }),
     {
