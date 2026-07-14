@@ -361,6 +361,7 @@ function ProductForm({ product, categories, onClose, onSaved }: {
   const [uploadingMobile, setUploadingMobile] = useState(false)
   const [saving, setSaving] = useState(false)
   const [aiAnalyzing, setAiAnalyzing] = useState(false)
+  const [aiProvider, setAiProvider] = useState<string>("")
 
   // AI auto-fill — analyzes the first uploaded image and fills all fields
   const handleAiAnalyze = async () => {
@@ -378,6 +379,7 @@ function ProductForm({ product, categories, onClose, onSaved }: {
       const data = await res.json()
       if (data.analysis) {
         const a = data.analysis
+        setAiProvider(data.provider || "AI")
         setForm((f: any) => ({
           ...f,
           name: a.name || f.name,
@@ -554,8 +556,49 @@ function ProductForm({ product, categories, onClose, onSaved }: {
               <><Sparkles size={16} /> ✨ AI Auto-Fill from Image</>
             )}
           </button>
+          {aiProvider && !aiAnalyzing && (
+            <p className="text-xs text-[#5C8C3E] mt-2 text-center font-semibold">
+              ✓ Auto-filled by {aiProvider}
+            </p>
+          )}
+          <details className="mt-2">
+            <summary className="text-xs text-[#6B5544] cursor-pointer hover:text-[#8B1E3E]">
+              ⚙️ How to configure AI (click to expand)
+            </summary>
+            <div className="mt-3 p-4 bg-[#FBF6EC] rounded-md text-xs text-[#6B5544] space-y-3">
+              <p className="font-semibold text-[#2A0A0F]">The AI works automatically. To use a specific provider, add its API key as an environment variable in Vercel:</p>
+
+              <div className="space-y-2">
+                <p className="font-semibold text-[#8B1E3E]">Option 1: Google Gemini (Recommended — Free)</p>
+                <p>1. Go to <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-[#8B1E3E] underline">https://aistudio.google.com/app/apikey</a></p>
+                <p>2. Sign in with Google account</p>
+                <p>3. Click "Create API Key"</p>
+                <p>4. Copy the key</p>
+                <p>5. In Vercel: Settings → Environment Variables → Add:</p>
+                <p className="font-mono bg-white p-1 rounded">GEMINI_API_KEY = your_key_here</p>
+              </div>
+
+              <div className="space-y-2">
+                <p className="font-semibold text-[#8B1E3E]">Option 2: xAI Grok</p>
+                <p>1. Go to <a href="https://console.x.ai" target="_blank" rel="noreferrer" className="text-[#8B1E3E] underline">https://console.x.ai</a></p>
+                <p>2. Sign in and create an API key</p>
+                <p>3. In Vercel: Settings → Environment Variables → Add:</p>
+                <p className="font-mono bg-white p-1 rounded">XAI_API_KEY = your_key_here</p>
+              </div>
+
+              <div className="space-y-2">
+                <p className="font-semibold text-[#8B1E3E]">Option 3: Default (No setup needed)</p>
+                <p>If no API keys are set, the built-in AI is used automatically. Works on Vercel servers.</p>
+              </div>
+
+              <p className="font-semibold text-[#2A0A0F] pt-2 border-t border-[#E8D9B8]">
+                Priority: Gemini → Grok → Default AI
+              </p>
+              <p>After adding any key, redeploy in Vercel for it to take effect.</p>
+            </div>
+          </details>
           <p className="text-xs text-[#6B5544] mt-2 text-center">
-            Upload an image first, then click this button. AI will analyze the image and auto-fill product name, category, description, materials, features, price, and badge. You can edit any field afterward.
+            Upload an image first, then click. AI fills name, category, description, materials, features, price & badge. Edit any field afterward.
           </p>
         </div>
 
