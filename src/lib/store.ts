@@ -205,7 +205,7 @@ export const useStore = create<StoreState>()(
         } else {
           set({ cart: [...get().cart, item] })
         }
-        set({ isCartOpen: true })
+        // Don't auto-open cart drawer — just add silently
       },
       removeFromCart: (productId) =>
         set({ cart: get().cart.filter((c) => c.productId !== productId) }),

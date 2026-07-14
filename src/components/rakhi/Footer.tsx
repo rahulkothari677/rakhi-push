@@ -89,6 +89,7 @@ export function Footer() {
               <li><button onClick={() => setView("shop")} className="hover:text-[var(--accent)] transition-colors">Collection</button></li>
               <li><button onClick={() => setView("wishlist")} className="hover:text-[var(--accent)] transition-colors">Wishlist</button></li>
               <li><button onClick={() => openInfo("about")} className="hover:text-[var(--accent)] transition-colors">About</button></li>
+              <li><button onClick={() => openInfo("story")} className="hover:text-[var(--accent)] transition-colors">Our Story</button></li>
               <li><button onClick={() => openInfo("contact")} className="hover:text-[var(--accent)] transition-colors">Contact</button></li>
             </ul>
           </div>

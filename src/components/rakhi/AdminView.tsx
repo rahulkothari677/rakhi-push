@@ -37,13 +37,12 @@ export function AdminView() {
       {/* Top bar */}
       <header className="bg-gradient-to-r from-[#2A0A0F] to-[#8B1E3E] text-[#FBF6EC] py-3 px-4 sm:px-6 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
-          <Sparkles size={20} className="text-[#C9A24B]" />
           <div>
             <h1 className="font-serif text-base sm:text-lg font-bold leading-none">
-              House of Neelam — Admin
+              {session?.user?.role === "ADMIN" ? "Management Portal" : "My Account"}
             </h1>
             <p className="text-[10px] text-[#C9A24B] tracking-elegant uppercase mt-0.5">
-              Management Portal
+              {session?.user?.role === "ADMIN" ? "House of Neelam" : "House of Neelam"}
             </p>
           </div>
         </div>

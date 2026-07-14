@@ -127,7 +127,7 @@ export function ProductCard({ product, index = 0 }: Props) {
           )}
         </div>
 
-        {/* Action icons — top right (wishlist + add to cart + buy) */}
+        {/* Action icons — top right (wishlist + add to cart ONLY, no buy) */}
         <div className="absolute top-2.5 right-2.5 flex flex-col gap-1.5">
           {/* Wishlist heart */}
           <button
@@ -156,35 +156,19 @@ export function ProductCard({ product, index = 0 }: Props) {
           >
             {added ? <Check size={14} /> : <ShoppingBag size={14} />}
           </button>
-
-          {/* Buy on WhatsApp icon */}
-          <button
-            onClick={handleBuyNow}
-            className="w-8 h-8 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:bg-[#1FAE54] hover:scale-110 transition-all duration-300 shadow-sm"
-            aria-label="Buy on WhatsApp"
-          >
-            <MessageCircle size={14} className="fill-current" />
-          </button>
         </div>
 
-        {/* Desktop: hover overlay with larger buttons */}
-        <div className="hidden md:flex absolute inset-x-0 bottom-0 p-2.5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 gap-2">
+        {/* Desktop: hover overlay with larger Add button only */}
+        <div className="hidden md:flex absolute inset-x-0 bottom-0 p-2.5 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
           <button
             onClick={handleAddToCart}
             className={cn(
-              "flex-1 h-9 backdrop-blur-md text-[10px] tracking-elegant uppercase font-semibold rounded-md transition-all flex items-center justify-center gap-1 shadow-lg",
+              "w-full h-9 backdrop-blur-md text-[10px] tracking-elegant uppercase font-semibold rounded-md transition-all flex items-center justify-center gap-1 shadow-lg",
               added ? "bg-[#5C8C3E] text-white" : "bg-foreground/90 text-background hover:bg-primary"
             )}
             aria-label="Add to cart"
           >
-            {added ? <Check size={13} /> : <ShoppingBag size={13} />} {added ? "Added!" : "Add"}
-          </button>
-          <button
-            onClick={handleBuyNow}
-            className="flex-1 h-9 bg-[#25D366]/95 backdrop-blur-md text-white text-[10px] tracking-elegant uppercase font-semibold rounded-md hover:bg-[#1FAE54] transition-all flex items-center justify-center gap-1 shadow-lg"
-            aria-label="Buy on WhatsApp"
-          >
-            <MessageCircle size={13} /> Buy
+            {added ? <><Check size={13} /> Added!</> : <><ShoppingBag size={13} /> Add to Cart</>}
           </button>
         </div>
       </div>
@@ -204,29 +188,40 @@ export function ProductCard({ product, index = 0 }: Props) {
             {product.name}
           </h3>
         </button>
-        {/* Price — compact */}
-        <div className="flex items-baseline gap-1.5 mt-auto">
-          <span className="text-sm font-bold text-primary">
-            {formatINR(product.price)}
-          </span>
-          {product.compareAtPrice && product.compareAtPrice > product.price && (
-            <span className="text-[11px] text-muted-foreground line-through">
-              {formatINR(product.compareAtPrice)}
+        {/* Price + Buy button — compact row */}
+        <div className="flex items-center justify-between mt-auto gap-2">
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-sm font-bold text-primary">
+              {formatINR(product.price)}
             </span>
-          )}
-          {discount > 0 && (
-            <span className="text-[10px] text-accent font-semibold">
-              {discount}% off
-            </span>
-          )}
+            {product.compareAtPrice && product.compareAtPrice > product.price && (
+              <span className="text-[11px] text-muted-foreground line-through">
+                {formatINR(product.compareAtPrice)}
+              </span>
+            )}
+            {discount > 0 && (
+              <span className="text-[10px] text-accent font-semibold">
+                {discount}% off
+              </span>
+            )}
+          </div>
+          {/* Buy on WhatsApp — small icon button near price */}
+          <button
+            onClick={handleBuyNow}
+            className="w-7 h-7 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:bg-[#1FAE54] hover:scale-110 transition-all duration-300 shadow-sm flex-shrink-0"
+            aria-label="Buy on WhatsApp"
+            title="Buy on WhatsApp"
+          >
+            <MessageCircle size={13} className="fill-current" />
+          </button>
         </div>
 
-        {/* Mobile: small text hints for icons */}
-        <div className="md:hidden mt-1.5 flex items-center justify-between text-[9px] text-muted-foreground">
-          <span className="flex items-center gap-0.5"><Heart size={9} /> Wishlist</span>
-          <span className="flex items-center gap-0.5"><ShoppingBag size={9} /> Cart</span>
-          <span className="flex items-center gap-0.5 text-[#25D366] font-semibold"><MessageCircle size={9} className="fill-current" /> Buy</span>
-        </div>
+        {/* Added confirmation text (mobile) */}
+        {added && (
+          <p className="md:hidden mt-1 text-[9px] text-[#5C8C3E] font-semibold flex items-center gap-1">
+            <Check size={10} /> Added to cart!
+          </p>
+        )}
       </div>
     </motion.div>
   )

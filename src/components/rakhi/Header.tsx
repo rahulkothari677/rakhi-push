@@ -106,22 +106,13 @@ export function Header() {
               onClick={() => useStore.getState().goHome()}
               className="flex flex-col items-center group"
             >
-              <div className="flex items-center gap-2.5">
-                {/* Decorative monogram circle */}
-                <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dark)] flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
-                  <span className="font-hero text-2xl sm:text-3xl text-white leading-none">N</span>
-                  <div className="absolute inset-0 rounded-full border-2 border-white/30" />
-                </div>
-                {/* Brand text */}
-                <div className="flex flex-col leading-none">
-                  <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[var(--foreground)]">
-                    House of <span className="text-[var(--primary)] italic">Neelam</span>
-                  </span>
-                  <span className="text-[9px] sm:text-[10px] tracking-[0.25em] text-[var(--accent)] uppercase mt-1 font-semibold">
-                    Rakhi Collection
-                  </span>
-                </div>
-              </div>
+              <span className="font-hero text-3xl sm:text-4xl leading-none tracking-tight">
+                <span className="text-[var(--accent)]">House of </span>
+                <span className="text-[var(--primary)]">Neelam</span>
+              </span>
+              <span className="text-[9px] sm:text-[10px] tracking-[0.3em] text-[var(--accent)] uppercase mt-1 font-semibold">
+                ✦ Rakhi Collection ✦
+              </span>
             </button>
 
             {/* Desktop nav */}
@@ -200,7 +191,7 @@ export function Header() {
               </div>
 
               <button
-                onClick={() => { useStore.setState({ infoPageId: "about" }); setView("info") }}
+                onClick={() => { useStore.setState({ infoPageId: "story" }); setView("info") }}
                 className="px-4 py-2 text-sm tracking-elegant uppercase font-medium text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--accent)]/10 rounded-md transition-all"
               >
                 Our Story
@@ -251,19 +242,21 @@ export function Header() {
                 )}
               </button>
 
-              {/* Admin button */}
+              {/* Account button — shows user icon for everyone, admin panel only for admin login */}
               {session ? (
                 <button
                   onClick={() => setAdminOpen(true)}
-                  className="hidden sm:flex items-center gap-1.5 px-4 py-2 ml-1 bg-gradient-to-r from-[var(--primary)] to-[var(--primary-dark)] text-[var(--background)] text-xs tracking-elegant uppercase font-semibold rounded-md hover:shadow-lg transition-all"
+                  className="p-2.5 text-[var(--foreground)] hover:text-[var(--primary)] rounded-md transition-all"
+                  aria-label="Account"
+                  title={session.user?.email}
                 >
-                  <Sparkles size={14} /> Admin
+                  <User size={20} />
                 </button>
               ) : (
                 <button
                   onClick={() => setAdminOpen(true)}
-                  className="p-2.5 text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--cream)] rounded-md transition-all"
-                  aria-label="Admin login"
+                  className="p-2.5 text-[var(--foreground)] hover:text-[var(--primary)] rounded-md transition-all"
+                  aria-label="Account"
                 >
                   <User size={20} />
                 </button>
@@ -363,7 +356,7 @@ export function Header() {
                 </div>
                 <div className="divider-gold my-3" />
                 <button
-                  onClick={() => { useStore.setState({ infoPageId: "about" }); setView("info") }}
+                  onClick={() => { useStore.setState({ infoPageId: "story" }); setView("info") }}
                   className="block w-full text-left px-3 py-2.5 text-sm font-medium text-[var(--foreground)] hover:bg-[var(--background)] rounded-md"
                 >
                   Our Story
