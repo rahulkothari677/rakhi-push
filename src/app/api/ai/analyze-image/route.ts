@@ -146,9 +146,7 @@ Return ONLY valid JSON (no markdown, no code blocks). Format:
 }
 
 // ─── Google Gemini (using official SDK) ──────────────────────────────────────
-// Works with BOTH old format (AIza...) and new format (AQ.Ab8...) keys
 async function analyzeWithGemini(imageUrl: string, prompt: string, apiKey: string): Promise<any> {
-  // Use the official Google AI SDK which handles all key formats properly
   const { GoogleGenerativeAI } = await import("@google/generative-ai")
   const genAI = new GoogleGenerativeAI(apiKey)
 
@@ -161,52 +159,62 @@ async function analyzeWithGemini(imageUrl: string, prompt: string, apiKey: strin
   const base64 = Buffer.from(imageBuffer).toString("base64")
   const mimeType = imageRes.headers.get("content-type") || "image/jpeg"
 
-  // Try multiple models
-  const models = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
+  // First, list available models to find what works with this key
+  let availableModels: string[] = []
+  try {
+    const modelList = await genAI.listModels()
+    for await (const m of modelList) {
+      if (m.supportedGenerationMethods?.includes("generateContent")) {
+        availableModels.push(m.name.replace("models/", ""))
+      }
+    }
+    console.log("[AI] Available Gemini models:", availableModels.slice(0, 10))
+  } catch (e: any) {
+    console.error("[AI] Could not list models:", e.message)
+  }
+
+  // If we found models, use the first flash model. Otherwise try common names.
+  const modelsToTry = availableModels.length > 0
+    ? availableModels.filter(m => m.includes("flash")).concat(availableModels)
+    : ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-flash", "gemini-pro", "gemini-1.5-pro"]
+
   let lastErr = ""
 
-  for (const modelName of models) {
+  for (const modelName of modelsToTry.slice(0, 5)) {
     try {
       const model = genAI.getGenerativeModel({ model: modelName })
       const result = await model.generateContent([
         prompt,
-        {
-          inlineData: {
-            data: base64,
-            mimeType: mimeType,
-          },
-        },
+        { inlineData: { data: base64, mimeType } },
       ])
 
       const content = result.response.text()
-
       if (!content) {
-        lastErr = `${modelName} → empty response`
+        lastErr = `${modelName} → empty`
         continue
       }
 
-      // Parse JSON from response
       const cleaned = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
       try {
         return JSON.parse(cleaned)
       } catch {
         const jsonMatch = cleaned.match(/\{[\s\S]*\}/)
         if (jsonMatch) return JSON.parse(jsonMatch[0])
-        lastErr = `${modelName} → invalid JSON: ${cleaned.slice(0, 100)}`
+        lastErr = `${modelName} → bad JSON`
       }
     } catch (e: any) {
-      lastErr = `${modelName} → ${e.message}`
-      console.error(`[AI] Gemini ${modelName} failed:`, e.message)
+      lastErr = `${modelName} → ${e.message?.slice(0, 80)}`
+      console.error(`[AI] Gemini ${modelName}:`, e.message?.slice(0, 100))
     }
   }
 
-  throw new Error(lastErr || "All Gemini models failed")
+  throw new Error(lastErr || "Gemini failed")
 }
 
 // ─── xAI Grok ────────────────────────────────────────────────────────────────
 async function analyzeWithGrok(imageUrl: string, prompt: string, apiKey: string): Promise<any> {
-  // Grok vision model — try both available model names
-  const models = ["grok-2-vision-1212", "grok-vision-beta"]
+  // Grok vision model — try available model names
+  const models = ["grok-2-vision-1212", "grok-2-vision", "grok-vision-beta", "grok-2-1212"]
   let lastErr = ""
 
   for (const model of models) {
