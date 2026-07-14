@@ -53,6 +53,11 @@ async function initializeDB(): Promise<void> {
 
   // Always ensure story content has the new rich format (3 images, titleColor, etc.)
   const storyContent = await db.siteContent.findUnique({ where: { section: "story" } })
+
+  // Add mobileImage columns if they don't exist (for dual desktop/mobile image support)
+  await addMobileImageColumns()
+
+  // Always ensure story content has the new rich format (3 images, titleColor, etc.)
   if (!storyContent || !storyContent.data.includes("image2")) {
     console.log("[ensureDB] Updating story content with rich format...")
     const storyData = {
@@ -70,6 +75,30 @@ async function initializeDB(): Promise<void> {
       update: { data: JSON.stringify(storyData) },
     })
     console.log("[ensureDB] Story content updated")
+  }
+}
+
+// Add mobileImage columns to Product, Category, and HeroSlide tables
+// This enables separate desktop and mobile images for each item
+async function addMobileImageColumns(): Promise<void> {
+  const client = getLibsqlClient()
+  const alterStatements = [
+    'ALTER TABLE "Product" ADD COLUMN "primaryImageMobile" TEXT',
+    'ALTER TABLE "Product" ADD COLUMN "imagesMobile" TEXT',
+    'ALTER TABLE "Category" ADD COLUMN "imageMobile" TEXT',
+    'ALTER TABLE "HeroSlide" ADD COLUMN "imageMobile" TEXT',
+  ]
+
+  for (const sql of alterStatements) {
+    try {
+      await client.execute(sql)
+      console.log("[ensureDB] Added column:", sql.match(/"(\w+)"/g)?.pop())
+    } catch (err: any) {
+      // Column already exists — ignore error
+      if (!err.message?.includes("duplicate column") && !err.message?.includes("already exists")) {
+        // Silently ignore — column might already exist
+      }
+    }
   }
 }
 

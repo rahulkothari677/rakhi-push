@@ -17,7 +17,9 @@ export type Product = {
   price: number
   compareAtPrice?: number | null
   primaryImage: string
+  primaryImageMobile?: string | null
   images: string
+  imagesMobile?: string | null
   shortDescription: string
   badge?: string | null
   isFeatured: boolean
@@ -113,10 +115,18 @@ export function ProductCard({ product, index = 0 }: Props) {
         onClick={() => openProduct(product.slug)}
         className="block w-full aspect-[4/5] overflow-hidden bg-muted relative cursor-pointer"
       >
+        {/* Desktop image — hidden on mobile */}
         <img
           src={productImage(product.primaryImage)}
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+          className="hidden sm:block w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+          loading="lazy"
+        />
+        {/* Mobile image — hidden on desktop, falls back to desktop image if no mobile image */}
+        <img
+          src={productImage(product.primaryImageMobile || product.primaryImage)}
+          alt={product.name}
+          className="sm:hidden w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
           loading="lazy"
         />
         {/* No dark overlay — images stay vibrant */}

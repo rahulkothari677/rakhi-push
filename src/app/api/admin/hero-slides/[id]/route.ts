@@ -9,7 +9,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   try {
     const body = await req.json()
     const update: any = {}
-    for (const k of ["title", "subtitle", "description", "image", "ctaLabel", "ctaLink", "order", "isActive"]) {
+    for (const k of ["title", "subtitle", "description", "image", "imageMobile", "ctaLabel", "ctaLink", "order", "isActive"]) {
       if (body[k] !== undefined) update[k] = body[k]
     }
     if (update.order !== undefined) update.order = Number(update.order)

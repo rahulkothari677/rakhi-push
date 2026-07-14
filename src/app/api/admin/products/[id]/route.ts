@@ -25,15 +25,19 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const update: any = {}
     const allowed = [
       "name", "category", "categoryId", "price", "compareAtPrice",
-      "images", "primaryImage", "shortDescription", "description",
+      "images", "primaryImage", "imagesMobile", "primaryImageMobile",
+      "shortDescription", "description",
       "materials", "features", "badge", "inStock", "isActive", "isFeatured", "sku",
     ]
     for (const k of allowed) {
       if (body[k] !== undefined) {
-        if (k === "images" || k === "materials" || k === "features") {
+        if (k === "images" || k === "materials" || k === "features" || k === "imagesMobile") {
           update[k] = JSON.stringify(body[k] || [])
           if (k === "images" && Array.isArray(body[k])) {
             update.primaryImage = body[k][0] || ""
+          }
+          if (k === "imagesMobile" && Array.isArray(body[k])) {
+            update.primaryImageMobile = body[k][0] || ""
           }
         } else if (["price", "compareAtPrice", "inStock"].includes(k)) {
           update[k] = body[k] === null ? null : Number(body[k])

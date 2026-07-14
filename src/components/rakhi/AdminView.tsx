@@ -352,11 +352,13 @@ function ProductForm({ product, categories, onClose, onSaved }: {
     isFeatured: product?.isFeatured || false,
     isActive: product?.isActive ?? true,
     images: parseJSON(product?.images || "[]", []) as string[],
+    imagesMobile: parseJSON(product?.imagesMobile || "[]", []) as string[],
     materials: parseJSON(product?.materials || "[]", []).join(", ") as string,
     features: parseJSON(product?.features || "[]", []).join(", ") as string,
     sku: product?.sku || generateSKU(),
   })
   const [uploading, setUploading] = useState(false)
+  const [uploadingMobile, setUploadingMobile] = useState(false)
   const [saving, setSaving] = useState(false)
 
   const handleUpload = async (files: FileList) => {
@@ -370,7 +372,7 @@ function ProductForm({ product, categories, onClose, onSaved }: {
       if (data.urls) {
         setForm((f) => ({ ...f, images: [...f.images, ...data.urls] }))
       } else if (data.needsCloudinary) {
-        alert("⚠️ Image upload requires Cloudinary on Vercel.\n\nPlease set these env vars in Vercel:\n• CLOUDINARY_CLOUD_NAME\n• CLOUDINARY_API_KEY\n• CLOUDINARY_API_SECRET\n\nSign up free at https://cloudinary.com\n\nSee README.md for step-by-step instructions.")
+        alert("⚠️ Image upload requires Cloudinary on Vercel.\n\nPlease set these env vars in Vercel:\n• CLOUDINARY_CLOUD_NAME\n• CLOUDINARY_API_KEY\n• CLOUDINARY_API_SECRET\n\nSign up free at https://cloudinary.com")
       } else {
         alert("Upload failed: " + (data.error || "Unknown error"))
       }
@@ -378,6 +380,28 @@ function ProductForm({ product, categories, onClose, onSaved }: {
       alert("Upload failed: " + (e.message || "Network error"))
     } finally {
       setUploading(false)
+    }
+  }
+
+  const handleUploadMobile = async (files: FileList) => {
+    if (!files.length) return
+    setUploadingMobile(true)
+    const fd = new FormData()
+    for (const f of Array.from(files)) fd.append("files", f)
+    try {
+      const res = await fetch("/api/admin/upload", { method: "POST", body: fd })
+      const data = await res.json()
+      if (data.urls) {
+        setForm((f) => ({ ...f, imagesMobile: [...f.imagesMobile, ...data.urls] }))
+      } else if (data.needsCloudinary) {
+        alert("⚠️ Image upload requires Cloudinary on Vercel.\n\nPlease set these env vars in Vercel:\n• CLOUDINARY_CLOUD_NAME\n• CLOUDINARY_API_KEY\n• CLOUDINARY_API_SECRET\n\nSign up free at https://cloudinary.com")
+      } else {
+        alert("Upload failed: " + (data.error || "Unknown error"))
+      }
+    } catch (e: any) {
+      alert("Upload failed: " + (e.message || "Network error"))
+    } finally {
+      setUploadingMobile(false)
     }
   }
 
@@ -389,6 +413,7 @@ function ProductForm({ product, categories, onClose, onSaved }: {
       compareAtPrice: form.compareAtPrice ? Number(form.compareAtPrice) : null,
       inStock: Number(form.inStock) || 0,
       images: form.images,
+      imagesMobile: form.imagesMobile,
       materials: form.materials.split(",").map((s) => s.trim()).filter(Boolean),
       features: form.features.split(",").map((s) => s.trim()).filter(Boolean),
     }
@@ -423,12 +448,12 @@ function ProductForm({ product, categories, onClose, onSaved }: {
       </div>
 
       <div className="bg-white rounded-lg border border-[#E8D9B8] p-6 space-y-5">
-        {/* Images */}
+        {/* Desktop Images */}
         <div>
           <label className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-2 block">
-            Product Images
+            🖥️ Desktop Images (shown on desktop/tablet)
           </label>
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-3">
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-2">
             {form.images.map((img, i) => (
               <div key={i} className="relative aspect-square rounded-md overflow-hidden border border-[#E8D9B8] group">
                 <img src={thumbnailImage(img)} alt="" className="w-full h-full object-cover" />
@@ -442,16 +467,35 @@ function ProductForm({ product, categories, onClose, onSaved }: {
             ))}
             <label className="aspect-square rounded-md border-2 border-dashed border-[#C9A24B]/50 flex items-center justify-center cursor-pointer hover:bg-[#FBF6EC] transition-colors">
               {uploading ? <Loader2 className="animate-spin text-[#C9A24B]" size={20} /> : <Upload size={20} className="text-[#C9A24B]" />}
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                className="hidden"
-                onChange={(e) => e.target.files && handleUpload(e.target.files)}
-              />
+              <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => e.target.files && handleUpload(e.target.files)} />
             </label>
           </div>
-          <p className="text-xs text-[#6B5544]">📐 <strong>Recommended size: 1200 × 1200 px (square 1:1)</strong> — Square images display perfectly in product cards, product detail, cart, and wishlist. JPG/PNG, max 5MB.</p>
+          <p className="text-xs text-[#6B5544]">📐 <strong>Recommended: 1200 × 1200 px (square 1:1) or 1200 × 1500 px (4:5 portrait)</strong> for desktop. JPG/PNG, max 5MB.</p>
+        </div>
+
+        {/* Mobile Images */}
+        <div className="border-t border-[#E8D9B8] pt-5">
+          <label className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-2 block">
+            📱 Mobile Images (shown on mobile only)
+          </label>
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-2">
+            {form.imagesMobile.map((img, i) => (
+              <div key={i} className="relative aspect-[2/3] rounded-md overflow-hidden border border-[#E8D9B8] group">
+                <img src={thumbnailImage(img)} alt="" className="w-full h-full object-cover" />
+                <button
+                  onClick={() => setForm({ ...form, imagesMobile: form.imagesMobile.filter((_, idx) => idx !== i) })}
+                  className="absolute top-1 right-1 w-6 h-6 rounded-full bg-[#B3324A] text-white opacity-0 group-hover:opacity-100 flex items-center justify-center"
+                >
+                  <X size={12} />
+                </button>
+              </div>
+            ))}
+            <label className="aspect-[2/3] rounded-md border-2 border-dashed border-[#C9A24B]/50 flex items-center justify-center cursor-pointer hover:bg-[#FBF6EC] transition-colors">
+              {uploadingMobile ? <Loader2 className="animate-spin text-[#C9A24B]" size={20} /> : <Upload size={20} className="text-[#C9A24B]" />}
+              <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => e.target.files && handleUploadMobile(e.target.files)} />
+            </label>
+          </div>
+          <p className="text-xs text-[#6B5544]">📐 <strong>Recommended: 800 × 1200 px (2:3 portrait)</strong> for mobile screens. If empty, desktop image will be used as fallback. JPG/PNG, max 5MB.</p>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">

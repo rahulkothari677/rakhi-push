@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json()
-    const { name, description, image, icon, order, isActive } = body
+    const { name, description, image, imageMobile, icon, order, isActive } = body
     if (!name) return NextResponse.json({ error: "Name required" }, { status: 400 })
 
     const slug = slugify(name) + "-" + Math.random().toString(36).slice(2, 6)
@@ -35,6 +35,7 @@ export async function POST(req: Request) {
         slug,
         description: description || "",
         image: image || null,
+        imageMobile: imageMobile || null,
         icon: icon || null,
         order: Number(order) || 0,
         isActive: Boolean(isActive ?? true),

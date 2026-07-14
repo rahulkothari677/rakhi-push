@@ -167,14 +167,15 @@ export const db = {
       const id = opts.data.id || generateId()
       const now = new Date().toISOString()
       await client.execute({
-        sql: `INSERT INTO Category (id, name, slug, description, image, icon, \`order\`, isActive, createdAt, updatedAt)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        sql: `INSERT INTO Category (id, name, slug, description, image, imageMobile, icon, \`order\`, isActive, createdAt, updatedAt)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         args: [
           id,
           opts.data.name,
           opts.data.slug,
           opts.data.description || null,
           opts.data.image || null,
+          opts.data.imageMobile || null,
           opts.data.icon || null,
           opts.data.order || 0,
           opts.data.isActive !== false ? 1 : 0,
@@ -281,9 +282,10 @@ export const db = {
       const now = new Date().toISOString()
       await client.execute({
         sql: `INSERT INTO Product (id, slug, name, category, categoryId, price, compareAtPrice, images, primaryImage,
+              primaryImageMobile, imagesMobile,
               shortDescription, description, materials, features, sku, badge, inStock, isActive, isFeatured,
               rating, reviewCount, createdAt, updatedAt)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         args: [
           id,
           opts.data.slug,
@@ -294,6 +296,8 @@ export const db = {
           opts.data.compareAtPrice || null,
           opts.data.images,
           opts.data.primaryImage,
+          opts.data.primaryImageMobile || null,
+          opts.data.imagesMobile || null,
           opts.data.shortDescription,
           opts.data.description,
           opts.data.materials,
@@ -320,11 +324,15 @@ export const db = {
         if (k === 'isActive' || k === 'isFeatured') {
           fields.push(`${k} = ?`)
           args.push(v ? 1 : 0)
-        } else if (k === 'images' || k === 'materials' || k === 'features') {
+        } else if (k === 'images' || k === 'materials' || k === 'features' || k === 'imagesMobile') {
           fields.push(`${k} = ?`)
           args.push(typeof v === 'string' ? v : JSON.stringify(v))
           if (k === 'images' && Array.isArray(v)) {
             fields.push('primaryImage = ?')
+            args.push(v[0] || '')
+          }
+          if (k === 'imagesMobile' && Array.isArray(v)) {
+            fields.push('primaryImageMobile = ?')
             args.push(v[0] || '')
           }
         } else if (['price', 'compareAtPrice', 'inStock'].includes(k)) {
@@ -369,14 +377,15 @@ export const db = {
       const id = opts.data.id || generateId()
       const now = new Date().toISOString()
       await client.execute({
-        sql: `INSERT INTO HeroSlide (id, title, subtitle, description, image, ctaLabel, ctaLink, \`order\`, isActive, createdAt, updatedAt)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        sql: `INSERT INTO HeroSlide (id, title, subtitle, description, image, imageMobile, ctaLabel, ctaLink, \`order\`, isActive, createdAt, updatedAt)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         args: [
           id,
           opts.data.title,
           opts.data.subtitle,
           opts.data.description || null,
           opts.data.image,
+          opts.data.imageMobile || null,
           opts.data.ctaLabel || null,
           opts.data.ctaLink || null,
           opts.data.order || 0,

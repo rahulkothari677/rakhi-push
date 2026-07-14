@@ -20,6 +20,7 @@ export async function POST(req: Request) {
         subtitle: body.subtitle || "",
         description: body.description || "",
         image: body.image || "",
+        imageMobile: body.imageMobile || null,
         ctaLabel: body.ctaLabel || null,
         ctaLink: body.ctaLink || null,
         order: Number(body.order) || 0,
