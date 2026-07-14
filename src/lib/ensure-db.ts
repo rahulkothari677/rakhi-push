@@ -50,6 +50,27 @@ async function initializeDB(): Promise<void> {
   } else {
     console.log("[ensureDB] Admin user exists, skipping seed")
   }
+
+  // Always ensure story content has the new rich format (3 images, titleColor, etc.)
+  const storyContent = await db.siteContent.findUnique({ where: { section: "story" } })
+  if (!storyContent || !storyContent.data.includes("image2")) {
+    console.log("[ensureDB] Updating story content with rich format...")
+    const storyData = {
+      title: "The Sacred Bond of Raksha Bandhan",
+      titleColor: "#8B1E3E",
+      titleFont: "font-serif",
+      image: "/images/hero-1.svg",
+      image2: "/images/hero-2.svg",
+      image3: "/images/hero-3.svg",
+      body: "In the heart of every Indian home, there exists a bond that transcends time — the sacred relationship between a brother and sister. Raksha Bandhan celebrates this eternal connection, weaving together threads of love, protection, and devotion.\n\nThe word 'Raksha' means protection, and 'Bandhan' means bond. Together, they form a promise — a sacred vow that has echoed through millennia, from the palaces of ancient kings to the homes of today.\n\n---\n\nLegend speaks of Queen Karnawati of Chittor, who sent a Rakhi to Emperor Humayun in her hour of need. Touched by this sacred thread, the mighty emperor rode to her aid, honoring the bond that knew no boundaries of religion or kingdom.\n\nThrough the ages, this tradition has only grown stronger. Today, when a sister ties the Rakhi on her brother's wrist, she doesn't just tie a thread — she ties a piece of her heart. And when the brother promises to protect her, he doesn't just speak words — he makes a vow that echoes through lifetimes.\n\n---\n\nAt House of Neelam, we understand the weight of this sacred moment. Every Rakhi we craft is not merely an accessory — it is a vessel of love, a symbol of devotion, a thread that binds hearts across distances.\n\nFrom the sacred moli threads blessed by generations of artisans to the diamond-studded luxury pieces that catch the light of a thousand celebrations, each Rakhi tells a story. Your story.\n\nThis Raksha Bandhan, let us help you write the next chapter. Because some bonds are forever — and they deserve to be celebrated with beauty worthy of their depth."
+    }
+    await db.siteContent.upsert({
+      where: { section: "story" },
+      create: { section: "story", data: JSON.stringify(storyData) },
+      update: { data: JSON.stringify(storyData) },
+    })
+    console.log("[ensureDB] Story content updated")
+  }
 }
 
 // Raw SQL to create all tables — works for both SQLite and Turso (libsql)
