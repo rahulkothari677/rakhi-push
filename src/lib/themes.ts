@@ -192,16 +192,33 @@ export function applyTheme(theme: Partial<Theme> | null) {
 
   const { colors, fonts } = theme
   if (colors) {
+    // Set ALL CSS variables that components actually use
+    // Legacy variable names (for backward compatibility)
     root.style.setProperty("--burgundy", colors.primary)
     root.style.setProperty("--burgundy-dark", colors.primaryDark || colors.primary)
     root.style.setProperty("--gold", colors.accent)
     root.style.setProperty("--gold-dark", colors.accentDark || colors.accent)
     root.style.setProperty("--ivory", colors.background)
+    root.style.setProperty("--cream", colors.muted)
+
+    // Primary CSS variables (used by all components via var(--primary), etc.)
+    root.style.setProperty("--primary", colors.primary)
+    root.style.setProperty("--primary-dark", colors.primaryDark || colors.primary)
+    root.style.setProperty("--primary-foreground", colors.background)
+    root.style.setProperty("--accent", colors.accent)
+    root.style.setProperty("--accent-dark", colors.accentDark || colors.accent)
+    root.style.setProperty("--accent-foreground", colors.foreground)
     root.style.setProperty("--background", colors.background)
     root.style.setProperty("--foreground", colors.foreground)
-    root.style.setProperty("--cream", colors.muted)
+    root.style.setProperty("--muted", colors.muted)
+    root.style.setProperty("--muted-foreground", colors.muted)
     root.style.setProperty("--card", colors.card)
+    root.style.setProperty("--card-foreground", colors.foreground)
     root.style.setProperty("--border", colors.border)
+    root.style.setProperty("--input", colors.border)
+    root.style.setProperty("--ring", colors.accent)
+    root.style.setProperty("--secondary", colors.muted)
+    root.style.setProperty("--secondary-foreground", colors.foreground)
   }
 
   if (fonts) {

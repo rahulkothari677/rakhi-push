@@ -77,21 +77,52 @@ export function InfoPage({ pageId }: { pageId: InfoPageId }) {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="prose prose-lg max-w-none"
+            className="max-w-none"
           >
+            {/* Hero image */}
             {content?.image && (
               <div className="aspect-[2/1] rounded-xl overflow-hidden mb-8 shadow-luxe">
                 <img src={infoImage(content.image)} alt={pageTitle} className="w-full h-full object-cover" />
               </div>
             )}
 
-            <div className="text-[var(--foreground)] leading-relaxed space-y-4 text-base">
-              {(content?.body || defaultContent[pageId]?.body || "").split("\n").map((line: string, i: number) => (
-                <p key={i} className={line.startsWith("•") ? "ml-4" : ""}>
-                  {line}
-                </p>
-              ))}
+            {/* Title with custom font and color (for story page) */}
+            {pageId === "story" && content?.title ? (
+              <h2
+                className={`${content.titleFont || "font-serif"} text-4xl sm:text-5xl font-bold mb-8 text-center`}
+                style={{ color: content.titleColor || "var(--primary)" }}
+              >
+                {content.title}
+              </h2>
+            ) : null}
+
+            {/* Body content — with --- section break support for story page */}
+            <div className="text-[var(--foreground)] leading-relaxed space-y-4 text-base sm:text-lg">
+              {(content?.body || defaultContent[pageId]?.body || "").split("\n").map((line: string, i: number) => {
+                // Section break — insert image 2 here
+                if (line.trim() === "---") {
+                  return content?.image2 ? (
+                    <div key={i} className="aspect-[16/9] rounded-xl overflow-hidden my-8 shadow-luxe">
+                      <img src={content.image2} alt="Story" className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div key={i} className="h-px bg-[var(--border)] my-8" />
+                  )
+                }
+                return (
+                  <p key={i} className={line.startsWith("•") ? "ml-4" : ""}>
+                    {line}
+                  </p>
+                )
+              })}
             </div>
+
+            {/* Image 3 (end of story) */}
+            {pageId === "story" && content?.image3 && (
+              <div className="aspect-[16/9] rounded-xl overflow-hidden mt-8 shadow-luxe">
+                <img src={content.image3} alt="Story end" className="w-full h-full object-cover" />
+              </div>
+            )}
 
             {/* Contact section */}
             {pageId === "contact" && settings && (

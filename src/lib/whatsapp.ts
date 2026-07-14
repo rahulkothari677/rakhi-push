@@ -7,14 +7,10 @@ export type WhatsAppConfig = {
 }
 
 export function normalizeWhatsAppNumber(num: string): string {
-  // Strip all non-digit chars except leading +
   let cleaned = num.replace(/[^\d]/g, "")
-  // If starts with 91 and length is 12, keep as is
-  // If starts with 0 and length is 11, strip the 0 and add 91
   if (cleaned.length === 11 && cleaned.startsWith("0")) {
     cleaned = "91" + cleaned.slice(1)
   }
-  // If length is 10, assume India and add 91
   if (cleaned.length === 10) {
     cleaned = "91" + cleaned
   }
@@ -27,6 +23,8 @@ export function buildWhatsAppUrl(phone: string, message: string): string {
   return `https://wa.me/${normalized}?text=${encoded}`
 }
 
+// Modern, friendly WhatsApp message templates
+
 export function buildSingleProductMessage(opts: {
   brandName: string
   productName: string
@@ -35,18 +33,15 @@ export function buildSingleProductMessage(opts: {
   productUrl: string
   formatPrice: (n: number) => string
 }): string {
-  return `🙏 Namaste ${opts.brandName}!
+  return `Hey ${opts.brandName}! 💫
 
-I would like to purchase this beautiful Rakhi:
+I'm interested in this Rakhi:
 
-🪔 *${opts.productName}*
-💰 Price: ${opts.formatPrice(opts.price)}
-🏷️ SKU: ${opts.sku}
-🔗 View: ${opts.productUrl}
+✨ ${opts.productName}
+💰 ${opts.formatPrice(opts.price)}
+🏷️ ${opts.sku}
 
-Please let me know the availability and next steps.
-
-Thank you!`
+Is it available? Would love to order this one!`
 }
 
 export function buildCartOrderMessage(opts: {
@@ -62,29 +57,31 @@ export function buildCartOrderMessage(opts: {
     .map(
       (item, idx) =>
         `${idx + 1}. ${item.name}
-   • Qty: ${item.quantity}
-   • Price: ${opts.formatPrice(item.price)}
-   • Subtotal: ${opts.formatPrice(item.price * item.quantity)}
-   • SKU: ${item.sku}`
+   Qty: ${item.quantity} × ${opts.formatPrice(item.price)}
+   = ${opts.formatPrice(item.price * item.quantity)}`
     )
     .join("\n\n")
 
-  return `🙏 Namaste ${opts.brandName}!
+  const customerLine = opts.customerName ? `\n👤 ${opts.customerName}\n` : "\n"
 
-I would like to place an order for the following Rakhis${
-    opts.customerName ? ` (Customer: ${opts.customerName})` : ""
-  }:
+  return `Hey ${opts.brandName}! 💫
 
+I'd like to order these Rakhis:${customerLine}
+🛍️ Order:
 ${itemsList}
 
-───────────────
-🧾 *ORDER SUMMARY*
+━━━━━━━━━━━━━
+📋 Summary:
 • Items: ${opts.items.length}
 • Subtotal: ${opts.formatPrice(opts.subtotal)}
 • Shipping: ${opts.shipping === 0 ? "FREE" : opts.formatPrice(opts.shipping)}
-• *Total: ${opts.formatPrice(opts.total)}*
+• Total: ${opts.formatPrice(opts.total)}
 
-Please confirm the order and share payment & delivery details.
+Please confirm availability & delivery details!`
+}
 
-Thank you! 🪔✨`
+export function buildQueryMessage(brandName: string): string {
+  return `Hey ${brandName}! 💫
+
+I have a question about your Rakhi collection. Can you help me?`
 }

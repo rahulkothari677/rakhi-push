@@ -56,7 +56,7 @@ export function HeroCarousel() {
   }
 
   return (
-    <section className="relative h-[70vh] sm:h-[85vh] min-h-[520px] overflow-hidden">
+    <section className="relative h-[70vh] sm:h-[85vh] min-h-[520px] overflow-hidden pt-20 sm:pt-0">
       <AnimatePresence mode="wait">
         <motion.div
           key={current}
@@ -78,12 +78,12 @@ export function HeroCarousel() {
           </div>
 
           {/* Content */}
-          <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">
+          <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center sm:justify-start">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="max-w-2xl"
+              className="max-w-2xl text-center sm:text-left"
             >
               <div className="hidden sm:inline-block bg-[var(--primary)]/90 backdrop-blur-sm px-4 py-1.5 rounded-full mb-4">
                 <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-white font-medium">
@@ -91,8 +91,8 @@ export function HeroCarousel() {
                 </p>
               </div>
 
-              {/* Hero title — Great Vibes font, elegant cursive — ALWAYS visible */}
-              <h1 className="font-hero text-5xl sm:text-7xl lg:text-8xl text-[var(--primary)] leading-[1.1] mb-4 drop-shadow-sm">
+              {/* Hero title — Great Vibes font, golden color on mobile, burgundy on desktop */}
+              <h1 className="font-hero text-5xl sm:text-7xl lg:text-8xl leading-[1.1] mb-4 drop-shadow-lg text-[var(--accent)] sm:text-[var(--primary)]" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>
                 {slide.title}
               </h1>
 

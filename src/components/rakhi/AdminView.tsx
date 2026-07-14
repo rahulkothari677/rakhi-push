@@ -1213,6 +1213,10 @@ function ContentTab() {
           <CTASectionEditor current={current} update={update} />
         )}
 
+        {active === "story" && (
+          <StoryEditor current={current} update={update} />
+        )}
+
         <button
           onClick={handleSave}
           disabled={saving}
@@ -1221,6 +1225,135 @@ function ContentTab() {
           {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
           Save Content
         </button>
+      </div>
+    </div>
+  )
+}
+
+// ─── STORY EDITOR (Our Story page with images) ───────────────────────────────
+function StoryEditor({ current, update }: {
+  current: any
+  update: (field: string, value: string) => void
+}) {
+  const [uploading, setUploading] = useState(false)
+
+  const handleUpload = async (field: string, files: FileList) => {
+    if (!files.length) return
+    setUploading(true)
+    const fd = new FormData()
+    for (const f of Array.from(files)) fd.append("files", f)
+    try {
+      const res = await fetch("/api/admin/upload", { method: "POST", body: fd })
+      const data = await res.json()
+      if (data.urls?.[0]) {
+        update(field, data.urls[0])
+      } else if (data.needsCloudinary) {
+        alert("⚠️ Image upload requires Cloudinary on Vercel.\n\nPlease set these env vars in Vercel:\n• CLOUDINARY_CLOUD_NAME\n• CLOUDINARY_API_KEY\n• CLOUDINARY_API_SECRET\n\nSign up free at https://cloudinary.com")
+      } else {
+        alert("Upload failed: " + (data.error || "Unknown error"))
+      }
+    } catch (e: any) {
+      alert("Upload failed: " + (e.message || "Network error"))
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      <p className="text-xs text-[var(--muted-foreground)] bg-[var(--cream)] p-3 rounded-md">
+        💡 This controls the "Our Story" page. Add a beautiful story with multiple images, custom fonts, and colors.
+      </p>
+
+      {/* Hero Image */}
+      <div>
+        <label className="text-xs tracking-elegant uppercase text-[var(--accent)] font-semibold mb-2 block">
+          Hero Image (top of story page)
+        </label>
+        <div className="flex items-start gap-4">
+          <div className="w-32 h-20 rounded-lg overflow-hidden border border-[var(--border)] bg-[var(--background)] flex-shrink-0">
+            {current.image ? (
+              <img src={current.image} alt="Hero" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-[var(--muted-foreground)] text-xs">No image</div>
+            )}
+          </div>
+          <div className="flex-1">
+            <label className="inline-flex items-center gap-2 px-4 py-2 border border-[var(--border)] text-sm rounded-md cursor-pointer hover:bg-[var(--cream)] transition-colors">
+              {uploading ? <><Loader2 size={14} className="animate-spin" /> Uploading...</> : <><Upload size={14} /> Upload Hero Image</>}
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files && handleUpload("image", e.target.files)} />
+            </label>
+            {current.image && <button onClick={() => update("image", "")} className="ml-2 text-xs text-[#B3324A] hover:underline">Remove</button>}
+          </div>
+        </div>
+      </div>
+
+      {/* Image 2 (middle of story) */}
+      <div>
+        <label className="text-xs tracking-elegant uppercase text-[var(--accent)] font-semibold mb-2 block">
+          Story Image 2 (middle section)
+        </label>
+        <div className="flex items-start gap-4">
+          <div className="w-32 h-20 rounded-lg overflow-hidden border border-[var(--border)] bg-[var(--background)] flex-shrink-0">
+            {current.image2 ? <img src={current.image2} alt="Story 2" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-[var(--muted-foreground)] text-xs">No image</div>}
+          </div>
+          <div className="flex-1">
+            <label className="inline-flex items-center gap-2 px-4 py-2 border border-[var(--border)] text-sm rounded-md cursor-pointer hover:bg-[var(--cream)] transition-colors">
+              {uploading ? <><Loader2 size={14} className="animate-spin" /> Uploading...</> : <><Upload size={14} /> Upload Image 2</>}
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files && handleUpload("image2", e.target.files)} />
+            </label>
+            {current.image2 && <button onClick={() => update("image2", "")} className="ml-2 text-xs text-[#B3324A] hover:underline">Remove</button>}
+          </div>
+        </div>
+      </div>
+
+      {/* Image 3 (bottom of story) */}
+      <div>
+        <label className="text-xs tracking-elegant uppercase text-[var(--accent)] font-semibold mb-2 block">
+          Story Image 3 (end section)
+        </label>
+        <div className="flex items-start gap-4">
+          <div className="w-32 h-20 rounded-lg overflow-hidden border border-[var(--border)] bg-[var(--background)] flex-shrink-0">
+            {current.image3 ? <img src={current.image3} alt="Story 3" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-[var(--muted-foreground)] text-xs">No image</div>}
+          </div>
+          <div className="flex-1">
+            <label className="inline-flex items-center gap-2 px-4 py-2 border border-[var(--border)] text-sm rounded-md cursor-pointer hover:bg-[var(--cream)] transition-colors">
+              {uploading ? <><Loader2 size={14} className="animate-spin" /> Uploading...</> : <><Upload size={14} /> Upload Image 3</>}
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files && handleUpload("image3", e.target.files)} />
+            </label>
+            {current.image3 && <button onClick={() => update("image3", "")} className="ml-2 text-xs text-[#B3324A] hover:underline">Remove</button>}
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label className="text-xs tracking-elegant uppercase text-[var(--accent)] font-semibold mb-1.5 block">Story Title</label>
+        <input type="text" value={current.title || ""} onChange={(e) => update("title", e.target.value)} placeholder="The Story of Raksha Bandhan" className="w-full px-3 py-2 border border-[var(--border)] rounded-md text-sm bg-[var(--background)] outline-none focus:border-[var(--accent)]" />
+      </div>
+
+      <div>
+        <label className="text-xs tracking-elegant uppercase text-[var(--accent)] font-semibold mb-1.5 block">Story Body (use --- to separate sections)</label>
+        <textarea rows={10} value={current.body || ""} onChange={(e) => update("body", e.target.value)} placeholder="Write your beautiful story here..." className="w-full px-3 py-2 border border-[var(--border)] rounded-md text-sm bg-[var(--background)] outline-none focus:border-[var(--accent)] resize-y" />
+        <p className="text-xs text-[var(--muted-foreground)] mt-1">Use --- on a new line to create a section break (image 2 will appear there). Each line becomes a paragraph.</p>
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label className="text-xs tracking-elegant uppercase text-[var(--accent)] font-semibold mb-1.5 block">Title Color (hex)</label>
+          <div className="flex gap-2">
+            <input type="color" value={current.titleColor || "#8B1E3E"} onChange={(e) => update("titleColor", e.target.value)} className="w-12 h-10 rounded border border-[var(--border)] cursor-pointer" />
+            <input type="text" value={current.titleColor || ""} onChange={(e) => update("titleColor", e.target.value)} placeholder="#8B1E3E" className="flex-1 px-2 py-1.5 text-xs border border-[var(--border)] rounded outline-none focus:border-[var(--accent)]" />
+          </div>
+        </div>
+        <div>
+          <label className="text-xs tracking-elegant uppercase text-[var(--accent)] font-semibold mb-1.5 block">Title Font</label>
+          <select value={current.titleFont || "font-serif"} onChange={(e) => update("titleFont", e.target.value)} className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-md bg-[var(--background)] outline-none focus:border-[var(--accent)]">
+            <option value="font-serif">Playfair Display (Serif)</option>
+            <option value="font-hero">Great Vibes (Cursive)</option>
+            <option value="font-body">Montserrat (Sans)</option>
+            <option value="font-script">Cormorant (Script)</option>
+          </select>
+        </div>
       </div>
     </div>
   )

@@ -109,9 +109,9 @@ export function Header() {
               <div className="flex items-center gap-2">
                 {/* Decorative ornament */}
                 <span className="text-[var(--accent)] text-lg hidden sm:block">❖</span>
-                <span className="font-serif text-2xl sm:text-3xl font-bold leading-none tracking-tight">
-                  <span className="text-[var(--foreground)]">House of </span>
-                  <span className="text-gradient-gold italic">Neelam</span>
+                <span className="leading-none tracking-tight">
+                  <span className="font-body text-xl sm:text-2xl font-light tracking-wide text-[var(--foreground)]">House of</span>{" "}
+                  <span className="font-hero text-3xl sm:text-4xl text-[var(--accent)]" style={{ textShadow: '0 1px 8px rgba(201,162,75,0.3)' }}>Neelam</span>
                 </span>
                 <span className="text-[var(--accent)] text-lg hidden sm:block">❖</span>
               </div>

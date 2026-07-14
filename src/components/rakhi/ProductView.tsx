@@ -235,9 +235,9 @@ export function ProductView() {
                   {features.map((f, i) => (
                     <span
                       key={i}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--cream)] text-[var(--foreground)] text-xs rounded-full border border-[var(--border)]"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--primary)]/10 text-[var(--primary)] text-xs font-semibold rounded-full border border-[var(--primary)]/20"
                     >
-                      <Check size={12} className="text-[var(--primary)]" />
+                      <Check size={12} className="text-[var(--accent)]" />
                       {f}
                     </span>
                   ))}
