@@ -127,21 +127,47 @@ export function ProductCard({ product, index = 0 }: Props) {
           )}
         </div>
 
-        {/* Wishlist heart — top right */}
-        <button
-          onClick={handleWishlist}
-          className={cn(
-            "absolute top-2.5 right-2.5 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm",
-            wishlisted
-              ? "bg-primary text-primary-foreground scale-110"
-              : "bg-card/95 backdrop-blur-sm text-primary hover:bg-primary hover:text-primary-foreground hover:scale-110"
-          )}
-          aria-label="Toggle wishlist"
-        >
-          <Heart size={14} className={wishlisted ? "fill-current" : ""} />
-        </button>
+        {/* Action icons — top right (wishlist + add to cart + buy) */}
+        <div className="absolute top-2.5 right-2.5 flex flex-col gap-1.5">
+          {/* Wishlist heart */}
+          <button
+            onClick={handleWishlist}
+            className={cn(
+              "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm",
+              wishlisted
+                ? "bg-primary text-primary-foreground scale-110"
+                : "bg-card/95 backdrop-blur-sm text-primary hover:bg-primary hover:text-primary-foreground hover:scale-110"
+            )}
+            aria-label="Toggle wishlist"
+          >
+            <Heart size={14} className={wishlisted ? "fill-current" : ""} />
+          </button>
 
-        {/* Desktop: hover overlay with small action icons (Myntra style) */}
+          {/* Add to cart icon */}
+          <button
+            onClick={handleAddToCart}
+            className={cn(
+              "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm",
+              added
+                ? "bg-[#5C8C3E] text-white scale-110"
+                : "bg-card/95 backdrop-blur-sm text-primary hover:bg-primary hover:text-primary-foreground hover:scale-110"
+            )}
+            aria-label="Add to cart"
+          >
+            {added ? <Check size={14} /> : <ShoppingBag size={14} />}
+          </button>
+
+          {/* Buy on WhatsApp icon */}
+          <button
+            onClick={handleBuyNow}
+            className="w-8 h-8 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:bg-[#1FAE54] hover:scale-110 transition-all duration-300 shadow-sm"
+            aria-label="Buy on WhatsApp"
+          >
+            <MessageCircle size={14} className="fill-current" />
+          </button>
+        </div>
+
+        {/* Desktop: hover overlay with larger buttons */}
         <div className="hidden md:flex absolute inset-x-0 bottom-0 p-2.5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 gap-2">
           <button
             onClick={handleAddToCart}
@@ -151,14 +177,14 @@ export function ProductCard({ product, index = 0 }: Props) {
             )}
             aria-label="Add to cart"
           >
-            {added ? <Check size={13} /> : <ShoppingBag size={13} />}
+            {added ? <Check size={13} /> : <ShoppingBag size={13} />} {added ? "Added!" : "Add"}
           </button>
           <button
             onClick={handleBuyNow}
-            className="flex-1 h-9 bg-[#25D366]/95 backdrop-blur-md text-white text-[10px] tracking-elegant uppercase font-semibold rounded-md hover:bg-[#1FAE54] transition-all flex items-center justify-center shadow-lg"
+            className="flex-1 h-9 bg-[#25D366]/95 backdrop-blur-md text-white text-[10px] tracking-elegant uppercase font-semibold rounded-md hover:bg-[#1FAE54] transition-all flex items-center justify-center gap-1 shadow-lg"
             aria-label="Buy on WhatsApp"
           >
-            <MessageCircle size={13} />
+            <MessageCircle size={13} /> Buy
           </button>
         </div>
       </div>
@@ -195,25 +221,11 @@ export function ProductCard({ product, index = 0 }: Props) {
           )}
         </div>
 
-        {/* Mobile: small action buttons (compact, Myntra style) */}
-        <div className="md:hidden mt-2 flex gap-1.5">
-          <button
-            onClick={handleAddToCart}
-            className={cn(
-              "flex-1 h-8 text-[10px] tracking-elegant uppercase font-semibold rounded-md transition-all flex items-center justify-center gap-1",
-              added ? "bg-[#5C8C3E] text-white" : "bg-foreground text-background"
-            )}
-            aria-label="Add to cart"
-          >
-            {added ? <Check size={12} /> : <ShoppingBag size={12} />}
-          </button>
-          <button
-            onClick={handleBuyNow}
-            className="flex-1 h-8 bg-[#25D366] text-white text-[10px] tracking-elegant uppercase font-semibold rounded-md hover:bg-[#1FAE54] transition-all flex items-center justify-center"
-            aria-label="Buy on WhatsApp"
-          >
-            <MessageCircle size={12} />
-          </button>
+        {/* Mobile: small text hints for icons */}
+        <div className="md:hidden mt-1.5 flex items-center justify-between text-[9px] text-muted-foreground">
+          <span className="flex items-center gap-0.5"><Heart size={9} /> Wishlist</span>
+          <span className="flex items-center gap-0.5"><ShoppingBag size={9} /> Cart</span>
+          <span className="flex items-center gap-0.5 text-[#25D366] font-semibold"><MessageCircle size={9} className="fill-current" /> Buy</span>
         </div>
       </div>
     </motion.div>

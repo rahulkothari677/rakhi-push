@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useStore } from "@/lib/store"
@@ -36,6 +36,32 @@ export function HeroCarousel() {
     return () => clearInterval(timer)
   }, [slides.length])
 
+  // Touch swipe support for mobile
+  const touchStartX = useRef(0)
+  const touchEndX = useRef(0)
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX
+  }
+
+  const handleTouchEnd = () => {
+    if (slides.length <= 1) return
+    const diff = touchStartX.current - touchEndX.current
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) {
+        setCurrent((c) => (c + 1) % slides.length)
+      } else {
+        setCurrent((c) => (c - 1 + slides.length) % slides.length)
+      }
+    }
+    touchStartX.current = 0
+    touchEndX.current = 0
+  }
+
   if (!slides.length) {
     return (
       <section className="relative h-[70vh] sm:h-[80vh] min-h-[500px] bg-gradient-to-br from-[var(--cream)] via-[var(--background)] to-[var(--cream)] flex items-center justify-center">
@@ -56,7 +82,12 @@ export function HeroCarousel() {
   }
 
   return (
-    <section className="relative h-[70vh] sm:h-[85vh] min-h-[520px] overflow-hidden pt-20 sm:pt-0">
+    <section
+      className="relative h-[70vh] sm:h-[85vh] min-h-[520px] overflow-hidden pt-16 sm:pt-0"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       <AnimatePresence mode="wait">
         <motion.div
           key={current}
@@ -78,7 +109,7 @@ export function HeroCarousel() {
           </div>
 
           {/* Content */}
-          <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center sm:justify-start">
+          <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-start sm:items-center justify-center sm:justify-start pt-8 sm:pt-0">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
@@ -123,25 +154,26 @@ export function HeroCarousel() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Controls */}
+      {/* Controls — arrows hidden on mobile, swipe instead */}
       {slides.length > 1 && (
         <>
+          {/* Desktop arrows only */}
           <button
             onClick={() => setCurrent((c) => (c - 1 + slides.length) % slides.length)}
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/80 backdrop-blur-sm border-2 border-[var(--accent)] text-[var(--primary)] flex items-center justify-center hover:bg-[var(--accent)] hover:text-white transition-colors shadow-lg"
+            className="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/80 backdrop-blur-sm border-2 border-[var(--accent)] text-[var(--primary)] items-center justify-center hover:bg-[var(--accent)] hover:text-white transition-colors shadow-lg"
             aria-label="Previous slide"
           >
             <ChevronLeft size={20} />
           </button>
           <button
             onClick={() => setCurrent((c) => (c + 1) % slides.length)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/80 backdrop-blur-sm border-2 border-[var(--accent)] text-[var(--primary)] flex items-center justify-center hover:bg-[var(--accent)] hover:text-white transition-colors shadow-lg"
+            className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/80 backdrop-blur-sm border-2 border-[var(--accent)] text-[var(--primary)] items-center justify-center hover:bg-[var(--accent)] hover:text-white transition-colors shadow-lg"
             aria-label="Next slide"
           >
             <ChevronRight size={20} />
           </button>
 
-          {/* Dots */}
+          {/* Dots — visible on all sizes */}
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
             {slides.map((_, i) => (
               <button

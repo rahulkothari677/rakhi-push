@@ -106,18 +106,22 @@ export function Header() {
               onClick={() => useStore.getState().goHome()}
               className="flex flex-col items-center group"
             >
-              <div className="flex items-center gap-2">
-                {/* Decorative ornament */}
-                <span className="text-[var(--accent)] text-lg hidden sm:block">❖</span>
-                <span className="leading-none tracking-tight">
-                  <span className="font-body text-xl sm:text-2xl font-light tracking-wide text-[var(--foreground)]">House of</span>{" "}
-                  <span className="font-hero text-3xl sm:text-4xl text-[var(--accent)]" style={{ textShadow: '0 1px 8px rgba(201,162,75,0.3)' }}>Neelam</span>
-                </span>
-                <span className="text-[var(--accent)] text-lg hidden sm:block">❖</span>
+              <div className="flex items-center gap-2.5">
+                {/* Decorative monogram circle */}
+                <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dark)] flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
+                  <span className="font-hero text-2xl sm:text-3xl text-white leading-none">N</span>
+                  <div className="absolute inset-0 rounded-full border-2 border-white/30" />
+                </div>
+                {/* Brand text */}
+                <div className="flex flex-col leading-none">
+                  <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[var(--foreground)]">
+                    House of <span className="text-[var(--primary)] italic">Neelam</span>
+                  </span>
+                  <span className="text-[9px] sm:text-[10px] tracking-[0.25em] text-[var(--accent)] uppercase mt-1 font-semibold">
+                    Rakhi Collection
+                  </span>
+                </div>
               </div>
-              <span className="text-[10px] sm:text-xs tracking-[0.3em] text-[var(--primary)] uppercase mt-1.5 font-semibold">
-                ✦ Rakhi Collection ✦
-              </span>
             </button>
 
             {/* Desktop nav */}

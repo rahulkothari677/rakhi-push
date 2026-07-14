@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useStore } from "@/lib/store"
 import { motion } from "framer-motion"
 import { Mail, Phone, Clock, MessageCircle, MapPin } from "lucide-react"
-import { buildWhatsAppUrl } from "@/lib/whatsapp"
+import { buildWhatsAppUrl, buildQueryMessage } from "@/lib/whatsapp"
 import { infoImage } from "@/lib/images"
 
 type InfoPageId = "about" | "story" | "care" | "shipping" | "contact" | "privacy" | "terms"
@@ -170,7 +170,7 @@ export function InfoPage({ pageId }: { pageId: InfoPageId }) {
                 {settings.whatsapp?.primaryNumber && (
                   <div className="sm:col-span-2">
                     <a
-                      href={buildWhatsAppUrl(settings.whatsapp.primaryNumber, `🙏 Namaste ${settings.whatsapp.brandName || "House of Neelam"}! I have a question.`)}
+                      href={buildWhatsAppUrl(settings.whatsapp.primaryNumber, buildQueryMessage(settings.whatsapp.brandName || "House of Neelam"))}
                       target="_blank"
                       rel="noreferrer"
                       className="flex items-center justify-center gap-2 px-6 py-4 bg-[#25D366] text-white text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[#1FAE54] transition-colors w-full"

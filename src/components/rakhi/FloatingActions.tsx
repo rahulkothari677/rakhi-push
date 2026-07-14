@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { MessageCircle, X, ChevronUp } from "lucide-react"
-import { buildWhatsAppUrl } from "@/lib/whatsapp"
+import { buildWhatsAppUrl, buildQueryMessage } from "@/lib/whatsapp"
 
 export function FloatingActions() {
   const [showTop, setShowTop] = useState(false)
@@ -40,7 +40,7 @@ export function FloatingActions() {
         <motion.a
           href={buildWhatsAppUrl(
             whatsapp.primaryNumber,
-            `🙏 Namaste ${whatsapp.brandName || "House of Neelam"}! I'd like to know more about your Rakhis.`
+            buildQueryMessage(whatsapp.brandName || "House of Neelam")
           )}
           target="_blank"
           rel="noreferrer"
