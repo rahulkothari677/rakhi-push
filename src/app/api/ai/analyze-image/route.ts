@@ -145,9 +145,13 @@ Return ONLY valid JSON (no markdown, no code blocks). Format:
   }
 }
 
-// ─── Google Gemini ───────────────────────────────────────────────────────────
+// ─── Google Gemini (using official SDK) ──────────────────────────────────────
 // Works with BOTH old format (AIza...) and new format (AQ.Ab8...) keys
 async function analyzeWithGemini(imageUrl: string, prompt: string, apiKey: string): Promise<any> {
+  // Use the official Google AI SDK which handles all key formats properly
+  const { GoogleGenerativeAI } = await import("@google/generative-ai")
+  const genAI = new GoogleGenerativeAI(apiKey)
+
   // Fetch image and convert to base64
   const imageRes = await fetch(imageUrl, { redirect: "follow" })
   if (!imageRes.ok) {
@@ -157,60 +161,27 @@ async function analyzeWithGemini(imageUrl: string, prompt: string, apiKey: strin
   const base64 = Buffer.from(imageBuffer).toString("base64")
   const mimeType = imageRes.headers.get("content-type") || "image/jpeg"
 
-  // Try multiple Gemini models (some might not be available in all regions)
+  // Try multiple models
   const models = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
   let lastErr = ""
 
-  for (const model of models) {
+  for (const modelName of models) {
     try {
-      // Pass API key BOTH as header AND query param for max compatibility
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey,
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                { text: prompt },
-                {
-                  inline_data: {
-                    mime_type: mimeType,
-                    data: base64,
-                  },
-                },
-              ],
-            },
-          ],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 1000,
+      const model = genAI.getGenerativeModel({ model: modelName })
+      const result = await model.generateContent([
+        prompt,
+        {
+          inlineData: {
+            data: base64,
+            mimeType: mimeType,
           },
-        }),
-      })
+        },
+      ])
 
-      if (!res.ok) {
-        const errText = await res.text()
-        let errMsg = `${res.status}`
-        try {
-          const errJson = JSON.parse(errText)
-          errMsg = `${res.status}: ${errJson.error?.message || errText.slice(0, 100)}`
-        } catch {
-          errMsg = `${res.status}: ${errText.slice(0, 100)}`
-        }
-        lastErr = `${model} → ${errMsg}`
-        console.error(`[AI] Gemini ${model} failed:`, errMsg)
-        continue // Try next model
-      }
-
-      const data = await res.json()
-      const content = data.candidates?.[0]?.content?.parts?.[0]?.text || ""
+      const content = result.response.text()
 
       if (!content) {
-        lastErr = `${model} → empty response`
+        lastErr = `${modelName} → empty response`
         continue
       }
 
@@ -221,10 +192,11 @@ async function analyzeWithGemini(imageUrl: string, prompt: string, apiKey: strin
       } catch {
         const jsonMatch = cleaned.match(/\{[\s\S]*\}/)
         if (jsonMatch) return JSON.parse(jsonMatch[0])
-        lastErr = `${model} → invalid JSON`
+        lastErr = `${modelName} → invalid JSON: ${cleaned.slice(0, 100)}`
       }
     } catch (e: any) {
-      lastErr = `${model} → ${e.message}`
+      lastErr = `${modelName} → ${e.message}`
+      console.error(`[AI] Gemini ${modelName} failed:`, e.message)
     }
   }
 
