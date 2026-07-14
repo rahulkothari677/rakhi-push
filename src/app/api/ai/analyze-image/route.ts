@@ -44,27 +44,39 @@ Return ONLY valid JSON (no markdown, no code blocks). Format:
 
     let analysis = null
     let providerUsed = ""
+    let lastError = ""
+
+    // Check which providers are configured
+    const geminiKey = process.env.GEMINI_API_KEY
+    const grokKey = process.env.XAI_API_KEY
+    const zaiEnabled = true // z-ai SDK is always available on the server
+
+    console.log("[AI] Providers configured:", {
+      gemini: !!geminiKey,
+      grok: !!grokKey,
+      zai: zaiEnabled,
+    })
 
     // ─── Try Google Gemini first ─────────────────────────────────────────
-    const geminiKey = process.env.GEMINI_API_KEY
     if (!analysis && geminiKey) {
       try {
         console.log("[AI] Trying Google Gemini...")
         analysis = await analyzeWithGemini(imageUrl, prompt, geminiKey)
         providerUsed = "Google Gemini"
       } catch (e: any) {
+        lastError = `Gemini: ${e.message}`
         console.error("[AI] Gemini failed:", e.message)
       }
     }
 
     // ─── Try xAI Grok second ─────────────────────────────────────────────
-    const grokKey = process.env.XAI_API_KEY
     if (!analysis && grokKey) {
       try {
         console.log("[AI] Trying xAI Grok...")
         analysis = await analyzeWithGrok(imageUrl, prompt, grokKey)
         providerUsed = "xAI Grok"
       } catch (e: any) {
+        lastError = `${lastError} | Grok: ${e.message}`
         console.error("[AI] Grok failed:", e.message)
       }
     }
@@ -72,7 +84,7 @@ Return ONLY valid JSON (no markdown, no code blocks). Format:
     // ─── Try z-ai-web-dev-sdk as fallback ────────────────────────────────
     if (!analysis) {
       try {
-        console.log("[AI] Trying z-ai-web-dev-sdk...")
+        console.log("[AI] Trying z-ai-web-dev-sdk (default)...")
         const ZAI = (await import("z-ai-web-dev-sdk")).default
         const zai = await ZAI.create()
 
@@ -100,8 +112,14 @@ Return ONLY valid JSON (no markdown, no code blocks). Format:
             analysis = JSON.parse(jsonMatch[0])
           }
         }
-        providerUsed = "Z-AI (default)"
+
+        if (analysis) {
+          providerUsed = "Built-in AI"
+        } else {
+          lastError = `${lastError} | Built-in AI: No valid response`
+        }
       } catch (e: any) {
+        lastError = `${lastError} | Built-in AI: ${e.message}`
         console.error("[AI] z-ai failed:", e.message)
       }
     }
@@ -109,7 +127,17 @@ Return ONLY valid JSON (no markdown, no code blocks). Format:
     if (!analysis) {
       return NextResponse.json(
         {
-          error: "All AI providers failed. Set GEMINI_API_KEY or XAI_API_KEY env var in Vercel. See instructions in admin panel.",
+          error: `AI analysis failed. ${lastError || "No providers configured."} 
+
+To fix:
+1. Get a FREE Gemini API key from https://aistudio.google.com/app/apikey
+   (Key must start with "AIza" — if yours starts with "AQ." you're in the wrong place)
+2. In Vercel: Settings → Environment Variables → Add GEMINI_API_KEY
+3. Make sure to check ALL 3 boxes: Production, Preview, Development
+4. Click Save, then Redeploy
+
+OR get Grok key from https://console.x.ai and add XAI_API_KEY`,
+          debug: lastError,
         },
         { status: 500 }
       )
@@ -126,13 +154,18 @@ Return ONLY valid JSON (no markdown, no code blocks). Format:
 }
 
 // ─── Google Gemini ───────────────────────────────────────────────────────────
+// Works with keys from https://aistudio.google.com/app/apikey (starts with "AIza")
 async function analyzeWithGemini(imageUrl: string, prompt: string, apiKey: string): Promise<any> {
   // Fetch the image and convert to base64
   const imageRes = await fetch(imageUrl)
+  if (!imageRes.ok) {
+    throw new Error(`Failed to fetch image: ${imageRes.status}`)
+  }
   const imageBuffer = await imageRes.arrayBuffer()
   const base64 = Buffer.from(imageBuffer).toString("base64")
   const mimeType = imageRes.headers.get("content-type") || "image/jpeg"
 
+  // Use gemini-1.5-flash (fast, free tier)
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
     {
@@ -161,12 +194,23 @@ async function analyzeWithGemini(imageUrl: string, prompt: string, apiKey: strin
   )
 
   if (!res.ok) {
-    const err = await res.text()
-    throw new Error(`Gemini API error: ${res.status} ${err.slice(0, 200)}`)
+    const errText = await res.text()
+    let errMsg = `Gemini API ${res.status}`
+    try {
+      const errJson = JSON.parse(errText)
+      errMsg += `: ${errJson.error?.message || errText.slice(0, 150)}`
+    } catch {
+      errMsg += `: ${errText.slice(0, 150)}`
+    }
+    throw new Error(errMsg)
   }
 
   const data = await res.json()
   let content = data.candidates?.[0]?.content?.parts?.[0]?.text || ""
+
+  if (!content) {
+    throw new Error("Gemini returned empty response")
+  }
 
   // Strip markdown
   content = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
@@ -176,7 +220,7 @@ async function analyzeWithGemini(imageUrl: string, prompt: string, apiKey: strin
   } catch {
     const jsonMatch = content.match(/\{[\s\S]*\}/)
     if (jsonMatch) return JSON.parse(jsonMatch[0])
-    throw new Error("Gemini returned invalid JSON")
+    throw new Error("Gemini returned invalid JSON: " + content.slice(0, 100))
   }
 }
 
@@ -205,8 +249,8 @@ async function analyzeWithGrok(imageUrl: string, prompt: string, apiKey: string)
   })
 
   if (!res.ok) {
-    const err = await res.text()
-    throw new Error(`Grok API error: ${res.status} ${err.slice(0, 200)}`)
+    const errText = await res.text()
+    throw new Error(`Grok API ${res.status}: ${errText.slice(0, 150)}`)
   }
 
   const data = await res.json()

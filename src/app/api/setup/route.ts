@@ -29,6 +29,9 @@ export async function GET() {
     NEXTAUTH_SECRET_set: !!process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL_set: !!process.env.NEXTAUTH_URL,
     CLOUDINARY_CLOUD_NAME_set: !!process.env.CLOUDINARY_CLOUD_NAME,
+    GEMINI_API_KEY_set: !!process.env.GEMINI_API_KEY,
+    GEMINI_API_KEY_prefix: process.env.GEMINI_API_KEY?.slice(0, 6) + "..." || "(not set)",
+    XAI_API_KEY_set: !!process.env.XAI_API_KEY,
   }
 
   // Try direct libsql connection test (bypasses Prisma)
