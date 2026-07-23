@@ -119,7 +119,7 @@ Return ONLY valid JSON:
       return NextResponse.json({ error: helpfulError, debug: errorStr.slice(0, 300) }, { status: 500 })
     }
 
-    return NextResponse.json({ analysis, provider: providerUsed })
+    return NextResponse.json({ analysis, provider: providerUsed, debugErrors: allErrors })
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 })
   }
