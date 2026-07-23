@@ -16,6 +16,7 @@ import { AccountModal } from "@/components/rakhi/AccountModal"
 import { FloatingActions } from "@/components/rakhi/FloatingActions"
 import { BackButton, BrowserHistorySync } from "@/components/rakhi/BackButton"
 import { ThemeLoader } from "@/components/rakhi/ThemeLoader"
+import { QuickView } from "@/components/rakhi/QuickView"
 import { useEffect } from "react"
 
 const pageTransitions = {
@@ -26,7 +27,7 @@ const pageTransitions = {
 }
 
 export default function Home() {
-  const { view, infoPageId, isAdminOpen, isAdminPanelOpen } = useStore()
+  const { view, infoPageId, isAdminOpen, isAdminPanelOpen, quickViewProduct, setQuickView } = useStore()
 
   // Scroll to top on view change (handled in store too, but as backup)
   useEffect(() => {
@@ -69,6 +70,7 @@ export default function Home() {
       <AccountModal />
       <AdminView />
       <FloatingActions />
+      <QuickView product={quickViewProduct} onClose={() => setQuickView(null)} />
     </div>
   )
 }

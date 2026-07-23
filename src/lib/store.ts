@@ -67,6 +67,9 @@ type StoreState = NavState & {
   // Recently viewed products
   recentlyViewed: WishlistItem[]
 
+  // Quick View
+  quickViewProduct: any | null
+
   // Admin
   isAdminOpen: boolean
   isAdminPanelOpen: boolean
@@ -94,6 +97,8 @@ type StoreState = NavState & {
   isWishlisted: (productId: string) => boolean
 
   addToRecentlyViewed: (item: WishlistItem) => void
+
+  setQuickView: (product: any | null) => void
 
   setAdminOpen: (open: boolean) => void
   setAdminPanelOpen: (open: boolean) => void
@@ -156,6 +161,8 @@ export const useStore = create<StoreState>()(
       wishlist: [],
 
       recentlyViewed: [],
+
+      quickViewProduct: null,
 
       isAdminOpen: false,
       isAdminPanelOpen: false,
@@ -247,6 +254,8 @@ export const useStore = create<StoreState>()(
         const existing = get().recentlyViewed.filter((r) => r.productId !== item.productId)
         set({ recentlyViewed: [item, ...existing].slice(0, 8) })
       },
+
+      setQuickView: (product) => set({ quickViewProduct: product }),
 
       setAdminOpen: (open) => set({ isAdminOpen: open }),
       setAdminPanelOpen: (open) => set({ isAdminPanelOpen: open }),

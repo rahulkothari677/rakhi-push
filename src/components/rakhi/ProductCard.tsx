@@ -1,7 +1,7 @@
 "use client"
 
 import { useStore } from "@/lib/store"
-import { Heart, ShoppingBag, MessageCircle, Plus, Check } from "lucide-react"
+import { Heart, ShoppingBag, MessageCircle, Check, Eye } from "lucide-react"
 import { motion } from "framer-motion"
 import { cn, formatINR } from "@/lib/utils"
 import { productImage } from "@/lib/images"
@@ -34,7 +34,7 @@ type Props = {
 }
 
 export function ProductCard({ product, index = 0 }: Props) {
-  const { openProduct, addToCart, toggleWishlist, isWishlisted } = useStore()
+  const { openProduct, addToCart, toggleWishlist, isWishlisted, setQuickView } = useStore()
   const [added, setAdded] = useState(false)
   const [whatsappConfig, setWhatsappConfig] = useState<any>(null)
 
@@ -173,6 +173,25 @@ export function ProductCard({ product, index = 0 }: Props) {
             aria-label="Add to cart"
           >
             {added ? <Check size={14} /> : <ShoppingBag size={14} />}
+          </button>
+
+          {/* Quick View icon */}
+          <button
+            onClick={(e) => { e.stopPropagation(); setQuickView(product) }}
+            className="w-8 h-8 rounded-full bg-card/95 backdrop-blur-sm text-primary hover:bg-primary hover:text-primary-foreground hover:scale-110 transition-all duration-300 shadow-sm flex items-center justify-center"
+            aria-label="Quick view"
+          >
+            <Eye size={14} />
+          </button>
+        </div>
+
+        {/* Quick View center button (desktop hover) */}
+        <div className="hidden md:flex absolute inset-0 items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+          <button
+            onClick={(e) => { e.stopPropagation(); setQuickView(product) }}
+            className="px-6 py-2.5 bg-white/90 backdrop-blur-md text-[var(--primary)] text-xs tracking-wide uppercase font-semibold rounded-md hover:bg-white shadow-lg pointer-events-auto flex items-center gap-1.5"
+          >
+            <Eye size={14} /> Quick View
           </button>
         </div>
 
