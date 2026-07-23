@@ -41,17 +41,6 @@ Return ONLY valid JSON:
     const grokKey = process.env.XAI_API_KEY
     const githubToken = process.env.GITHUB_TOKEN
 
-    // ─── 0. Try GitHub Models (Free via GITHUB_TOKEN) ─────────────────────
-    if (!analysis && githubToken) {
-      try {
-        console.log("[AI] Trying GitHub Models...")
-        analysis = await analyzeWithGitHubModels(fullImageUrl, prompt, githubToken)
-        if (analysis) providerUsed = "GitHub Models (Free)"
-      } catch (e: any) {
-        allErrors.push(`GitHub-Models: ${e.message}`)
-      }
-    }
-
     // ─── 1. Try Gemini via OpenAI-compatible endpoint ───────────────────
     if (!analysis && geminiKey) {
       try {
@@ -89,7 +78,7 @@ Return ONLY valid JSON:
                 const m = cleaned.match(/\{[\s\S]*\}/)
                 if (m) analysis = JSON.parse(m[0])
               }
-              if (analysis) providerUsed = "Google Gemini (OpenAI)"
+              if (analysis) providerUsed = "Google Gemini"
             }
           } else {
             const errText = await res.text()
@@ -111,6 +100,17 @@ Return ONLY valid JSON:
         if (analysis) providerUsed = "Google Gemini"
       } catch (e: any) {
         allErrors.push(`Gemini-REST: ${e.message}`)
+      }
+    }
+
+    // ─── 3. Try GitHub Models (Fallback via GITHUB_TOKEN) ─────────────────
+    if (!analysis && githubToken) {
+      try {
+        console.log("[AI] Trying GitHub Models...")
+        analysis = await analyzeWithGitHubModels(fullImageUrl, prompt, githubToken)
+        if (analysis) providerUsed = "GitHub Models (Free)"
+      } catch (e: any) {
+        allErrors.push(`GitHub-Models: ${e.message}`)
       }
     }
 
