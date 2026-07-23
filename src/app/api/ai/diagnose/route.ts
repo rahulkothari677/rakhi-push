@@ -90,7 +90,7 @@ export async function GET(req: Request) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [{ parts: [{ text: "Say 'hello' in one word" }] }],
-          generationConfig: { maxOutputTokens: 10 },
+          generationConfig: { maxOutputTokens: 100 },
         }),
       })
 
@@ -98,11 +98,15 @@ export async function GET(req: Request) {
       let parsed: any = null
       try { parsed = JSON.parse(resBody) } catch {}
 
+      const geminiParts = parsed?.candidates?.[0]?.content?.parts || []
+      const geminiTextPart = geminiParts.find((p: any) => typeof p.text === "string")
+      const geminiText = geminiTextPart?.text || "(empty response)"
+
       result.tests.gemini = {
         status: res.status,
         ok: res.ok,
         response: res.ok
-          ? (parsed?.candidates?.[0]?.content?.parts?.[0]?.text || "(empty response)")
+          ? geminiText
           : (parsed?.error?.message || resBody.slice(0, 200)),
         conclusion: res.ok
           ? "✅ WORKING — Gemini API is functional"

@@ -146,7 +146,9 @@ async function analyzeWithGeminiREST(base64: string, mimeType: string, prompt: s
 
       if (res.ok) {
         const data = await res.json()
-        const content = data.candidates?.[0]?.content?.parts?.[0]?.text || ""
+        const parts = data.candidates?.[0]?.content?.parts || []
+        const textPart = parts.find((p: any) => typeof p.text === "string")
+        const content = textPart?.text || ""
         if (content) {
           const cleaned = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
           try { return JSON.parse(cleaned) } catch {}
