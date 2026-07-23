@@ -105,6 +105,7 @@ export async function GET(req: Request) {
       result.tests.gemini = {
         status: res.status,
         ok: res.ok,
+        rawBody: resBody.slice(0, 500),
         response: res.ok
           ? geminiText
           : (parsed?.error?.message || resBody.slice(0, 200)),
