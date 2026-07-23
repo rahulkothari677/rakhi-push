@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { generateOrderNumber } from "@/lib/utils"
 import { ensureDB } from "@/lib/ensure-db"
@@ -6,6 +8,11 @@ import { ensureDB } from "@/lib/ensure-db"
 export async function POST(req: Request) {
   try {
     await ensureDB()
+
+    // Get logged-in user's email if available
+    const session = await getServerSession(authOptions)
+    const sessionEmail = session?.user?.email
+
     const body = await req.json()
     const {
       customerName,
@@ -29,12 +36,24 @@ export async function POST(req: Request) {
       )
     }
 
+    // Use session email if available, otherwise use the form email
+    const finalEmail = sessionEmail || customerEmail || null
+    // Find user ID if logged in
+    let userId: string | null = null
+    if (finalEmail) {
+      try {
+        const user = await db.user.findUnique({ where: { email: finalEmail } })
+        if (user) userId = user.id
+      } catch {}
+    }
+
     const order = await db.order.create({
       data: {
         orderNumber: generateOrderNumber(),
+        userId: userId || undefined,
         customerName,
         customerPhone,
-        customerEmail: customerEmail || null,
+        customerEmail: finalEmail,
         customerAddress: customerAddress || null,
         customerCity: customerCity || null,
         customerState: customerState || null,

@@ -49,7 +49,7 @@ export default function Home() {
       <ThemeLoader />
       <Header />
       <BackButton />
-      <main className="flex-1">
+      <main className="flex-1 pb-0">
         <AnimatePresence mode="wait">
           <motion.div key={view} {...pageTransitions}>
             {view === "home" && <HomeView />}

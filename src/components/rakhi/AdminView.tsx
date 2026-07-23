@@ -2386,6 +2386,50 @@ function SettingsTab() {
           </button>
         </SettingsCard>
 
+        {/* Festival / Countdown Config */}
+        <SettingsCard
+          title="Festival Countdown"
+          icon={Sparkles}
+          description="Configure the Raksha Bandhan countdown timer date and announcement bar"
+        >
+          <label className="flex items-center gap-2 mb-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={settings.festival?.countdownEnabled ?? true}
+              onChange={(e) => setSettings({ ...settings, festival: { ...settings.festival, countdownEnabled: e.target.checked } })}
+              className="w-4 h-4 accent-[var(--primary)]"
+            />
+            <span className="text-sm font-medium">Show countdown timer on homepage</span>
+          </label>
+          <div className="grid sm:grid-cols-2 gap-3 mb-3">
+            <div>
+              <label className="text-xs text-[var(--muted-foreground)] mb-1 block">Countdown Date</label>
+              <input
+                type="date"
+                value={settings.festival?.countdownDate || "2026-08-09"}
+                onChange={(e) => setSettings({ ...settings, festival: { ...settings.festival, countdownDate: e.target.value } })}
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-md text-sm bg-[var(--background)] outline-none focus:border-[var(--accent)]"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-[var(--muted-foreground)] mb-1 block">Festival Label (shown in timer)</label>
+              <input
+                type="text"
+                value={settings.festival?.countdownLabel || "Raksha Bandhan"}
+                onChange={(e) => setSettings({ ...settings, festival: { ...settings.festival, countdownLabel: e.target.value } })}
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-md text-sm bg-[var(--background)] outline-none focus:border-[var(--accent)]"
+              />
+            </div>
+          </div>
+          <button
+            onClick={() => handleSave("festival", settings.festival)}
+            disabled={saving}
+            className="px-4 py-2 bg-[var(--primary)] text-white text-xs rounded-md hover:bg-[var(--primary-dark)] disabled:opacity-50"
+          >
+            Save Festival Config
+          </button>
+        </SettingsCard>
+
         {/* Reseed button */}
         <SettingsCard
           title="Demo Data"

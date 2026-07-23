@@ -17,6 +17,7 @@ export function ProductView() {
     toggleWishlist,
     isWishlisted,
     setView,
+    addToRecentlyViewed,
   } = useStore()
   const [product, setProduct] = useState<any>(null)
   const [related, setRelated] = useState<Product[]>([])
@@ -44,6 +45,17 @@ export function ProductView() {
       .then((d) => {
         setProduct(d.product)
         setRelated(d.related || [])
+        // Track recently viewed
+        if (d.product) {
+          addToRecentlyViewed({
+            productId: d.product.id,
+            slug: d.product.slug,
+            name: d.product.name,
+            image: d.product.primaryImage,
+            price: d.product.price,
+            sku: d.product.sku,
+          })
+        }
       })
       .catch(() => {})
       .finally(() => setLoading(false))

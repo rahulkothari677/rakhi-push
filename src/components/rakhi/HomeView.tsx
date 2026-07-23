@@ -6,6 +6,7 @@ import { ArrowRight, Sparkles, Crown, Heart, Shield, Truck, Gift } from "lucide-
 import { useStore } from "@/lib/store"
 import { HeroCarousel } from "./HeroCarousel"
 import { ProductCard, type Product } from "./ProductCard"
+import { CountdownTimer } from "./CountdownTimer"
 import { categoryImagePortrait, ctaImage } from "@/lib/images"
 
 type Category = {
@@ -18,13 +19,18 @@ type Category = {
 }
 
 export function HomeView() {
-  const { setView, setCategory, openProduct } = useStore()
+  const { setView, setCategory, openProduct, recentlyViewed } = useStore()
   const [featured, setFeatured] = useState<Product[]>([])
   const [newArrivals, setNewArrivals] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [ctaContent, setCtaContent] = useState<any>(null)
+  const [settings, setSettings] = useState<any>(null)
 
   useEffect(() => {
+    fetch("/api/settings")
+      .then((r) => r.json())
+      .then((d) => setSettings(d.settings))
+      .catch(() => {})
     fetch("/api/products?featured=true&limit=8")
       .then((r) => r.json())
       .then((d) => setFeatured(d.products || []))
@@ -47,6 +53,9 @@ export function HomeView() {
     <div>
       <HeroCarousel />
 
+      {/* Raksha Bandhan Countdown Timer */}
+      <CountdownTimer />
+
       {/* Trust badges strip — VIBRANT festive gradient (not dark) */}
       <section className="bg-gradient-to-r from-[var(--primary)] via-[var(--primary-dark)] to-[var(--primary)] text-white py-7 border-y-2 border-[var(--accent)] relative overflow-hidden">
         {/* Festive dot pattern */}
@@ -57,7 +66,7 @@ export function HomeView() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-6 relative">
           {[
             { icon: Crown, title: "Premium Quality", sub: "Handcrafted with care" },
-            { icon: Truck, title: "Free Shipping", sub: "On orders above ₹999" },
+            { icon: Truck, title: "Free Shipping", sub: `On orders above ₹${settings?.shipping?.freeAbove || 999}` },
             { icon: Shield, title: "Secure Packaging", sub: "Gift-ready delivery" },
             { icon: Heart, title: "Made with Love", sub: "By Indian artisans" },
           ].map((b, i) => (
@@ -342,6 +351,49 @@ export function HomeView() {
         </div>
         </div>
       </section>
+
+      {/* Recently Viewed Products */}
+      {recentlyViewed.length > 0 && (
+        <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <div className="flex items-center justify-center gap-4 mb-4">
+              <div className="h-px w-16 bg-gradient-to-r from-transparent to-[var(--accent)]" />
+              <span className="text-[var(--accent)] text-lg">❖</span>
+              <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-[var(--accent)] font-semibold">
+                Pick Up Where You Left Off
+              </p>
+              <span className="text-[var(--accent)] text-lg">❖</span>
+              <div className="h-px w-16 bg-gradient-to-l from-transparent to-[var(--accent)]" />
+            </div>
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[var(--foreground)] mb-3">
+              Recently <span className="text-gradient-burgundy italic">Viewed</span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {recentlyViewed.slice(0, 4).map((item, i) => (
+              <ProductCard
+                key={item.productId}
+                product={{
+                  id: item.productId,
+                  slug: item.slug,
+                  name: item.name,
+                  category: "",
+                  price: item.price,
+                  primaryImage: item.image,
+                  images: "[]",
+                  shortDescription: "",
+                  isFeatured: false,
+                  rating: 5,
+                  reviewCount: 0,
+                  sku: item.sku,
+                }}
+                index={i}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Festive / Gift box CTA — VIBRANT (not dark) */}
       <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

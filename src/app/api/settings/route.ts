@@ -45,6 +45,11 @@ export async function GET() {
       tagline: "Rakhi Collection",
       establishedYear: "2024",
     },
+    festival: {
+      countdownEnabled: true,
+      countdownDate: "2026-08-09",
+      countdownLabel: "Raksha Bandhan",
+    },
   }
   return NextResponse.json({ settings: { ...defaults, ...result } })
 }

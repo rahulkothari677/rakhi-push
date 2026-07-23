@@ -54,6 +54,15 @@ async function initializeDB(): Promise<void> {
   // Always ensure story content has the new rich format (3 images, titleColor, etc.)
   const storyContent = await db.siteContent.findUnique({ where: { section: "story" } })
 
+  // Always ensure festival config exists
+  const festivalContent = await db.siteSetting.findUnique({ where: { key: "festival" } })
+  if (!festivalContent) {
+    console.log("[ensureDB] Adding festival config...")
+    await db.siteSetting.create({
+      data: { key: "festival", value: JSON.stringify({ countdownEnabled: true, countdownDate: "2026-08-09", countdownLabel: "Raksha Bandhan" }) },
+    })
+  }
+
   // Add mobileImage columns if they don't exist (for dual desktop/mobile image support)
   await addMobileImageColumns()
 
@@ -519,6 +528,7 @@ async function seedDemoData(): Promise<void> {
     { key: "social", value: { instagram: "", facebook: "", youtube: "", pinterest: "" } },
     { key: "announcement", value: { enabled: true, text: "✨ Free shipping across India on orders above ₹999 • Handcrafted with love ✨" } },
     { key: "branding", value: { tagline: "Rakhi Collection", establishedYear: "2024" } },
+    { key: "festival", value: { countdownEnabled: true, countdownDate: "2026-08-09", countdownLabel: "Raksha Bandhan" } },
   ]
   for (const s of settings) {
     await db.siteSetting.create({ data: { key: s.key, value: JSON.stringify(s.value) } })

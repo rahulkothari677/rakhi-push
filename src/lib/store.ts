@@ -64,6 +64,9 @@ type StoreState = NavState & {
   // Wishlist
   wishlist: WishlistItem[]
 
+  // Recently viewed products
+  recentlyViewed: WishlistItem[]
+
   // Admin
   isAdminOpen: boolean
   isAdminPanelOpen: boolean
@@ -89,6 +92,8 @@ type StoreState = NavState & {
   toggleWishlist: (item: WishlistItem) => void
   removeFromWishlist: (productId: string) => void
   isWishlisted: (productId: string) => boolean
+
+  addToRecentlyViewed: (item: WishlistItem) => void
 
   setAdminOpen: (open: boolean) => void
   setAdminPanelOpen: (open: boolean) => void
@@ -149,6 +154,8 @@ export const useStore = create<StoreState>()(
       isCartOpen: false,
 
       wishlist: [],
+
+      recentlyViewed: [],
 
       isAdminOpen: false,
       isAdminPanelOpen: false,
@@ -236,13 +243,18 @@ export const useStore = create<StoreState>()(
         set({ wishlist: get().wishlist.filter((w) => w.productId !== productId) }),
       isWishlisted: (productId) => !!get().wishlist.find((w) => w.productId === productId),
 
+      addToRecentlyViewed: (item) => {
+        const existing = get().recentlyViewed.filter((r) => r.productId !== item.productId)
+        set({ recentlyViewed: [item, ...existing].slice(0, 8) })
+      },
+
       setAdminOpen: (open) => set({ isAdminOpen: open }),
       setAdminPanelOpen: (open) => set({ isAdminPanelOpen: open }),
       setMenuOpen: (open) => set({ isMenuOpen: open }),
     }),
     {
       name: "house-of-neelam-store",
-      partialize: (state) => ({ cart: state.cart, wishlist: state.wishlist }),
+      partialize: (state) => ({ cart: state.cart, wishlist: state.wishlist, recentlyViewed: state.recentlyViewed }),
     }
   )
 )

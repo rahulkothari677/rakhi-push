@@ -25,7 +25,7 @@ export const authOptions: NextAuthOptions = {
           where: { email: credentials.email.toLowerCase() },
         })
         if (!user || !user.passwordHash) return null
-        if (user.role !== "ADMIN") return null
+        if (user.role !== "ADMIN" && user.role !== "CUSTOMER") return null
         const ok = await bcrypt.compare(credentials.password, user.passwordHash)
         if (!ok) return null
         return {
