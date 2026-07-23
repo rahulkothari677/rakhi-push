@@ -68,7 +68,7 @@ Return ONLY valid JSON:
               "Authorization": `Bearer ${geminiKey}`,
             },
             body: JSON.stringify({
-              model: "gemini-2.0-flash",
+              model: "gemini-3.5-flash",
               messages: [{
                 role: "user",
                 content: [
@@ -237,7 +237,7 @@ async function analyzeWithGeminiREST(imageUrl: string, prompt: string, apiKey: s
   const base64 = Buffer.from(await imageRes.arrayBuffer()).toString("base64")
   const mimeType = imageRes.headers.get("content-type") || "image/jpeg"
 
-  const models = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-flash-latest"]
+  const models = ["gemini-3.5-flash", "gemini-flash-latest", "gemini-2.0-flash", "gemini-1.5-flash"]
   const errors: string[] = []
 
   for (const model of models) {

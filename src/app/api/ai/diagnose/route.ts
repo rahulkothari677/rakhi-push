@@ -81,7 +81,7 @@ export async function GET() {
   // ─── Test Gemini with a simple text request ────────────────────────────
   if (geminiKey) {
     try {
-      const testUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`
+      const testUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${geminiKey}`
       const res = await fetch(testUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
