@@ -11,10 +11,16 @@ export async function GET() {
 
   const geminiKey = process.env.GEMINI_API_KEY
   const grokKey = process.env.XAI_API_KEY
+  const githubToken = process.env.GITHUB_TOKEN
 
   const result: any = {
     timestamp: new Date().toISOString(),
     providers: {
+      github: {
+        configured: !!githubToken,
+        keyPrefix: githubToken ? `${githubToken.slice(0, 6)}...` : "(not set)",
+        keyLength: githubToken?.length || 0,
+      },
       gemini: {
         configured: !!geminiKey,
         keyPrefix: geminiKey ? `${geminiKey.slice(0, 8)}...` : "(not set)",
@@ -31,6 +37,45 @@ export async function GET() {
       },
     },
     tests: {},
+  }
+
+  // ─── Test GitHub Models with a simple text request ──────────────────────
+  if (githubToken) {
+    try {
+      const res = await fetch("https://models.github.ai/inference/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${githubToken}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: [{ role: "user", content: "Say 'hello' in one word" }],
+          max_tokens: 10,
+        }),
+      })
+
+      const resBody = await res.text()
+      let parsed: any = null
+      try { parsed = JSON.parse(resBody) } catch {}
+
+      result.tests.github = {
+        status: res.status,
+        ok: res.ok,
+        response: res.ok
+          ? (parsed?.choices?.[0]?.message?.content || "(empty response)")
+          : (parsed?.error?.message || resBody.slice(0, 200)),
+        conclusion: res.ok
+          ? "✅ WORKING — GitHub Models API is functional (Free Tier)"
+          : res.status === 401
+          ? "❌ UNAUTHORIZED — Token is invalid or expired"
+          : `❌ ERROR ${res.status} — ${parsed?.error?.message || resBody.slice(0, 150)}`,
+      }
+    } catch (e: any) {
+      result.tests.github = { error: e.message, conclusion: "❌ NETWORK ERROR — Could not reach GitHub Models API" }
+    }
+  } else {
+    result.tests.github = { conclusion: "⚠️ NOT CONFIGURED — GITHUB_TOKEN not set in Vercel env vars" }
   }
 
   // ─── Test Gemini with a simple text request ────────────────────────────
@@ -76,7 +121,6 @@ export async function GET() {
   // ─── Test Grok with a simple text request ──────────────────────────────
   if (grokKey) {
     try {
-      // First list models
       const listRes = await fetch("https://api.x.ai/v1/models", {
         headers: { Authorization: `Bearer ${grokKey}` },
       })
@@ -91,7 +135,6 @@ export async function GET() {
           : `❌ KEY INVALID — Status ${listRes.status}`,
       }
 
-      // Try a simple text completion with first available model
       if (listRes.ok && modelIds.length > 0) {
         const testModel = modelIds.find((m: string) => m.includes("grok-2")) || modelIds[0]
         const chatRes = await fetch("https://api.x.ai/v1/chat/completions", {
@@ -128,14 +171,18 @@ export async function GET() {
   }
 
   // ─── Overall conclusion ────────────────────────────────────────────────
+  const githubOk = result.tests.github?.ok === true
   const geminiOk = result.tests.gemini?.ok === true
   const grokOk = result.tests.grok?.listModelsStatus === 200
 
-  result.overallConclusion = geminiOk
+  result.overallConclusion = githubOk
+    ? "✅ GitHub Models is working! AI Auto-Fill is ready for free."
+    : geminiOk
     ? "✅ Gemini is working! AI Auto-Fill should work. If it fails, it's a temporary rate limit."
     : grokOk
     ? "✅ Grok is working! But vision models might not be available on your tier."
-    : "❌ No AI providers are working. See details above for how to fix."
+    : "❌ No AI providers are working. Set GITHUB_TOKEN or GEMINI_API_KEY in Vercel env vars."
 
   return NextResponse.json(result, { status: 200 })
 }
+

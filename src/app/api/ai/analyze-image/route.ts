@@ -39,6 +39,18 @@ Return ONLY valid JSON:
 
     const geminiKey = process.env.GEMINI_API_KEY
     const grokKey = process.env.XAI_API_KEY
+    const githubToken = process.env.GITHUB_TOKEN
+
+    // ─── 0. Try GitHub Models (Free via GITHUB_TOKEN) ─────────────────────
+    if (!analysis && githubToken) {
+      try {
+        console.log("[AI] Trying GitHub Models...")
+        analysis = await analyzeWithGitHubModels(fullImageUrl, prompt, githubToken)
+        if (analysis) providerUsed = "GitHub Models (Free)"
+      } catch (e: any) {
+        allErrors.push(`GitHub-Models: ${e.message}`)
+      }
+    }
 
     // ─── 1. Try Gemini via OpenAI-compatible endpoint ───────────────────
     if (!analysis && geminiKey) {
@@ -151,7 +163,7 @@ Return ONLY valid JSON:
       let helpfulError = errorStr
 
       if (errorStr.includes("429") || errorStr.includes("quota")) {
-        helpfulError = "Gemini free tier quota is 0. Your Google Cloud project needs billing enabled (you get $300 FREE credit — you will NOT be charged). Go to: https://console.cloud.google.com/billing — Select your project → Link billing account → Done. Then try again."
+        helpfulError = "Gemini free tier quota is 0. Your Google Cloud project needs billing enabled (you get $300 FREE credit — you will NOT be charged). Alternatively, ensure GITHUB_TOKEN is set in Vercel environment variables."
       }
 
       return NextResponse.json({ error: helpfulError, debug: errorStr.slice(0, 300) }, { status: 500 })
@@ -161,6 +173,62 @@ Return ONLY valid JSON:
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 })
   }
+}
+
+async function analyzeWithGitHubModels(imageUrl: string, prompt: string, apiKey: string): Promise<any> {
+  const imageRes = await fetch(imageUrl, { redirect: "follow" })
+  if (!imageRes.ok) throw new Error(`Image fetch: ${imageRes.status}`)
+  const base64 = Buffer.from(await imageRes.arrayBuffer()).toString("base64")
+  const mimeType = imageRes.headers.get("content-type") || "image/jpeg"
+
+  const models = ["gpt-4o-mini", "gpt-4o"]
+  const errors: string[] = []
+
+  for (const model of models) {
+    try {
+      const res = await fetch("https://models.github.ai/inference/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model,
+          messages: [{
+            role: "user",
+            content: [
+              { type: "text", text: prompt },
+              { type: "image_url", image_url: { url: `data:${mimeType};base64,${base64}` } },
+            ],
+          }],
+          max_tokens: 1000,
+        }),
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        const content = data.choices?.[0]?.message?.content || ""
+        if (content) {
+          const cleaned = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
+          try { return JSON.parse(cleaned) } catch {}
+          const m = cleaned.match(/\{[\s\S]*\}/)
+          if (m) return JSON.parse(m[0])
+        }
+      } else {
+        const errText = await res.text()
+        try {
+          const errJson = JSON.parse(errText)
+          errors.push(`${model}: ${res.status} ${(errJson.error?.message || errText).slice(0, 80)}`)
+        } catch {
+          errors.push(`${model}: ${res.status} ${errText.slice(0, 80)}`)
+        }
+      }
+    } catch (e: any) {
+      errors.push(`${model}: ${e.message?.slice(0, 80)}`)
+    }
+  }
+
+  throw new Error(errors.join("; "))
 }
 
 async function analyzeWithGeminiREST(imageUrl: string, prompt: string, apiKey: string): Promise<any> {
@@ -257,3 +325,4 @@ async function analyzeWithGrok(imageUrl: string, prompt: string, apiKey: string)
   }
   throw new Error(errors.join("; "))
 }
+
