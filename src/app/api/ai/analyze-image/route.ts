@@ -3,6 +3,38 @@ import { promises as fs } from "fs"
 import path from "path"
 import { requireAdmin } from "@/lib/admin-guard"
 
+async function getImageData(imageUrl: string, reqHost: string | null): Promise<{ base64: string; mimeType: string }> {
+  if (imageUrl.startsWith("data:")) {
+    const matches = imageUrl.match(/^data:([^;]+);base64,(.+)$/)
+    if (matches) {
+      return { mimeType: matches[1], base64: matches[2] }
+    }
+  }
+
+  if (imageUrl.startsWith("/")) {
+    try {
+      const localPath = path.join(process.cwd(), "public", imageUrl)
+      const buffer = await fs.readFile(localPath)
+      const ext = path.extname(imageUrl).toLowerCase().replace(".", "")
+      const mimeType = ext === "png" ? "image/png" : ext === "webp" ? "image/webp" : "image/jpeg"
+      return { base64: buffer.toString("base64"), mimeType }
+    } catch {}
+  }
+
+  let fullUrl = imageUrl
+  if (imageUrl.startsWith("/")) {
+    const baseURL = reqHost ? `https://${reqHost}` : "http://localhost:3000"
+    fullUrl = `${baseURL}${imageUrl}`
+  }
+
+  const res = await fetch(fullUrl, { redirect: "follow" })
+  if (!res.ok) throw new Error(`Image fetch failed: ${res.status}`)
+  const arrayBuffer = await res.arrayBuffer()
+  const base64 = Buffer.from(arrayBuffer).toString("base64")
+  const mimeType = res.headers.get("content-type") || "image/jpeg"
+  return { base64, mimeType }
+}
+
 export async function POST(req: Request) {
   const session = await requireAdmin()
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -10,12 +42,6 @@ export async function POST(req: Request) {
   try {
     const { imageUrl } = await req.json()
     if (!imageUrl) return NextResponse.json({ error: "Image URL required" }, { status: 400 })
-
-    let fullImageUrl = imageUrl
-    if (imageUrl.startsWith("/")) {
-      const baseURL = req.headers.get("host") ? `https://${req.headers.get("host")}` : "http://localhost:3000"
-      fullImageUrl = `${baseURL}${imageUrl}`
-    }
 
     const prompt = `You are an expert Rakhi product catalog manager for "House of Neelam".
 
@@ -33,6 +59,13 @@ Analyze this Rakhi product image and provide ALL details:
 Return ONLY valid JSON:
 {"name":"...","category":"...","shortDescription":"...","description":"...","materials":["..."],"features":["..."],"suggestedPrice":599,"badge":"Premium"}`
 
+    let imageData: { base64: string; mimeType: string } | null = null
+    try {
+      imageData = await getImageData(imageUrl, req.headers.get("host"))
+    } catch (e: any) {
+      return NextResponse.json({ error: `Could not load image: ${e.message}` }, { status: 400 })
+    }
+
     let analysis = null
     let providerUsed = ""
     const allErrors: string[] = []
@@ -41,73 +74,23 @@ Return ONLY valid JSON:
     const grokKey = process.env.XAI_API_KEY
     const githubToken = process.env.GITHUB_TOKEN
 
-    // ─── 1. Try Gemini via OpenAI-compatible endpoint ───────────────────
+    // ─── 1. Try Google Gemini REST (Primary) ────────────────────────────
     if (!analysis && geminiKey) {
       try {
-        console.log("[AI] Trying Gemini (OpenAI endpoint)...")
-        const imageRes = await fetch(fullImageUrl, { redirect: "follow" })
-        if (imageRes.ok) {
-          const base64 = Buffer.from(await imageRes.arrayBuffer()).toString("base64")
-          const mimeType = imageRes.headers.get("content-type") || "image/jpeg"
-
-          const res = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${geminiKey}`,
-            },
-            body: JSON.stringify({
-              model: "gemini-3.5-flash",
-              messages: [{
-                role: "user",
-                content: [
-                  { type: "text", text: prompt },
-                  { type: "image_url", image_url: { url: `data:${mimeType};base64,${base64}` } },
-                ],
-              }],
-              max_tokens: 1000,
-            }),
-          })
-
-          if (res.ok) {
-            const data = await res.json()
-            const content = data.choices?.[0]?.message?.content || ""
-            if (content) {
-              const cleaned = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
-              try { analysis = JSON.parse(cleaned) } catch {
-                const m = cleaned.match(/\{[\s\S]*\}/)
-                if (m) analysis = JSON.parse(m[0])
-              }
-              if (analysis) providerUsed = "Google Gemini"
-            }
-          } else {
-            const errText = await res.text()
-            let errMsg = `${res.status}`
-            try { errMsg += `: ${JSON.parse(errText).error?.message?.slice(0, 100)}` } catch {}
-            allErrors.push(`Gemini-OpenAI: ${errMsg}`)
-          }
-        }
-      } catch (e: any) {
-        allErrors.push(`Gemini-OpenAI: ${e.message}`)
-      }
-    }
-
-    // ─── 2. Try Gemini via REST API ─────────────────────────────────────
-    if (!analysis && geminiKey) {
-      try {
-        console.log("[AI] Trying Gemini (REST)...")
-        analysis = await analyzeWithGeminiREST(fullImageUrl, prompt, geminiKey)
+        console.log("[AI] Trying Google Gemini...")
+        analysis = await analyzeWithGeminiREST(imageData.base64, imageData.mimeType, prompt, geminiKey)
         if (analysis) providerUsed = "Google Gemini"
       } catch (e: any) {
-        allErrors.push(`Gemini-REST: ${e.message}`)
+        allErrors.push(`Gemini: ${e.message}`)
+        console.error("[AI] Gemini error:", e.message)
       }
     }
 
-    // ─── 3. Try GitHub Models (Fallback via GITHUB_TOKEN) ─────────────────
+    // ─── 2. Try GitHub Models (Fallback) ──────────────────────────────────
     if (!analysis && githubToken) {
       try {
         console.log("[AI] Trying GitHub Models...")
-        analysis = await analyzeWithGitHubModels(fullImageUrl, prompt, githubToken)
+        analysis = await analyzeWithGitHubModels(imageData.base64, imageData.mimeType, prompt, githubToken)
         if (analysis) providerUsed = "GitHub Models (Free)"
       } catch (e: any) {
         allErrors.push(`GitHub-Models: ${e.message}`)
@@ -118,43 +101,10 @@ Return ONLY valid JSON:
     if (!analysis && grokKey) {
       try {
         console.log("[AI] Trying Grok...")
-        analysis = await analyzeWithGrok(fullImageUrl, prompt, grokKey)
+        analysis = await analyzeWithGrok(imageUrl, prompt, grokKey)
         if (analysis) providerUsed = "xAI Grok"
       } catch (e: any) {
         allErrors.push(`Grok: ${e.message}`)
-      }
-    }
-
-    // ─── 4. Try built-in z-ai SDK ───────────────────────────────────────
-    if (!analysis) {
-      try {
-        console.log("[AI] Trying built-in...")
-        // Try writing config from env var or committed file
-        const zaiConfig = process.env.Z_AI_CONFIG
-        if (zaiConfig) {
-          await fs.writeFile("/tmp/.z-ai-config", zaiConfig)
-        }
-
-        const ZAI = (await import("z-ai-web-dev-sdk")).default
-        const zai = await ZAI.create()
-
-        const response = await zai.chat.completions.createVision({
-          messages: [{ role: "user", content: [
-            { type: "text", text: prompt },
-            { type: "image_url", image_url: { url: fullImageUrl } },
-          ]}],
-          thinking: { type: "disabled" },
-        })
-
-        let content = response.choices[0]?.message?.content || ""
-        content = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
-        try { analysis = JSON.parse(content) } catch {
-          const m = content.match(/\{[\s\S]*\}/)
-          if (m) analysis = JSON.parse(m[0])
-        }
-        if (analysis) providerUsed = "Built-in AI"
-      } catch (e: any) {
-        allErrors.push(`Built-in: ${e.message}`)
       }
     }
 
@@ -163,7 +113,7 @@ Return ONLY valid JSON:
       let helpfulError = errorStr
 
       if (errorStr.includes("429") || errorStr.includes("quota")) {
-        helpfulError = "Gemini free tier quota is 0. Your Google Cloud project needs billing enabled (you get $300 FREE credit — you will NOT be charged). Alternatively, ensure GITHUB_TOKEN is set in Vercel environment variables."
+        helpfulError = "Gemini quota exceeded or rate limited. Enable billing at https://console.cloud.google.com/billing or verify your key."
       }
 
       return NextResponse.json({ error: helpfulError, debug: errorStr.slice(0, 300) }, { status: 500 })
@@ -175,12 +125,50 @@ Return ONLY valid JSON:
   }
 }
 
-async function analyzeWithGitHubModels(imageUrl: string, prompt: string, apiKey: string): Promise<any> {
-  const imageRes = await fetch(imageUrl, { redirect: "follow" })
-  if (!imageRes.ok) throw new Error(`Image fetch: ${imageRes.status}`)
-  const base64 = Buffer.from(await imageRes.arrayBuffer()).toString("base64")
-  const mimeType = imageRes.headers.get("content-type") || "image/jpeg"
+async function analyzeWithGeminiREST(base64: string, mimeType: string, prompt: string, apiKey: string): Promise<any> {
+  const models = ["gemini-3.5-flash", "gemini-flash-latest"]
+  const errors: string[] = []
 
+  for (const model of models) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [
+            { text: prompt },
+            { inline_data: { mime_type: mimeType, data: base64 } },
+          ]}],
+          generationConfig: { temperature: 0.7, maxOutputTokens: 2000 },
+        }),
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        const content = data.candidates?.[0]?.content?.parts?.[0]?.text || ""
+        if (content) {
+          const cleaned = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
+          try { return JSON.parse(cleaned) } catch {}
+          const m = cleaned.match(/\{[\s\S]*\}/)
+          if (m) return JSON.parse(m[0])
+        }
+      } else {
+        const errText = await res.text()
+        try {
+          const errJson = JSON.parse(errText)
+          errors.push(`${model}: ${res.status} ${(errJson.error?.message || "").slice(0, 80)}`)
+        } catch { errors.push(`${model}: ${res.status}`) }
+      }
+    } catch (e: any) {
+      errors.push(`${model}: ${e.message?.slice(0, 80)}`)
+    }
+  }
+
+  throw new Error(errors.join("; "))
+}
+
+async function analyzeWithGitHubModels(base64: string, mimeType: string, prompt: string, apiKey: string): Promise<any> {
   const models = ["gpt-4o-mini", "gpt-4o"]
   const errors: string[] = []
 
@@ -231,57 +219,6 @@ async function analyzeWithGitHubModels(imageUrl: string, prompt: string, apiKey:
   throw new Error(errors.join("; "))
 }
 
-async function analyzeWithGeminiREST(imageUrl: string, prompt: string, apiKey: string): Promise<any> {
-  const imageRes = await fetch(imageUrl, { redirect: "follow" })
-  if (!imageRes.ok) throw new Error(`Image fetch: ${imageRes.status}`)
-  const base64 = Buffer.from(await imageRes.arrayBuffer()).toString("base64")
-  const mimeType = imageRes.headers.get("content-type") || "image/jpeg"
-
-  const models = ["gemini-3.5-flash", "gemini-flash-latest", "gemini-2.0-flash", "gemini-1.5-flash"]
-  const errors: string[] = []
-
-  for (const model of models) {
-    for (const authMethod of ["query", "header"] as const) {
-      try {
-        const url = authMethod === "query"
-          ? `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`
-          : `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`
-        const headers: Record<string, string> = { "Content-Type": "application/json" }
-        if (authMethod === "header") headers["x-goog-api-key"] = apiKey
-
-        const res = await fetch(url, {
-          method: "POST", headers,
-          body: JSON.stringify({
-            contents: [{ parts: [
-              { text: prompt },
-              { inline_data: { mime_type: mimeType, data: base64 } },
-            ]}],
-            generationConfig: { temperature: 0.7, maxOutputTokens: 1000 },
-          }),
-        })
-
-        if (res.ok) {
-          const data = await res.json()
-          const content = data.candidates?.[0]?.content?.parts?.[0]?.text || ""
-          if (content) {
-            const cleaned = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
-            try { return JSON.parse(cleaned) } catch {}
-            const m = cleaned.match(/\{[\s\S]*\}/)
-            if (m) return JSON.parse(m[0])
-          }
-        } else {
-          const errText = await res.text()
-          try {
-            const errJson = JSON.parse(errText)
-            errors.push(`${model}/${authMethod}: ${res.status} ${(errJson.error?.message || "").slice(0, 60)}`)
-          } catch { errors.push(`${model}/${authMethod}: ${res.status}`) }
-        }
-      } catch (e: any) { errors.push(`${model}/${authMethod}: ${e.message?.slice(0, 60)}`) }
-    }
-  }
-  throw new Error(errors.join("; "))
-}
-
 async function analyzeWithGrok(imageUrl: string, prompt: string, apiKey: string): Promise<any> {
   let availableModels: string[] = []
   try {
@@ -325,4 +262,5 @@ async function analyzeWithGrok(imageUrl: string, prompt: string, apiKey: string)
   }
   throw new Error(errors.join("; "))
 }
+
 
