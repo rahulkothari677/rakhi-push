@@ -3,7 +3,8 @@
 import { useStore } from "@/lib/store"
 import { useSession, signOut } from "next-auth/react"
 import { useEffect, useState, useRef } from "react"
-import { Menu, X, ShoppingBag, Heart, Search, User, ChevronDown, Image as ImageIcon, Loader2 } from "lucide-react"
+import { Menu, X, ShoppingBag, Heart, Search, User, ChevronDown, Image as ImageIcon, Loader2, Camera, Sparkles } from "lucide-react"
+import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { categoryThumbnail } from "@/lib/images"
 import { motion, AnimatePresence } from "framer-motion"
@@ -118,21 +119,32 @@ export function Header() {
 
   const onImageSearch = async (file: File) => {
     setImageSearchLoading(true)
+    const toastId = toast.loading("Analyzing your image…", {
+      description: "Uploading and identifying the Rakhi",
+      duration: Infinity,
+    })
     try {
-      // Upload the image first
-      const fd = new FormData()
-      fd.append("files", file)
-      const uploadRes = await fetch("/api/admin/upload", { method: "POST", body: fd })
-      const uploadData = await uploadRes.json()
-
-      if (!uploadData.urls?.[0]) {
-        alert("Image upload failed. Please try again.")
-        return
+      // Validate file type & size client-side (5 MB max)
+      if (!file.type.startsWith("image/")) {
+        throw new Error("Please upload an image file (JPEG, PNG, WebP, or GIF)")
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        throw new Error(`Image is too large (${(file.size / 1024 / 1024).toFixed(1)} MB). Max 5 MB.`)
       }
 
-      const imageUrl = uploadData.urls[0]
+      // Step 1: Upload image to PUBLIC endpoint (no admin auth required)
+      const fd = new FormData()
+      fd.append("file", file)
+      const uploadRes = await fetch("/api/ai/upload-search-image", { method: "POST", body: fd })
+      const uploadData = await uploadRes.json()
 
-      // Use AI to find similar products
+      if (!uploadRes.ok || !uploadData.url) {
+        throw new Error(uploadData.error || "Image upload failed. Please try again.")
+      }
+
+      const imageUrl = uploadData.url
+
+      // Step 2: AI analyzes the image and returns a search query
       const aiRes = await fetch("/api/ai/search-by-image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -140,19 +152,33 @@ export function Header() {
       })
       const aiData = await aiRes.json()
 
-      if (aiData.searchQuery) {
-        // Search products using AI-generated query
-        setSearchQuery(aiData.searchQuery)
+      if (!aiRes.ok) {
+        throw new Error(aiData.error || "AI analysis failed. Please try text search.")
+      }
+
+      // Step 3: Apply the search query — always present after our fix
+      const query = aiData.searchQuery?.trim()
+      if (query) {
+        setSearchInput(query)
+        setSearchQuery(query)
         setShowSearch(false)
-      } else if (aiData.productIds?.length > 0) {
-        // Direct match — go to shop with category filter
-        setSearchQuery(aiData.productIds[0])
-        setShowSearch(false)
+        setShowSuggestions(false)
+        toast.success("Found similar Rakhis!", {
+          id: toastId,
+          description: `Searching for: "${query}"`,
+          duration: 3000,
+          icon: <Sparkles size={18} className="text-white" />,
+          style: { background: "var(--primary)", color: "white", border: "none" },
+        })
       } else {
-        alert("Couldn't find similar Rakhis. Try a different image or search by text.")
+        throw new Error("Couldn't identify the Rakhi. Try a clearer photo or use text search.")
       }
     } catch (e: any) {
-      alert("Image search failed: " + e.message)
+      toast.error("Image search failed", {
+        id: toastId,
+        description: e.message || "Unknown error",
+        duration: 5000,
+      })
     } finally {
       setImageSearchLoading(false)
       if (fileInputRef.current) fileInputRef.current.value = ""
@@ -301,10 +327,10 @@ export function Header() {
 
             {/* Actions */}
             <div className="flex items-center gap-1 sm:gap-2">
-              {/* Search — toggle expandable */}
+              {/* Search — toggle expandable (mobile/tablet only; desktop has persistent search) */}
               <button
                 onClick={() => setShowSearch(!showSearch)}
-                className="p-2.5 text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--cream)] rounded-md transition-all"
+                className="lg:hidden p-2.5 text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--cream)] rounded-md transition-all"
                 aria-label="Search"
               >
                 {showSearch ? <X size={20} /> : <Search size={20} />}
@@ -348,16 +374,95 @@ export function Header() {
           </div>
         </div>
 
-        {/* Search bar — expandable with autocomplete + image search */}
+        {/* Desktop persistent search bar — always visible below the nav (no click required) */}
+        <div className="hidden lg:block bg-white/60 backdrop-blur-sm border-t border-[var(--border)]/50">
+          <div className="max-w-3xl mx-auto px-4 py-3" ref={searchRef}>
+            <form onSubmit={onSearch}>
+              <div className="relative">
+                <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] pointer-events-none" />
+                <input
+                  type="text"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onFocus={() => searchResults.length > 0 && setShowSuggestions(true)}
+                  placeholder="Search for Rakhis, categories, materials..."
+                  className="w-full pl-12 pr-36 py-3 bg-[var(--background)] border-2 border-[var(--accent)]/30 rounded-full text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition-all"
+                />
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                  {/* Image search button — prominent */}
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={imageSearchLoading}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[var(--primary)] hover:bg-[var(--cream)] rounded-full transition-colors disabled:opacity-50 border border-[var(--accent)]/30"
+                    aria-label="Search by image"
+                    title="Search by image — upload a Rakhi photo"
+                  >
+                    {imageSearchLoading ? <Loader2 size={14} className="animate-spin" /> : <Camera size={14} />}
+                    <span className="hidden xl:inline">Photo Search</span>
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => e.target.files?.[0] && onImageSearch(e.target.files[0])}
+                  />
+                  <button
+                    type="submit"
+                    className="px-4 py-1.5 bg-[var(--primary)] text-[var(--background)] text-xs tracking-elegant uppercase font-semibold rounded-full hover:bg-[var(--primary-dark)] transition-colors"
+                  >
+                    Search
+                  </button>
+                </div>
+
+                {/* Autocomplete suggestions */}
+                {showSuggestions && (searchResults.length > 0 || searchLoading) && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-[0_20px_60px_rgba(139,30,62,0.15)] border border-[var(--border)] overflow-hidden z-50">
+                    {searchLoading ? (
+                      <div className="p-4 text-center text-sm text-[var(--muted-foreground)] flex items-center justify-center gap-2">
+                        <Loader2 size={16} className="animate-spin" /> Searching...
+                      </div>
+                    ) : (
+                      <div className="max-h-80 overflow-y-auto">
+                        {searchResults.map((product) => (
+                          <button
+                            key={product.id}
+                            onClick={() => onSuggestionClick(product.slug)}
+                            className="w-full flex items-center gap-3 p-3 hover:bg-[var(--background)] transition-colors text-left border-b border-[var(--border)]/50 last:border-0"
+                          >
+                            <img src={product.primaryImage} alt="" className="w-12 h-12 rounded-md object-cover flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-[var(--foreground)] truncate">{product.name}</p>
+                              <p className="text-xs text-[var(--muted-foreground)]">{product.category}</p>
+                            </div>
+                            <span className="text-sm font-bold text-[var(--primary)] flex-shrink-0">
+                              ₹{product.price}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </form>
+            <p className="text-xs text-[var(--muted-foreground)] mt-2 flex items-center justify-center gap-1.5">
+              <Sparkles size={11} className="text-[var(--accent)]" /> AI-powered search · Type a query or click the camera icon to upload a Rakhi photo
+            </p>
+          </div>
+        </div>
+
+        {/* Mobile/tablet expandable search bar — toggle via search icon */}
         <AnimatePresence>
           {showSearch && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden bg-white border-t border-[var(--border)]"
+              className="lg:hidden overflow-hidden bg-white border-t border-[var(--border)]"
             >
-              <div className="max-w-3xl mx-auto px-4 py-4" ref={searchRef}>
+              <div className="max-w-3xl mx-auto px-4 py-4">
                 <form onSubmit={onSearch}>
                   <div className="relative">
                     <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
