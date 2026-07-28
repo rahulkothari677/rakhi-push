@@ -32,11 +32,30 @@ export function AiShoppingAssistant() {
   const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE])
   const [input, setInput] = useState("")
   const [loading, setLoading] = useState(false)
+  const [loadingMessage, setLoadingMessage] = useState("Thinking...")
   const [hasNewMessage, setHasNewMessage] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const { setCategory, setSearchQuery, openProduct } = useStore()
+
+  // Rotate loading messages for better UX feedback during AI processing
+  useEffect(() => {
+    if (!loading) return
+    const messages = [
+      "Thinking...",
+      "Checking the catalog...",
+      "Finding the perfect Rakhi...",
+      "Almost there...",
+    ]
+    let i = 0
+    setLoadingMessage(messages[0])
+    const interval = setInterval(() => {
+      i = (i + 1) % messages.length
+      setLoadingMessage(messages[i])
+    }, 1500)
+    return () => clearInterval(interval)
+  }, [loading])
 
   // Auto-scroll to bottom on new message
   useEffect(() => {
@@ -233,12 +252,12 @@ export function AiShoppingAssistant() {
                 <div className="flex justify-start">
                   <div className="bg-white border border-[var(--border)] px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm">
                     <div className="flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
-                      <Loader2 size={14} className="animate-spin" />
                       <div className="flex gap-1">
                         <span className="w-1.5 h-1.5 bg-[var(--primary)] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
                         <span className="w-1.5 h-1.5 bg-[var(--primary)] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
                         <span className="w-1.5 h-1.5 bg-[var(--primary)] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                       </div>
+                      <span className="text-xs">{loadingMessage}</span>
                     </div>
                   </div>
                 </div>
