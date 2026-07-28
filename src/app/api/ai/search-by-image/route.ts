@@ -21,6 +21,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Image URL required" }, { status: 400 })
     }
 
+    // Fetch actual categories from the catalog so the AI returns valid names
+    let categoryNames: string[] = []
+    try {
+      const catsRes = await fetch(`${new URL(req.url).origin}/api/categories`)
+      const catsData = await catsRes.json()
+      categoryNames = (catsData.categories || []).map((c: any) => c.name)
+    } catch {
+      // Fallback to a generic list if categories API fails
+      categoryNames = ["Girls Rakhi", "Kids Rakhi", "Designer Rakhi", "Handmade Rakhi"]
+    }
+
     const prompt = `You are helping a customer find Rakhis on the "House of Neelam" store.
 
 Look at this image carefully and describe what you see in 3-5 search keywords that would help find similar products in our Rakhi catalog.
@@ -32,10 +43,13 @@ Focus on:
 - Style (floral, peacock, simple, ornate, cartoon, divine, etc.)
 - Recipient (brother, bhabhi, kids, etc.) if obvious
 
-Categories in our catalog: Traditional Rakhi, Designer Rakhi, Kids Rakhi, Bhaiya-Bhabhi (Lumba), Premium Gold Rakhi, Silver Rakhi, Handmade Rakhi, Personalized Rakhi, Roli-Chawal & Thali
+IMPORTANT — these are the ONLY valid category names in our catalog:
+${categoryNames.map((c) => `- ${c}`).join("\n")}
+
+You MUST pick one of these exact category names, or return null if none fit.
 
 Return ONLY a JSON object (no markdown, no code blocks, no extra text):
-{"searchQuery": "keyword1 keyword2 keyword3", "category": "exact category name from list above or null"}`
+{"searchQuery": "keyword1 keyword2 keyword3", "category": "exact category name from the list above or null"}`
 
     let analysis: { searchQuery?: string; category?: string | null } | null = null
     let provider = "none"
@@ -247,9 +261,23 @@ Return ONLY a JSON object (no markdown, no code blocks, no extra text):
         : "rakhi"
     }
 
+    // Validate category — if AI returned a name that doesn't match any real
+    // category, set it to null (so the frontend doesn't filter to a
+    // non-existent category and show 0 results)
+    let finalCategory: string | null = null
+    if (analysis.category && analysis.category !== "null" && categoryNames.length > 0) {
+      const matched = categoryNames.find(
+        (c) => c.toLowerCase() === analysis.category!.toLowerCase()
+      )
+      finalCategory = matched || null
+      if (!matched && analysis.category !== "null") {
+        console.log(`[AI Search] AI returned unknown category "${analysis.category}", discarding. Valid: ${categoryNames.join(", ")}`)
+      }
+    }
+
     return NextResponse.json({
       searchQuery: finalQuery,
-      category: analysis.category && analysis.category !== "null" ? analysis.category : null,
+      category: finalCategory,
       provider,
     })
   } catch (e: any) {
