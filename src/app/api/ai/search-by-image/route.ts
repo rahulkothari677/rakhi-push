@@ -39,6 +39,7 @@ Return ONLY a JSON object (no markdown, no code blocks, no extra text):
 
     let analysis: { searchQuery?: string; category?: string | null } | null = null
     let provider = "none"
+    const errors: string[] = []
 
     // ─── 1. Gemini native v1beta (primary — works on Vercel with AQ. format keys) ─
     if (!analysis) {
@@ -77,12 +78,19 @@ Return ONLY a JSON object (no markdown, no code blocks, no extra text):
               if (analysis) provider = "gemini-v1beta"
             } else {
               const errText = await res.text()
-              console.error(`[AI Search] Gemini v1beta HTTP ${res.status}:`, errText.slice(0, 200))
+              const msg = `Gemini v1beta HTTP ${res.status}: ${errText.slice(0, 300)}`
+              console.error(`[AI Search] ${msg}`)
+              errors.push(msg)
             }
+          } else {
+            errors.push(`Image fetch failed: HTTP ${imageRes.status}`)
           }
         } catch (e: any) {
           console.error("[AI Search] Gemini v1beta failed:", e.message)
+          errors.push(`Gemini v1beta exception: ${e.message}`)
         }
+      } else {
+        errors.push("GEMINI_API_KEY not configured")
       }
     }
 
@@ -117,6 +125,7 @@ Return ONLY a JSON object (no markdown, no code blocks, no extra text):
         }
       } catch (e: any) {
         console.error("[AI Search] ZAI SDK failed:", e.message)
+        errors.push(`ZAI SDK exception: ${e.message}`)
       }
     }
 
@@ -155,21 +164,29 @@ Return ONLY a JSON object (no markdown, no code blocks, no extra text):
               const content = data.choices?.[0]?.message?.content || ""
               analysis = parseAnalysisResponse(content)
               if (analysis) provider = "gemini-openai"
+            } else {
+              const errText = await res.text()
+              errors.push(`Gemini OpenAI HTTP ${res.status}: ${errText.slice(0, 200)}`)
             }
           }
         } catch (e: any) {
           console.error("[AI Search] Gemini OpenAI endpoint failed:", e.message)
+          errors.push(`Gemini OpenAI exception: ${e.message}`)
         }
       }
     }
 
     // ─── Final fallback — return a generic search query so user sees results ─
     if (!analysis) {
-      console.error("[AI Search] All providers failed.")
+      console.error("[AI Search] All providers failed.", errors)
       return NextResponse.json(
         {
           error: "We couldn't analyze your image right now. Please try a text search instead.",
           searchQuery: null,
+          debug: {
+            geminiConfigured: !!process.env.GEMINI_API_KEY,
+            errors,
+          },
         },
         { status: 500 }
       )
