@@ -41,17 +41,79 @@ Return ONLY a JSON object (no markdown, no code blocks, no extra text):
     let provider = "none"
     const errors: string[] = []
 
-    // ─── 1. Gemini native v1beta (primary — works on Vercel with AQ. format keys) ─
+    // Helper — fetch image as base64 (used by all providers)
+    async function fetchImageAsBase64(url: string): Promise<{ base64: string; mimeType: string } | null> {
+      try {
+        const imageRes = await fetch(url, { redirect: "follow" })
+        if (!imageRes.ok) {
+          errors.push(`Image fetch failed: HTTP ${imageRes.status}`)
+          return null
+        }
+        const buffer = Buffer.from(await imageRes.arrayBuffer())
+        return {
+          base64: buffer.toString("base64"),
+          mimeType: imageRes.headers.get("content-type") || "image/jpeg",
+        }
+      } catch (e: any) {
+        errors.push(`Image fetch exception: ${e.message}`)
+        return null
+      }
+    }
+
+    // ─── 1. GitHub Models (primary — free tier, GPT-4o vision) ──────────────
+    if (!analysis) {
+      const githubToken = process.env.GITHUB_TOKEN
+      if (githubToken) {
+        try {
+          const imgData = await fetchImageAsBase64(imageUrl)
+          if (imgData) {
+            // Use OpenAI-compatible chat completions with vision content
+            const res = await fetch("https://models.github.ai/inference/chat/completions", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${githubToken}`,
+              },
+              body: JSON.stringify({
+                model: "gpt-4o",
+                messages: [{
+                  role: "user",
+                  content: [
+                    { type: "text", text: prompt },
+                    { type: "image_url", image_url: { url: `data:${imgData.mimeType};base64,${imgData.base64}` } },
+                  ],
+                }],
+                max_tokens: 300,
+                temperature: 0.3,
+              }),
+            })
+
+            if (res.ok) {
+              const data = await res.json()
+              const content = data.choices?.[0]?.message?.content || ""
+              analysis = parseAnalysisResponse(content)
+              if (analysis) provider = "github-gpt-4o"
+            } else {
+              const errText = await res.text()
+              errors.push(`GitHub Models HTTP ${res.status}: ${errText.slice(0, 200)}`)
+            }
+          }
+        } catch (e: any) {
+          console.error("[AI Search] GitHub Models failed:", e.message)
+          errors.push(`GitHub Models exception: ${e.message}`)
+        }
+      } else {
+        errors.push("GITHUB_TOKEN not configured")
+      }
+    }
+
+    // ─── 2. Gemini native v1beta (fallback — needs billing enabled for heavy use) ─
     if (!analysis) {
       const geminiKey = process.env.GEMINI_API_KEY
       if (geminiKey) {
         try {
-          const imageRes = await fetch(imageUrl, { redirect: "follow" })
-          if (imageRes.ok) {
-            const buffer = Buffer.from(await imageRes.arrayBuffer())
-            const base64 = buffer.toString("base64")
-            const mimeType = imageRes.headers.get("content-type") || "image/jpeg"
-
+          const imgData = await fetchImageAsBase64(imageUrl)
+          if (imgData) {
             const res = await fetch(
               `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
               {
@@ -61,7 +123,7 @@ Return ONLY a JSON object (no markdown, no code blocks, no extra text):
                   contents: [{
                     parts: [
                       { text: prompt },
-                      { inline_data: { mime_type: mimeType, data: base64 } },
+                      { inline_data: { mime_type: imgData.mimeType, data: imgData.base64 } },
                     ],
                   }],
                   generationConfig: { maxOutputTokens: 300, temperature: 0.3 },
@@ -78,12 +140,10 @@ Return ONLY a JSON object (no markdown, no code blocks, no extra text):
               if (analysis) provider = "gemini-v1beta"
             } else {
               const errText = await res.text()
-              const msg = `Gemini v1beta HTTP ${res.status}: ${errText.slice(0, 300)}`
+              const msg = `Gemini v1beta HTTP ${res.status}: ${errText.slice(0, 200)}`
               console.error(`[AI Search] ${msg}`)
               errors.push(msg)
             }
-          } else {
-            errors.push(`Image fetch failed: HTTP ${imageRes.status}`)
           }
         } catch (e: any) {
           console.error("[AI Search] Gemini v1beta failed:", e.message)
@@ -94,26 +154,21 @@ Return ONLY a JSON object (no markdown, no code blocks, no extra text):
       }
     }
 
-    // ─── 2. ZAI SDK (fallback — only works when .z-ai-config is present, i.e. dev) ─
+    // ─── 3. ZAI SDK (fallback — only works when .z-ai-config is present, i.e. dev) ─
     if (!analysis) {
       try {
         const ZAI = (await import("z-ai-web-dev-sdk")).default
         const zai = await ZAI.create()
 
-        // Fetch image and convert to base64 for reliable transmission
-        const imageRes = await fetch(imageUrl, { redirect: "follow" })
-        if (imageRes.ok) {
-          const buffer = Buffer.from(await imageRes.arrayBuffer())
-          const base64 = buffer.toString("base64")
-          const mimeType = imageRes.headers.get("content-type") || "image/jpeg"
-
+        const imgData = await fetchImageAsBase64(imageUrl)
+        if (imgData) {
           const response = await zai.chat.completions.createVision({
             model: "glm-4.5v",
             messages: [{
               role: "user",
               content: [
                 { type: "text", text: prompt },
-                { type: "image_url", image_url: { url: `data:${mimeType};base64,${base64}` } },
+                { type: "image_url", image_url: { url: `data:${imgData.mimeType};base64,${imgData.base64}` } },
               ],
             }],
             thinking: { type: "disabled" },
@@ -129,17 +184,13 @@ Return ONLY a JSON object (no markdown, no code blocks, no extra text):
       }
     }
 
-    // ─── 3. Gemini OpenAI-compatible endpoint (legacy fallback) ───────────
+    // ─── 4. Gemini OpenAI-compatible endpoint (legacy fallback) ──────────
     if (!analysis) {
       const geminiKey = process.env.GEMINI_API_KEY
       if (geminiKey) {
         try {
-          const imageRes = await fetch(imageUrl, { redirect: "follow" })
-          if (imageRes.ok) {
-            const buffer = Buffer.from(await imageRes.arrayBuffer())
-            const base64 = buffer.toString("base64")
-            const mimeType = imageRes.headers.get("content-type") || "image/jpeg"
-
+          const imgData = await fetchImageAsBase64(imageUrl)
+          if (imgData) {
             const res = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
               method: "POST",
               headers: {
@@ -152,7 +203,7 @@ Return ONLY a JSON object (no markdown, no code blocks, no extra text):
                   role: "user",
                   content: [
                     { type: "text", text: prompt },
-                    { type: "image_url", image_url: { url: `data:${mimeType};base64,${base64}` } },
+                    { type: "image_url", image_url: { url: `data:${imgData.mimeType};base64,${imgData.base64}` } },
                   ],
                 }],
                 max_tokens: 300,
