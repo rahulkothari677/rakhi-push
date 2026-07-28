@@ -248,8 +248,12 @@ export const db = {
           const orConditions: string[] = []
           for (const cond of opts.where.OR) {
             for (const [k, v] of Object.entries(cond)) {
-              orConditions.push(`${k} LIKE ?`)
-              args.push(`%${v}%`)
+              // Handle Prisma-style { contains: value } format
+              const searchValue = typeof v === 'object' && v !== null && 'contains' in v
+                ? v.contains
+                : v
+              orConditions.push(`LOWER(${k}) LIKE LOWER(?)`)
+              args.push(`%${searchValue}%`)
             }
           }
           if (orConditions.length) {

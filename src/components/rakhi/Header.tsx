@@ -2,8 +2,8 @@
 
 import { useStore } from "@/lib/store"
 import { useSession, signOut } from "next-auth/react"
-import { useEffect, useState } from "react"
-import { Menu, X, ShoppingBag, Heart, Search, User, ChevronDown, Sparkles } from "lucide-react"
+import { useEffect, useState, useRef } from "react"
+import { Menu, X, ShoppingBag, Heart, Search, User, ChevronDown, Image as ImageIcon, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { categoryThumbnail } from "@/lib/images"
 import { motion, AnimatePresence } from "framer-motion"
@@ -17,27 +17,37 @@ type Category = {
   productCount: number
 }
 
+type SearchResult = {
+  id: string
+  name: string
+  slug: string
+  primaryImage: string
+  price: number
+  category: string
+}
+
 export function Header() {
   const {
-    view,
-    setView,
-    setMenuOpen,
-    isMenuOpen,
-    cart,
-    wishlist,
-    setCartOpen,
-    setCategory,
-    setSearchQuery,
-    isAdminOpen,
-    setAdminOpen,
+    view, setView, setMenuOpen, isMenuOpen,
+    cart, wishlist, setCartOpen, setCategory, setSearchQuery, setAdminOpen,
   } = useStore()
   const { data: session } = useSession()
   const [scrolled, setScrolled] = useState(false)
   const [categories, setCategories] = useState<Category[]>([])
   const [searchInput, setSearchInput] = useState("")
-  const [showCategories, setShowCategories] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
+  const [showCategories, setShowCategories] = useState(false)
   const [announcement, setAnnouncement] = useState<{ enabled: boolean; text: string } | null>(null)
+
+  // Autocomplete state
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
+  const [searchLoading, setSearchLoading] = useState(false)
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
+
+  // Image search state
+  const [imageSearchLoading, setImageSearchLoading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30)
@@ -56,10 +66,97 @@ export function Header() {
       .catch(() => {})
   }, [])
 
+  // Click outside to close suggestions
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  // Debounced search autocomplete
+  useEffect(() => {
+    if (!searchInput.trim() || searchInput.length < 2) {
+      setSearchResults([])
+      setShowSuggestions(false)
+      return
+    }
+
+    setSearchLoading(true)
+    const timer = setTimeout(() => {
+      fetch(`/api/products?search=${encodeURIComponent(searchInput)}&limit=6`)
+        .then((r) => r.json())
+        .then((d) => {
+          setSearchResults(d.products || [])
+          setShowSuggestions(true)
+        })
+        .catch(() => {})
+        .finally(() => setSearchLoading(false))
+    }, 300)
+
+    return () => clearTimeout(timer)
+  }, [searchInput])
+
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    setSearchQuery(searchInput)
+    if (searchInput.trim()) {
+      setSearchQuery(searchInput)
+      setShowSearch(false)
+      setShowSuggestions(false)
+    }
+  }
+
+  const onSuggestionClick = (slug: string) => {
+    setShowSuggestions(false)
     setShowSearch(false)
+    setSearchInput("")
+    useStore.getState().openProduct(slug)
+  }
+
+  const onImageSearch = async (file: File) => {
+    setImageSearchLoading(true)
+    try {
+      // Upload the image first
+      const fd = new FormData()
+      fd.append("files", file)
+      const uploadRes = await fetch("/api/admin/upload", { method: "POST", body: fd })
+      const uploadData = await uploadRes.json()
+
+      if (!uploadData.urls?.[0]) {
+        alert("Image upload failed. Please try again.")
+        return
+      }
+
+      const imageUrl = uploadData.urls[0]
+
+      // Use AI to find similar products
+      const aiRes = await fetch("/api/ai/search-by-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl }),
+      })
+      const aiData = await aiRes.json()
+
+      if (aiData.searchQuery) {
+        // Search products using AI-generated query
+        setSearchQuery(aiData.searchQuery)
+        setShowSearch(false)
+      } else if (aiData.productIds?.length > 0) {
+        // Direct match — go to shop with category filter
+        setSearchQuery(aiData.productIds[0])
+        setShowSearch(false)
+      } else {
+        alert("Couldn't find similar Rakhis. Try a different image or search by text.")
+      }
+    } catch (e: any) {
+      alert("Image search failed: " + e.message)
+    } finally {
+      setImageSearchLoading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ""
+    }
   }
 
   const navToCategory = (cat: string) => {
@@ -70,7 +167,7 @@ export function Header() {
 
   return (
     <>
-      {/* Announcement bar — premium gradient */}
+      {/* Announcement bar */}
       {announcement?.enabled && (
         <div className="bg-gradient-to-r from-[var(--primary-dark)] via-[var(--primary)] to-[var(--primary-dark)] text-[var(--background)] text-xs sm:text-sm py-2 overflow-hidden border-b border-[var(--accent)]/30">
           <div className="animate-marquee whitespace-nowrap flex">
@@ -95,13 +192,13 @@ export function Header() {
             {/* Mobile menu toggle */}
             <button
               onClick={() => setMenuOpen(!isMenuOpen)}
-              className="lg:hidden p-2 -ml-2 text-[var(--primary)] hover:bg-[var(--accent)]/15 rounded-md transition-colors"
+              className="lg:hidden p-2 -ml-2 text-[var(--primary)] hover:bg-[var(--cream)] rounded-md transition-colors"
               aria-label="Toggle menu"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
 
-            {/* Logo — premium design */}
+            {/* Logo */}
             <button
               onClick={() => useStore.getState().goHome()}
               className="flex flex-col items-center group"
@@ -177,10 +274,7 @@ export function Header() {
                         </button>
                       ))}
                       <button
-                        onClick={() => {
-                          setView("shop")
-                          setShowCategories(false)
-                        }}
+                        onClick={() => { setView("shop"); setShowCategories(false) }}
                         className="col-span-3 mt-2 py-3 text-center text-sm tracking-elegant uppercase font-semibold text-[var(--primary)] hover:bg-[var(--background)] rounded-lg transition-colors border-t border-[var(--border)]"
                       >
                         View All Collection →
@@ -192,14 +286,14 @@ export function Header() {
 
               <button
                 onClick={() => { useStore.setState({ infoPageId: "story" }); setView("info") }}
-                className="px-4 py-2 text-sm tracking-elegant uppercase font-medium text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--accent)]/10 rounded-md transition-all"
+                className="px-4 py-2 text-sm tracking-elegant uppercase font-medium text-[var(--foreground)] hover:text-[var(--primary)] rounded-md transition-all"
               >
                 Our Story
               </button>
 
               <button
                 onClick={() => { useStore.setState({ infoPageId: "contact" }); setView("info") }}
-                className="px-4 py-2 text-sm tracking-elegant uppercase font-medium text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--accent)]/10 rounded-md transition-all"
+                className="px-4 py-2 text-sm tracking-elegant uppercase font-medium text-[var(--foreground)] hover:text-[var(--primary)] rounded-md transition-all"
               >
                 Contact
               </button>
@@ -207,13 +301,13 @@ export function Header() {
 
             {/* Actions */}
             <div className="flex items-center gap-1 sm:gap-2">
-              {/* Search */}
+              {/* Search — toggle expandable */}
               <button
                 onClick={() => setShowSearch(!showSearch)}
                 className="p-2.5 text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--cream)] rounded-md transition-all"
                 aria-label="Search"
               >
-                <Search size={20} />
+                {showSearch ? <X size={20} /> : <Search size={20} />}
               </button>
 
               <button
@@ -242,30 +336,19 @@ export function Header() {
                 )}
               </button>
 
-              {/* Account button — shows user icon for everyone, admin panel only for admin login */}
-              {session ? (
-                <button
-                  onClick={() => setAdminOpen(true)}
-                  className="p-2.5 text-[var(--foreground)] hover:text-[var(--primary)] rounded-md transition-all"
-                  aria-label="Account"
-                  title={session.user?.email}
-                >
-                  <User size={20} />
-                </button>
-              ) : (
-                <button
-                  onClick={() => setAdminOpen(true)}
-                  className="p-2.5 text-[var(--foreground)] hover:text-[var(--primary)] rounded-md transition-all"
-                  aria-label="Account"
-                >
-                  <User size={20} />
-                </button>
-              )}
+              {/* Account button */}
+              <button
+                onClick={() => setAdminOpen(true)}
+                className="p-2.5 text-[var(--foreground)] hover:text-[var(--primary)] rounded-md transition-all"
+                aria-label="Account"
+              >
+                <User size={20} />
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Search bar — expandable */}
+        {/* Search bar — expandable with autocomplete + image search */}
         <AnimatePresence>
           {showSearch && (
             <motion.div
@@ -274,25 +357,81 @@ export function Header() {
               exit={{ height: 0, opacity: 0 }}
               className="overflow-hidden bg-white border-t border-[var(--border)]"
             >
-              <form onSubmit={onSearch} className="max-w-3xl mx-auto px-4 py-4">
-                <div className="relative">
-                  <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
-                  <input
-                    type="text"
-                    autoFocus
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
-                    placeholder="Search for Rakhis, categories..."
-                    className="w-full pl-12 pr-4 py-3 bg-[var(--background)] border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition-all"
-                  />
-                  <button
-                    type="submit"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5 bg-[var(--primary)] text-[var(--background)] text-xs tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors"
-                  >
-                    Search
-                  </button>
-                </div>
-              </form>
+              <div className="max-w-3xl mx-auto px-4 py-4" ref={searchRef}>
+                <form onSubmit={onSearch}>
+                  <div className="relative">
+                    <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
+                    <input
+                      type="text"
+                      autoFocus
+                      value={searchInput}
+                      onChange={(e) => setSearchInput(e.target.value)}
+                      onFocus={() => searchResults.length > 0 && setShowSuggestions(true)}
+                      placeholder="Search for Rakhis, categories..."
+                      className="w-full pl-12 pr-32 py-3 bg-[var(--background)] border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition-all"
+                    />
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                      {/* Image search button */}
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={imageSearchLoading}
+                        className="p-2 text-[var(--primary)] hover:bg-[var(--cream)] rounded-md transition-colors disabled:opacity-50"
+                        aria-label="Search by image"
+                        title="Search by image"
+                      >
+                        {imageSearchLoading ? <Loader2 size={18} className="animate-spin" /> : <ImageIcon size={18} />}
+                      </button>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => e.target.files?.[0] && onImageSearch(e.target.files[0])}
+                      />
+                      <button
+                        type="submit"
+                        className="px-4 py-1.5 bg-[var(--primary)] text-[var(--background)] text-xs tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors"
+                      >
+                        Search
+                      </button>
+                    </div>
+
+                    {/* Autocomplete suggestions */}
+                    {showSuggestions && (searchResults.length > 0 || searchLoading) && (
+                      <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-[0_20px_60px_rgba(139,30,62,0.15)] border border-[var(--border)] overflow-hidden z-50">
+                        {searchLoading ? (
+                          <div className="p-4 text-center text-sm text-[var(--muted-foreground)] flex items-center justify-center gap-2">
+                            <Loader2 size={16} className="animate-spin" /> Searching...
+                          </div>
+                        ) : (
+                          <div className="max-h-80 overflow-y-auto">
+                            {searchResults.map((product) => (
+                              <button
+                                key={product.id}
+                                onClick={() => onSuggestionClick(product.slug)}
+                                className="w-full flex items-center gap-3 p-3 hover:bg-[var(--background)] transition-colors text-left border-b border-[var(--border)]/50 last:border-0"
+                              >
+                                <img src={product.primaryImage} alt="" className="w-12 h-12 rounded-md object-cover flex-shrink-0" />
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-medium text-[var(--foreground)] truncate">{product.name}</p>
+                                  <p className="text-xs text-[var(--muted-foreground)]">{product.category}</p>
+                                </div>
+                                <span className="text-sm font-bold text-[var(--primary)] flex-shrink-0">
+                                  ₹{product.price}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </form>
+                <p className="text-xs text-[var(--muted-foreground)] mt-2 flex items-center gap-1.5">
+                  <ImageIcon size={12} /> Tip: Click the image icon to search by uploading a Rakhi photo
+                </p>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -331,7 +470,7 @@ export function Header() {
                 >
                   All Collection
                 </button>
-                <div className="px-3 py-1 text-xs tracking-elegant uppercase text-[var(--accent)] font-semibold">
+                <div className="px-3 py-1 text-xs tracking-elegant uppercase text-[var(--muted-foreground)] font-semibold">
                   Collections
                 </div>
                 <div className="max-h-72 overflow-y-auto">
@@ -341,7 +480,7 @@ export function Header() {
                       onClick={() => navToCategory(cat.name)}
                       className="flex items-center gap-3 w-full text-left px-3 py-2 text-sm text-[var(--foreground)] hover:bg-[var(--background)] rounded-md"
                     >
-                      <div className="w-8 h-8 rounded overflow-hidden bg-[var(--cream)] flex-shrink-0">
+                      <div className="w-7 h-7 rounded overflow-hidden bg-[var(--cream)] flex-shrink-0">
                         {cat.image ? (
                           <img src={categoryThumbnail(cat.image)} alt={cat.name} className="w-full h-full object-cover" />
                         ) : (
