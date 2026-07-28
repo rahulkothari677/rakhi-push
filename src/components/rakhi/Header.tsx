@@ -246,7 +246,7 @@ export function Header() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                       transition={{ duration: 0.2 }}
-                      className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[680px] bg-white shadow-[0_20px_60px_rgba(139,30,62,0.15)] rounded-xl border border-[var(--border)] p-6 grid grid-cols-3 gap-2"
+                      className="absolute top-full left-0 mt-2 w-[560px] max-w-[calc(100vw-2rem)] bg-white shadow-[0_20px_60px_rgba(139,30,62,0.15)] rounded-xl border border-[var(--border)] p-6 grid grid-cols-2 gap-2"
                     >
                       {categories.map((cat) => (
                         <button
@@ -275,7 +275,7 @@ export function Header() {
                       ))}
                       <button
                         onClick={() => { setView("shop"); setShowCategories(false) }}
-                        className="col-span-3 mt-2 py-3 text-center text-sm tracking-elegant uppercase font-semibold text-[var(--primary)] hover:bg-[var(--background)] rounded-lg transition-colors border-t border-[var(--border)]"
+                        className="col-span-2 mt-2 py-3 text-center text-sm tracking-elegant uppercase font-semibold text-[var(--primary)] hover:bg-[var(--background)] rounded-lg transition-colors border-t border-[var(--border)]"
                       >
                         View All Collection →
                       </button>
