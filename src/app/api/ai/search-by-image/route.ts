@@ -40,41 +40,7 @@ Return ONLY a JSON object (no markdown, no code blocks, no extra text):
     let analysis: { searchQuery?: string; category?: string | null } | null = null
     let provider = "none"
 
-    // ─── 1. ZAI SDK (primary — always available) ─────────────────────────
-    if (!analysis) {
-      try {
-        const ZAI = (await import("z-ai-web-dev-sdk")).default
-        const zai = await ZAI.create()
-
-        // Fetch image and convert to base64 for reliable transmission
-        const imageRes = await fetch(imageUrl, { redirect: "follow" })
-        if (imageRes.ok) {
-          const buffer = Buffer.from(await imageRes.arrayBuffer())
-          const base64 = buffer.toString("base64")
-          const mimeType = imageRes.headers.get("content-type") || "image/jpeg"
-
-          const response = await zai.chat.completions.createVision({
-            model: "glm-4.5v",
-            messages: [{
-              role: "user",
-              content: [
-                { type: "text", text: prompt },
-                { type: "image_url", image_url: { url: `data:${mimeType};base64,${base64}` } },
-              ],
-            }],
-            thinking: { type: "disabled" },
-          })
-
-          const content = response.choices?.[0]?.message?.content || ""
-          analysis = parseAnalysisResponse(content)
-          if (analysis) provider = "zai-sdk"
-        }
-      } catch (e: any) {
-        console.error("[AI Search] ZAI SDK failed:", e.message)
-      }
-    }
-
-    // ─── 2. Gemini native v1beta (works with AQ. format keys) ─────────────
+    // ─── 1. Gemini native v1beta (primary — works on Vercel with AQ. format keys) ─
     if (!analysis) {
       const geminiKey = process.env.GEMINI_API_KEY
       if (geminiKey) {
@@ -117,6 +83,40 @@ Return ONLY a JSON object (no markdown, no code blocks, no extra text):
         } catch (e: any) {
           console.error("[AI Search] Gemini v1beta failed:", e.message)
         }
+      }
+    }
+
+    // ─── 2. ZAI SDK (fallback — only works when .z-ai-config is present, i.e. dev) ─
+    if (!analysis) {
+      try {
+        const ZAI = (await import("z-ai-web-dev-sdk")).default
+        const zai = await ZAI.create()
+
+        // Fetch image and convert to base64 for reliable transmission
+        const imageRes = await fetch(imageUrl, { redirect: "follow" })
+        if (imageRes.ok) {
+          const buffer = Buffer.from(await imageRes.arrayBuffer())
+          const base64 = buffer.toString("base64")
+          const mimeType = imageRes.headers.get("content-type") || "image/jpeg"
+
+          const response = await zai.chat.completions.createVision({
+            model: "glm-4.5v",
+            messages: [{
+              role: "user",
+              content: [
+                { type: "text", text: prompt },
+                { type: "image_url", image_url: { url: `data:${mimeType};base64,${base64}` } },
+              ],
+            }],
+            thinking: { type: "disabled" },
+          })
+
+          const content = response.choices?.[0]?.message?.content || ""
+          analysis = parseAnalysisResponse(content)
+          if (analysis) provider = "zai-sdk"
+        }
+      } catch (e: any) {
+        console.error("[AI Search] ZAI SDK failed:", e.message)
       }
     }
 
