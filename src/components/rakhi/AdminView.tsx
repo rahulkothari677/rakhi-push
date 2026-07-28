@@ -12,6 +12,7 @@ import {
 import { cn, formatINR, slugify, generateSKU, parseJSON } from "@/lib/utils"
 import { thumbnailImage, categoryImage, heroImage, ctaImage } from "@/lib/images"
 import { PRESET_THEMES, FONT_OPTIONS } from "@/lib/themes"
+import { BulkUpload } from "./BulkUpload"
 
 type Tab = "dashboard" | "products" | "categories" | "hero" | "content" | "settings" | "orders" | "themes"
 
@@ -216,6 +217,7 @@ function ProductsTab() {
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState<any | null>(null)
   const [showForm, setShowForm] = useState(false)
+  const [showBulkUpload, setShowBulkUpload] = useState(false)
 
   const load = useCallback(() => {
     setLoading(true)
@@ -250,19 +252,76 @@ function ProductsTab() {
     )
   }
 
+  if (showBulkUpload) {
+    return (
+      <>
+        <ProductsTabContent
+          products={products}
+          loading={loading}
+          onAddProduct={() => setShowForm(true)}
+          onEdit={setEditing}
+          onDelete={handleDelete}
+        />
+        <BulkUpload
+          categories={categories}
+          onDone={load}
+          onClose={() => setShowBulkUpload(false)}
+        />
+      </>
+    )
+  }
+
+  return (
+    <ProductsTabContent
+      products={products}
+      loading={loading}
+      onAddProduct={() => setShowForm(true)}
+      onBulkUpload={() => setShowBulkUpload(true)}
+      onEdit={setEditing}
+      onDelete={handleDelete}
+    />
+  )
+}
+
+// ─── ProductsTabContent — the products table (reused by ProductsTab and BulkUpload overlay) ───
+function ProductsTabContent({
+  products,
+  loading,
+  onAddProduct,
+  onBulkUpload,
+  onEdit,
+  onDelete,
+}: {
+  products: any[]
+  loading: boolean
+  onAddProduct: () => void
+  onBulkUpload?: () => void
+  onEdit: (p: any) => void
+  onDelete: (id: string) => void
+}) {
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div>
           <h2 className="font-serif text-2xl font-bold text-[#2A0A0F]">Products</h2>
           <p className="text-sm text-[#6B5544]">{products.length} products in your catalog</p>
         </div>
-        <button
-          onClick={() => setShowForm(true)}
-          className="px-4 py-2.5 bg-[#8B1E3E] text-[#FBF6EC] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[#6B0E2A] transition-colors flex items-center gap-2"
-        >
-          <Plus size={16} /> Add Product
-        </button>
+        <div className="flex items-center gap-2">
+          {onBulkUpload && (
+            <button
+              onClick={onBulkUpload}
+              className="px-4 py-2.5 bg-gradient-to-r from-[#8B1E3E] to-[#B3324A] text-[#FBF6EC] text-sm tracking-elegant uppercase font-semibold rounded-md hover:from-[#6B0E2A] hover:to-[#8B1E3E] transition-all flex items-center gap-2 shadow-md"
+            >
+              <Sparkles size={16} /> Bulk Upload + AI
+            </button>
+          )}
+          <button
+            onClick={onAddProduct}
+            className="px-4 py-2.5 bg-[#FBF6EC] border border-[#8B1E3E] text-[#8B1E3E] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[#F4EAD5] transition-colors flex items-center gap-2"
+          >
+            <Plus size={16} /> Add Product
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -270,7 +329,15 @@ function ProductsTab() {
       ) : products.length === 0 ? (
         <div className="text-center py-20">
           <p className="text-sm text-[#6B5544] mb-4">No products yet.</p>
-          <button onClick={() => setShowForm(true)} className="text-[#8B1E3E] underline text-sm">Add your first product</button>
+          <div className="flex items-center justify-center gap-3">
+            <button onClick={onAddProduct} className="text-[#8B1E3E] underline text-sm">Add your first product</button>
+            {onBulkUpload && (
+              <>
+                <span className="text-[#6B5544]">or</span>
+                <button onClick={onBulkUpload} className="text-[#8B1E3E] underline text-sm font-semibold">Bulk upload with AI</button>
+              </>
+            )}
+          </div>
         </div>
       ) : (
         <div className="bg-white rounded-lg border border-[#E8D9B8] overflow-hidden">
@@ -314,10 +381,10 @@ function ProductsTab() {
                     </td>
                     <td className="p-3 text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <button onClick={() => setEditing(p)} className="w-8 h-8 rounded-md hover:bg-[#F4EAD5] flex items-center justify-center text-[#8B1E3E]">
+                        <button onClick={() => onEdit(p)} className="w-8 h-8 rounded-md hover:bg-[#F4EAD5] flex items-center justify-center text-[#8B1E3E]">
                           <Pencil size={14} />
                         </button>
-                        <button onClick={() => handleDelete(p.id)} className="w-8 h-8 rounded-md hover:bg-[#B3324A]/10 flex items-center justify-center text-[#B3324A]">
+                        <button onClick={() => onDelete(p.id)} className="w-8 h-8 rounded-md hover:bg-[#B3324A]/10 flex items-center justify-center text-[#B3324A]">
                           <Trash2 size={14} />
                         </button>
                       </div>

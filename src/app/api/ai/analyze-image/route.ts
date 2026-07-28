@@ -43,12 +43,22 @@ export async function POST(req: Request) {
     const { imageUrl } = await req.json()
     if (!imageUrl) return NextResponse.json({ error: "Image URL required" }, { status: 400 })
 
+    // Fetch actual categories from the catalog so the AI returns valid names
+    let categoryNames: string[] = []
+    try {
+      const catsRes = await fetch(`${new URL(req.url).origin}/api/categories`)
+      const catsData = await catsRes.json()
+      categoryNames = (catsData.categories || []).map((c: any) => c.name)
+    } catch {
+      categoryNames = ["Girls Rakhi", "Kids Rakhi", "Designer Rakhi", "Handmade Rakhi"]
+    }
+
     const prompt = `You are an expert Rakhi product catalog manager for "House of Neelam".
 
 Analyze this Rakhi product image and provide ALL details:
 
 1. name: Premium elegant product name (2-6 words)
-2. category: Choose from: "Traditional Rakhi", "Designer Rakhi", "Kids Rakhi", "Bhaiya-Bhabhi (Lumba)", "Premium Gold Rakhi", "Silver Rakhi", "Handmade Rakhi", "Personalized Rakhi", "Roli-Chawal & Thali"
+2. category: You MUST pick one of these EXACT category names: ${categoryNames.map((c) => `"${c}"`).join(", ")}
 3. shortDescription: One-line description (max 80 chars)
 4. description: Full 2-3 sentence description
 5. materials: Array of materials
