@@ -3,7 +3,7 @@
 import { useStore } from "@/lib/store"
 import { useSession, signOut } from "next-auth/react"
 import { useEffect, useState, useRef } from "react"
-import { Menu, X, ShoppingBag, Heart, Search, User, ChevronDown, Image as ImageIcon, Loader2, Camera, Sparkles } from "lucide-react"
+import { Menu, X, ShoppingBag, Heart, Search, User, ChevronDown, Loader2, Camera, Sparkles } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { categoryThumbnail } from "@/lib/images"
@@ -156,16 +156,27 @@ export function Header() {
         throw new Error(aiData.error || "AI analysis failed. Please try text search.")
       }
 
-      // Step 3: Apply the search query — always present after our fix
+      // Step 3: Apply category + search query from AI response.
+      // Setting category first ensures relevant products show even if the
+      // search keywords don't exactly match product names.
       const query = aiData.searchQuery?.trim()
-      if (query) {
-        setSearchInput(query)
-        setSearchQuery(query)
+      const category = aiData.category?.trim()
+      if (query || category) {
+        setSearchInput(query || "")
+        if (category) {
+          // setCategory clears searchQuery, so call setSearchQuery AFTER
+          setCategory(category)
+          if (query) setSearchQuery(query)
+        } else {
+          setSearchQuery(query)
+        }
         setShowSearch(false)
         setShowSuggestions(false)
         toast.success("Found similar Rakhis!", {
           id: toastId,
-          description: `Searching for: "${query}"`,
+          description: category
+            ? `Showing ${category}${query ? ` matching "${query}"` : ""}`
+            : `Searching for: "${query}"`,
           duration: 3000,
           icon: <Sparkles size={18} className="text-white" />,
           style: { background: "var(--primary)", color: "white", border: "none" },
@@ -327,14 +338,7 @@ export function Header() {
 
             {/* Actions */}
             <div className="flex items-center gap-1 sm:gap-2">
-              {/* Search — toggle expandable (mobile/tablet only; desktop has persistent search) */}
-              <button
-                onClick={() => setShowSearch(!showSearch)}
-                className="lg:hidden p-2.5 text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--cream)] rounded-md transition-all"
-                aria-label="Search"
-              >
-                {showSearch ? <X size={20} /> : <Search size={20} />}
-              </button>
+              {/* Search toggle removed — persistent search bar now shows on ALL screen sizes */}
 
               <button
                 onClick={() => setView("wishlist")}
@@ -374,19 +378,19 @@ export function Header() {
           </div>
         </div>
 
-        {/* Desktop persistent search bar — always visible below the nav (no click required) */}
-        <div className="hidden lg:block bg-white/60 backdrop-blur-sm border-t border-[var(--border)]/50">
-          <div className="max-w-3xl mx-auto px-4 py-3" ref={searchRef}>
+        {/* Persistent search bar — always visible on ALL screen sizes (mobile + desktop) */}
+        <div className="bg-white/60 backdrop-blur-sm border-t border-[var(--border)]/50">
+          <div className="max-w-3xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3" ref={searchRef}>
             <form onSubmit={onSearch}>
               <div className="relative">
-                <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] pointer-events-none" />
+                <Search size={18} className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] pointer-events-none" />
                 <input
                   type="text"
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   onFocus={() => searchResults.length > 0 && setShowSuggestions(true)}
-                  placeholder="Search for Rakhis, categories, materials..."
-                  className="w-full pl-12 pr-36 py-3 bg-[var(--background)] border-2 border-[var(--accent)]/30 rounded-full text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition-all"
+                  placeholder="Search for Rakhis, categories..."
+                  className="w-full pl-10 sm:pl-12 pr-28 sm:pr-36 py-2.5 sm:py-3 bg-[var(--background)] border-2 border-[var(--accent)]/30 rounded-full text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition-all"
                 />
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                   {/* Image search button — prominent */}
@@ -394,12 +398,13 @@ export function Header() {
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={imageSearchLoading}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[var(--primary)] hover:bg-[var(--cream)] rounded-full transition-colors disabled:opacity-50 border border-[var(--accent)]/30"
+                    className="flex items-center gap-1.5 px-2 sm:px-3 py-1.5 text-xs font-semibold text-[var(--primary)] hover:bg-[var(--cream)] rounded-full transition-colors disabled:opacity-50 border border-[var(--accent)]/30"
                     aria-label="Search by image"
                     title="Search by image — upload a Rakhi photo"
                   >
                     {imageSearchLoading ? <Loader2 size={14} className="animate-spin" /> : <Camera size={14} />}
-                    <span className="hidden xl:inline">Photo Search</span>
+                    <span className="hidden sm:inline">Photo</span>
+                    <span className="hidden xl:inline">&nbsp;Search</span>
                   </button>
                   <input
                     ref={fileInputRef}
@@ -410,7 +415,7 @@ export function Header() {
                   />
                   <button
                     type="submit"
-                    className="px-4 py-1.5 bg-[var(--primary)] text-[var(--background)] text-xs tracking-elegant uppercase font-semibold rounded-full hover:bg-[var(--primary-dark)] transition-colors"
+                    className="px-3 sm:px-4 py-1.5 bg-[var(--primary)] text-[var(--background)] text-xs tracking-elegant uppercase font-semibold rounded-full hover:bg-[var(--primary-dark)] transition-colors"
                   >
                     Search
                   </button>
@@ -447,99 +452,11 @@ export function Header() {
                 )}
               </div>
             </form>
-            <p className="text-xs text-[var(--muted-foreground)] mt-2 flex items-center justify-center gap-1.5">
+            <p className="text-[10px] sm:text-xs text-[var(--muted-foreground)] mt-1.5 sm:mt-2 flex items-center justify-center gap-1.5">
               <Sparkles size={11} className="text-[var(--accent)]" /> AI-powered search · Type a query or click the camera icon to upload a Rakhi photo
             </p>
           </div>
         </div>
-
-        {/* Mobile/tablet expandable search bar — toggle via search icon */}
-        <AnimatePresence>
-          {showSearch && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="lg:hidden overflow-hidden bg-white border-t border-[var(--border)]"
-            >
-              <div className="max-w-3xl mx-auto px-4 py-4">
-                <form onSubmit={onSearch}>
-                  <div className="relative">
-                    <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
-                    <input
-                      type="text"
-                      autoFocus
-                      value={searchInput}
-                      onChange={(e) => setSearchInput(e.target.value)}
-                      onFocus={() => searchResults.length > 0 && setShowSuggestions(true)}
-                      placeholder="Search for Rakhis, categories..."
-                      className="w-full pl-12 pr-32 py-3 bg-[var(--background)] border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition-all"
-                    />
-                    <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                      {/* Image search button */}
-                      <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={imageSearchLoading}
-                        className="p-2 text-[var(--primary)] hover:bg-[var(--cream)] rounded-md transition-colors disabled:opacity-50"
-                        aria-label="Search by image"
-                        title="Search by image"
-                      >
-                        {imageSearchLoading ? <Loader2 size={18} className="animate-spin" /> : <ImageIcon size={18} />}
-                      </button>
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => e.target.files?.[0] && onImageSearch(e.target.files[0])}
-                      />
-                      <button
-                        type="submit"
-                        className="px-4 py-1.5 bg-[var(--primary)] text-[var(--background)] text-xs tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors"
-                      >
-                        Search
-                      </button>
-                    </div>
-
-                    {/* Autocomplete suggestions */}
-                    {showSuggestions && (searchResults.length > 0 || searchLoading) && (
-                      <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-[0_20px_60px_rgba(139,30,62,0.15)] border border-[var(--border)] overflow-hidden z-50">
-                        {searchLoading ? (
-                          <div className="p-4 text-center text-sm text-[var(--muted-foreground)] flex items-center justify-center gap-2">
-                            <Loader2 size={16} className="animate-spin" /> Searching...
-                          </div>
-                        ) : (
-                          <div className="max-h-80 overflow-y-auto">
-                            {searchResults.map((product) => (
-                              <button
-                                key={product.id}
-                                onClick={() => onSuggestionClick(product.slug)}
-                                className="w-full flex items-center gap-3 p-3 hover:bg-[var(--background)] transition-colors text-left border-b border-[var(--border)]/50 last:border-0"
-                              >
-                                <img src={product.primaryImage} alt="" className="w-12 h-12 rounded-md object-cover flex-shrink-0" />
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium text-[var(--foreground)] truncate">{product.name}</p>
-                                  <p className="text-xs text-[var(--muted-foreground)]">{product.category}</p>
-                                </div>
-                                <span className="text-sm font-bold text-[var(--primary)] flex-shrink-0">
-                                  ₹{product.price}
-                                </span>
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </form>
-                <p className="text-xs text-[var(--muted-foreground)] mt-2 flex items-center gap-1.5">
-                  <ImageIcon size={12} /> Tip: Click the image icon to search by uploading a Rakhi photo
-                </p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Mobile menu */}
         <AnimatePresence>

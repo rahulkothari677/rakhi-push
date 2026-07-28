@@ -27,11 +27,25 @@ export async function GET(req: Request) {
     where.isFeatured = true
   }
   if (search) {
-    where.OR = [
-      { name: { contains: search } },
-      { shortDescription: { contains: search } },
-      { description: { contains: search } },
-    ]
+    // Split search into keywords and match ANY keyword (OR logic per word).
+    // This fixes the issue where AI image search returns multi-word queries
+    // like "lumba peach floral beads" — previously this was treated as a
+    // single phrase and matched 0 products.
+    const keywords = search.trim().split(/\s+/).filter((k) => k.length >= 2)
+    if (keywords.length === 1) {
+      where.OR = [
+        { name: { contains: keywords[0] } },
+        { shortDescription: { contains: keywords[0] } },
+        { description: { contains: keywords[0] } },
+      ]
+    } else if (keywords.length > 1) {
+      // Match products that contain ANY of the keywords in name/description
+      where.OR = keywords.flatMap((k) => [
+        { name: { contains: k } },
+        { shortDescription: { contains: k } },
+        { description: { contains: k } },
+      ])
+    }
   }
 
   let query = db.product.findMany({
