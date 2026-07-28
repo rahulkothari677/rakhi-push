@@ -142,7 +142,10 @@ export function AiShoppingAssistant() {
 
   return (
     <>
-      {/* Floating chat button — replaces/augments the WhatsApp button area */}
+      {/* Floating chat button — positioned ABOVE the WhatsApp button with clear spacing.
+          WhatsApp button is at bottom-4 (16px) / sm:bottom-6 (24px) and is 56px tall,
+          so its top is at 72px / 80px. AI button sits at bottom-24 (96px) / sm:bottom-28 (112px)
+          to leave a clear gap above WhatsApp. */}
       <motion.button
         onClick={() => {
           setIsOpen(!isOpen)
@@ -152,7 +155,7 @@ export function AiShoppingAssistant() {
         animate={{ opacity: 1, scale: 1 }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="fixed bottom-20 right-4 sm:bottom-24 sm:right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--primary-dark)] text-white shadow-luxe-hover flex items-center justify-center relative"
+        className="fixed bottom-24 right-4 sm:bottom-28 sm:right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--primary-dark)] text-white shadow-luxe-hover flex items-center justify-center"
         aria-label="Open AI Shopping Assistant"
       >
         {isOpen ? <X size={22} /> : <Sparkles size={22} />}
@@ -174,7 +177,7 @@ export function AiShoppingAssistant() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-36 right-4 sm:bottom-40 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-96 max-w-md bg-white rounded-2xl shadow-[0_25px_60px_rgba(139,30,62,0.25)] border border-[var(--border)] overflow-hidden flex flex-col"
+            className="fixed bottom-40 right-4 sm:bottom-44 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-96 max-w-md bg-white rounded-2xl shadow-[0_25px_60px_rgba(139,30,62,0.25)] border border-[var(--border)] overflow-hidden flex flex-col"
             style={{ maxHeight: "70vh" }}
           >
             {/* Header */}

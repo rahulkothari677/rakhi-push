@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { MessageCircle, X, ChevronUp } from "lucide-react"
+import { MessageCircle, ChevronUp, Sparkles, X } from "lucide-react"
 import { buildWhatsAppUrl, buildQueryMessage } from "@/lib/whatsapp"
 
 export function FloatingActions() {
@@ -20,7 +20,8 @@ export function FloatingActions() {
   }, [])
 
   return (
-    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 flex flex-col gap-3">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 flex flex-col gap-3 items-end">
+      {/* Back to top arrow — appears on scroll */}
       <AnimatePresence>
         {showTop && (
           <motion.button
@@ -36,6 +37,7 @@ export function FloatingActions() {
         )}
       </AnimatePresence>
 
+      {/* WhatsApp button — always visible at bottom */}
       {whatsapp?.primaryNumber && (
         <motion.a
           href={buildWhatsAppUrl(
