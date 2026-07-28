@@ -234,10 +234,6 @@ Return ONLY a JSON object (no markdown, no code blocks, no extra text):
         {
           error: "We couldn't analyze your image right now. Please try a text search instead.",
           searchQuery: null,
-          debug: {
-            geminiConfigured: !!process.env.GEMINI_API_KEY,
-            errors,
-          },
         },
         { status: 500 }
       )
