@@ -7,6 +7,7 @@ import { cn, formatINR } from "@/lib/utils"
 import { productImage } from "@/lib/images"
 import { buildWhatsAppUrl, buildSingleProductMessage } from "@/lib/whatsapp"
 import { showAddedToCart, showAddedToWishlist, showRemovedFromWishlist } from "@/lib/toast-helpers"
+import { flyToCart } from "./FlyingCart"
 import { useEffect, useState } from "react"
 
 export type Product = {
@@ -67,6 +68,8 @@ export function ProductCard({ product, index = 0 }: Props) {
     })
     setAdded(true)
     showAddedToCart(product.name)
+    // Trigger flying-to-cart animation
+    flyToCart(e, productImage(product.primaryImage))
     setTimeout(() => setAdded(false), 1500)
   }
 

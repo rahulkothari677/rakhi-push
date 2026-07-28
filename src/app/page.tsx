@@ -15,6 +15,7 @@ import { AdminView } from "@/components/rakhi/AdminView"
 import { AccountModal } from "@/components/rakhi/AccountModal"
 import { FloatingActions } from "@/components/rakhi/FloatingActions"
 import { AiShoppingAssistant } from "@/components/rakhi/AiShoppingAssistant"
+import { FlyingCartOverlay } from "@/components/rakhi/FlyingCart"
 import { BackButton, BrowserHistorySync } from "@/components/rakhi/BackButton"
 import { ThemeLoader } from "@/components/rakhi/ThemeLoader"
 import { QuickView } from "@/components/rakhi/QuickView"
@@ -72,6 +73,7 @@ export default function Home() {
       <AdminView />
       <FloatingActions />
       <AiShoppingAssistant />
+      <FlyingCartOverlay />
       <QuickView product={quickViewProduct} onClose={() => setQuickView(null)} />
     </div>
   )
