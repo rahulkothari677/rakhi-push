@@ -198,6 +198,46 @@ export function HomeView() {
         </div>
       </section>
 
+      {/* New Arrivals — VIBRANT with diagonal lines pattern (moved here, right after Featured) */}
+      <section className="py-20 bg-gradient-to-b from-[var(--background)] via-[#FFF8DC] to-[var(--background)] relative overflow-hidden">
+        {/* Diagonal lines pattern */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
+          backgroundImage: `repeating-linear-gradient(45deg, var(--accent) 0, var(--accent) 1px, transparent 1px, transparent 20px)`,
+        }} />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div className="text-center mb-12">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <div className="h-px w-12 bg-[var(--accent)]" />
+            <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-[var(--accent)] font-medium">
+              Fresh Additions
+            </p>
+            <div className="h-px w-12 bg-[var(--accent)]" />
+          </div>
+          <h2 className="font-serif text-3xl sm:text-5xl font-bold text-[var(--foreground)] mb-3">
+            New <span className="text-gradient-burgundy italic">Arrivals</span>
+          </h2>
+          <p className="text-[var(--muted-foreground)] max-w-2xl mx-auto">
+            Just landed — the newest pieces in our Rakhi collection, handcrafted and ready to celebrate.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          {newArrivals.slice(0, 4).map((p, i) => (
+            <ProductCard key={p.id} product={p} index={i} />
+          ))}
+        </div>
+
+        <div className="text-center mt-12">
+          <button
+            onClick={() => setView("shop")}
+            className="btn-luxe inline-flex items-center gap-2 px-8 py-3.5 bg-[var(--primary)] text-[var(--background)] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors shadow-luxe"
+          >
+            View All Rakhis <ArrowRight size={16} />
+          </button>
+        </div>
+        </div>
+      </section>
+
       {/* Quote / Story section — VIBRANT festive gradient (not dark/moody) */}
       <section className="py-28 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700] via-[#FFA500] to-[#FF8C00]" />
@@ -308,46 +348,6 @@ export function HomeView() {
               </div>
             </motion.div>
           ))}
-        </div>
-        </div>
-      </section>
-
-      {/* New Arrivals — VIBRANT with diagonal lines pattern */}
-      <section className="py-20 bg-gradient-to-b from-[var(--background)] via-[#FFF8DC] to-[var(--background)] relative overflow-hidden">
-        {/* Diagonal lines pattern */}
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
-          backgroundImage: `repeating-linear-gradient(45deg, var(--accent) 0, var(--accent) 1px, transparent 1px, transparent 20px)`,
-        }} />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center gap-3 mb-3">
-            <div className="h-px w-12 bg-[var(--accent)]" />
-            <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-[var(--accent)] font-medium">
-              Fresh Additions
-            </p>
-            <div className="h-px w-12 bg-[var(--accent)]" />
-          </div>
-          <h2 className="font-serif text-3xl sm:text-5xl font-bold text-[var(--foreground)] mb-3">
-            New <span className="text-gradient-burgundy italic">Arrivals</span>
-          </h2>
-          <p className="text-[var(--muted-foreground)] max-w-2xl mx-auto">
-            Just landed — the newest pieces in our Rakhi collection, handcrafted and ready to celebrate.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {newArrivals.slice(0, 4).map((p, i) => (
-            <ProductCard key={p.id} product={p} index={i} />
-          ))}
-        </div>
-
-        <div className="text-center mt-12">
-          <button
-            onClick={() => setView("shop")}
-            className="btn-luxe inline-flex items-center gap-2 px-8 py-3.5 bg-[var(--primary)] text-[var(--background)] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors shadow-luxe"
-          >
-            View All Rakhis <ArrowRight size={16} />
-          </button>
         </div>
         </div>
       </section>

@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react"
 import { useStore, getCartTotal, getCartCount } from "@/lib/store"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, Plus, Minus, Trash2, ShoppingBag, MessageCircle, ArrowRight } from "lucide-react"
+import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight } from "lucide-react"
 import { cn, formatINR } from "@/lib/utils"
-import { buildWhatsAppUrl, buildCartOrderMessage } from "@/lib/whatsapp"
 import { thumbnailImage } from "@/lib/images"
 
 export function CartDrawer() {
@@ -32,37 +31,9 @@ export function CartDrawer() {
 
   const handleCheckoutWhatsApp = () => {
     if (!whatsappConfig?.primaryNumber || cart.length === 0) return
-    const message = buildCartOrderMessage({
-      brandName: whatsappConfig.brandName || "House of Neelam",
-      items: cart,
-      subtotal,
-      shipping,
-      total,
-      formatPrice: formatINR,
-    })
-    const url = buildWhatsAppUrl(whatsappConfig.primaryNumber, message)
-    window.open(url, "_blank")
-
-    // Save order to backend
-    fetch("/api/orders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        customerName: "WhatsApp Customer",
-        customerPhone: "N/A",
-        items: cart.map((c) => ({
-          productId: c.productId,
-          name: c.name,
-          image: c.image,
-          price: c.price,
-          quantity: c.quantity,
-        })),
-        subtotal,
-        shipping,
-        total,
-      }),
-    }).catch(() => {})
-
+    // Close the drawer and navigate to the full CartView which has the
+    // customer details form (name, phone, address). This ensures orders
+    // are saved with real customer data instead of "WhatsApp Customer".
     setCartOpen(false)
     setView("cart")
   }
@@ -214,9 +185,9 @@ export function CartDrawer() {
 
                   <button
                     onClick={handleCheckoutWhatsApp}
-                    className="btn-luxe w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#25D366] text-white text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[#1FAE54] transition-colors"
+                    className="btn-luxe w-full flex items-center justify-center gap-2 px-6 py-4 bg-[var(--primary)] text-white text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors"
                   >
-                    <MessageCircle size={18} /> Send Order via WhatsApp
+                    <ShoppingBag size={18} /> Checkout
                   </button>
                   <button
                     onClick={() => {

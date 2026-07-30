@@ -6,6 +6,13 @@ import { Sparkles, X, Send, ShoppingBag, ArrowRight, Loader2 } from "lucide-reac
 import { useStore } from "@/lib/store"
 import { toast } from "sonner"
 
+type RecommendedProduct = {
+  name: string
+  slug: string
+  price: number
+  category: string
+}
+
 type Message = {
   role: "user" | "assistant"
   content: string
@@ -14,6 +21,7 @@ type Message = {
     searchQuery?: string | null
     maxPrice?: number | null
   } | null
+  products?: RecommendedProduct[]
   suggestions?: string[]
 }
 
@@ -123,6 +131,7 @@ export function AiShoppingAssistant() {
         role: "assistant",
         content: data.reply || "I'm sorry, I didn't catch that. Could you rephrase?",
         filter: data.filter || null,
+        products: data.products || [],
         suggestions: data.suggestions || [],
       }
       setMessages([...newMessages, assistantMsg])
@@ -220,6 +229,35 @@ export function AiShoppingAssistant() {
                       ))}
                     </div>
 
+                    {/* Show recommended products as clickable cards */}
+                    {msg.role === "assistant" && msg.products && msg.products.length > 0 && (
+                      <div className="w-full space-y-1.5">
+                        {msg.products.map((p, j) => (
+                          <button
+                            key={j}
+                            onClick={() => {
+                              openProduct(p.slug)
+                              setIsOpen(false)
+                            }}
+                            className="w-full flex items-center gap-2.5 p-2 bg-white border border-[var(--accent)]/30 rounded-lg hover:border-[var(--accent)] hover:bg-[var(--cream)]/50 transition-all text-left group"
+                          >
+                            <div className="w-9 h-9 rounded-md bg-gradient-to-br from-[var(--primary)]/10 to-[var(--accent)]/10 flex items-center justify-center flex-shrink-0">
+                              <ShoppingBag size={14} className="text-[var(--primary)]" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-semibold text-[var(--foreground)] truncate group-hover:text-[var(--primary)] transition-colors">
+                                {p.name}
+                              </p>
+                              <p className="text-[10px] text-[var(--muted-foreground)]">
+                                {p.category} · ₹{p.price}
+                              </p>
+                            </div>
+                            <ArrowRight size={12} className="text-[var(--muted-foreground)] group-hover:text-[var(--primary)] group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
                     {/* Show "View Rakhis" button if assistant returned a filter */}
                     {msg.role === "assistant" && msg.filter && (msg.filter.category || msg.filter.searchQuery) && (
                       <button
@@ -228,6 +266,21 @@ export function AiShoppingAssistant() {
                       >
                         <ShoppingBag size={12} />
                         View {msg.filter.category || `"${msg.filter.searchQuery}"`} Rakhis
+                        <ArrowRight size={12} />
+                      </button>
+                    )}
+
+                    {/* Always show "View All Rakhis" button for assistant messages (if no filter was applied yet) */}
+                    {msg.role === "assistant" && (!msg.filter || (!msg.filter.category && !msg.filter.searchQuery)) && msg.products && msg.products.length > 0 && (
+                      <button
+                        onClick={() => {
+                          useStore.getState().setView("shop")
+                          setIsOpen(false)
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--primary)] text-white text-xs font-semibold rounded-full hover:bg-[var(--primary-dark)] transition-colors w-fit"
+                      >
+                        <ShoppingBag size={12} />
+                        View All Rakhis
                         <ArrowRight size={12} />
                       </button>
                     )}

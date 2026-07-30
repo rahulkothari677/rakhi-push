@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useStore } from "@/lib/store"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, ShoppingBag, MessageCircle, Heart, Check, ChevronLeft, ChevronRight, Star } from "lucide-react"
+import { X, ShoppingBag, MessageCircle, Heart, Check, ChevronLeft, ChevronRight, Star, Maximize2 } from "lucide-react"
 import { cn, formatINR } from "@/lib/utils"
 import { productImage, thumbnailImage } from "@/lib/images"
 import { buildWhatsAppUrl, buildSingleProductMessage } from "@/lib/whatsapp"
@@ -34,6 +34,7 @@ export function QuickView({ product, onClose }: { product: Product | null; onClo
   const [activeImage, setActiveImage] = useState(0)
   const [added, setAdded] = useState(false)
   const [whatsappConfig, setWhatsappConfig] = useState<any>(null)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
 
   useEffect(() => {
     if (!whatsappConfig) {
@@ -151,12 +152,16 @@ export function QuickView({ product, onClose }: { product: Product | null; onClo
             <div className="grid md:grid-cols-2 gap-0">
               {/* Image section */}
               <div className="relative bg-[var(--cream)]">
-                <div className="aspect-square overflow-hidden">
+                <div className="aspect-square overflow-hidden cursor-zoom-in" onClick={() => setLightboxOpen(true)}>
                   <img
                     src={productImage(allImages[activeImage])}
                     alt={product.name}
                     className="w-full h-full object-cover"
                   />
+                  {/* Maximize button — indicates image is clickable to zoom */}
+                  <div className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-[var(--primary)] shadow-sm pointer-events-none">
+                    <Maximize2 size={16} />
+                  </div>
                 </div>
 
                 {/* Image navigation */}
@@ -301,6 +306,71 @@ export function QuickView({ product, onClose }: { product: Product | null; onClo
               </div>
             </div>
           </motion.div>
+        </motion.div>
+      )}
+
+      {/* Fullscreen Image Lightbox */}
+      {lightboxOpen && product && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[200] bg-black/90 flex items-center justify-center"
+          onClick={() => setLightboxOpen(false)}
+        >
+          <button
+            className="absolute top-4 right-4 w-11 h-11 rounded-full bg-white/10 backdrop-blur-sm text-white flex items-center justify-center hover:bg-white/20 transition-colors z-10"
+            onClick={(e) => { e.stopPropagation(); setLightboxOpen(false) }}
+            aria-label="Close"
+          >
+            <X size={24} />
+          </button>
+
+          {/* Navigation arrows */}
+          {allImages.length > 1 && (
+            <>
+              <button
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm text-white flex items-center justify-center hover:bg-white/20 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  const next = (activeImage - 1 + allImages.length) % allImages.length
+                  setActiveImage(next)
+                }}
+                aria-label="Previous"
+              >
+                <ChevronLeft size={24} />
+              </button>
+              <button
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm text-white flex items-center justify-center hover:bg-white/20 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  const next = (activeImage + 1) % allImages.length
+                  setActiveImage(next)
+                }}
+                aria-label="Next"
+              >
+                <ChevronRight size={24} />
+              </button>
+            </>
+          )}
+
+          <motion.img
+            key={activeImage}
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.2 }}
+            src={productImage(allImages[activeImage])}
+            alt={product.name}
+            className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+
+          {/* Image counter */}
+          {allImages.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white text-sm">
+              {activeImage + 1} / {allImages.length}
+            </div>
+          )}
         </motion.div>
       )}
     </AnimatePresence>

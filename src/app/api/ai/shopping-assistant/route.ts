@@ -38,11 +38,32 @@ export async function POST(req: Request) {
     ])
 
     const prodsData = await prodsRes.json()
-    const productLines = (prodsData.products || []).slice(0, 20).map((p: any) =>
-      `- ${p.name} | ${p.category} | ₹${p.price}`
+    // Include slug so the frontend can navigate to product pages when user clicks a recommendation
+    const products = (prodsData.products || []).slice(0, 20).map((p: any) => ({
+      name: p.name,
+      category: p.category,
+      price: p.price,
+      slug: p.slug,
+    }))
+    const productLines = products.map((p) =>
+      `- ${p.name} | ${p.category} | ₹${p.price} | slug:${p.slug}`
     )
 
-    const systemPrompt = getShoppingAssistantSystemPrompt(categoryNames, productLines)
+    const systemPrompt = `You are "Neelam", AI shopping assistant for House of Neelam Rakhi store.
+
+Categories: ${categoryNames.join(", ")}
+
+Products (name | category | price | slug):
+${productLines.join("\n")}
+
+Reply warmly and briefly (2-4 sentences). Recommend specific products by name+price.
+
+Return ONLY JSON:
+{"reply":"text","filter":{"category":"exact name or null","searchQuery":"keywords or null","maxPrice":number or null},"products":[{"name":"exact product name","slug":"exact slug from catalog"}],"suggestions":["short follow-up question 1","short follow-up question 2"]}
+
+The "products" array should contain 1-3 products you recommend (use EXACT name and slug from the catalog above). If no specific products apply, return empty array.
+The "filter" helps navigate to product listing. Set to null if not applicable.
+The "suggestions" should be 2-3 short follow-up questions (max 40 chars).`
 
     // Build conversation messages
     const conversationHistory = Array.isArray(history)
@@ -192,7 +213,20 @@ export async function POST(req: Request) {
       ? parsed.suggestions.filter((s: any) => typeof s === "string").slice(0, 3)
       : []
 
-    return NextResponse.json({ reply, filter, suggestions, provider })
+    // Validate products array — each must have a name and slug
+    const recommendedProducts = Array.isArray(parsed.products)
+      ? parsed.products
+          .filter((p: any) => p && typeof p === "object" && typeof p.name === "string" && typeof p.slug === "string")
+          .slice(0, 3)
+          // Verify the slug exists in our catalog
+          .filter((p: any) => products.some((cat: any) => cat.slug === p.slug))
+          .map((p: any) => {
+            const cat = products.find((c: any) => c.slug === p.slug)
+            return { name: cat.name, slug: p.slug, price: cat.price, category: cat.category }
+          })
+      : []
+
+    return NextResponse.json({ reply, filter, products: recommendedProducts, suggestions, provider })
   } catch (e: any) {
     console.error("[Shopping Assistant] Error:", e)
     return NextResponse.json(

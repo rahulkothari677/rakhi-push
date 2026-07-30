@@ -28,22 +28,22 @@ export async function GET(req: Request) {
   }
   if (search) {
     // Split search into keywords and match ANY keyword (OR logic per word).
-    // This fixes the issue where AI image search returns multi-word queries
-    // like "lumba peach floral beads" — previously this was treated as a
-    // single phrase and matched 0 products.
+    // Also match SKU so users can search by product code (e.g. "RKH-77197574")
     const keywords = search.trim().split(/\s+/).filter((k) => k.length >= 2)
     if (keywords.length === 1) {
       where.OR = [
         { name: { contains: keywords[0] } },
         { shortDescription: { contains: keywords[0] } },
         { description: { contains: keywords[0] } },
+        { sku: { contains: keywords[0] } },
       ]
     } else if (keywords.length > 1) {
-      // Match products that contain ANY of the keywords in name/description
+      // Match products that contain ANY of the keywords in name/description/sku
       where.OR = keywords.flatMap((k) => [
         { name: { contains: k } },
         { shortDescription: { contains: k } },
         { description: { contains: k } },
+        { sku: { contains: k } },
       ])
     }
   }
