@@ -151,12 +151,12 @@ export function QuickView({ product, onClose }: { product: Product | null; onClo
 
             <div className="grid md:grid-cols-2 gap-0">
               {/* Image section */}
-              <div className="relative bg-[var(--cream)]">
-                <div className="aspect-square overflow-hidden cursor-zoom-in" onClick={() => setLightboxOpen(true)}>
+              <div className="relative bg-white">
+                <div className="aspect-square overflow-hidden cursor-zoom-in flex items-center justify-center" onClick={() => setLightboxOpen(true)}>
                   <img
                     src={productImage(allImages[activeImage])}
                     alt={product.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                   {/* Maximize button — indicates image is clickable to zoom */}
                   <div className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-[var(--primary)] shadow-sm pointer-events-none">

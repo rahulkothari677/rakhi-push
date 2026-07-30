@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   X, LayoutDashboard, Package, FolderTree, Image, FileText, Settings, ShoppingBag,
   Plus, Pencil, Trash2, Save, Upload, Loader2, LogOut, Sparkles, TrendingUp,
-  Users, AlertCircle, Phone, ChevronRight, Star, Check,
+  Users, AlertCircle, Phone, ChevronRight, Star, Check, Maximize2,
 } from "lucide-react"
 import { cn, formatINR, slugify, generateSKU, parseJSON } from "@/lib/utils"
 import { thumbnailImage, categoryImage, heroImage, ctaImage } from "@/lib/images"
@@ -299,6 +299,8 @@ function ProductsTabContent({
   onEdit: (p: any) => void
   onDelete: (id: string) => void
 }) {
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null)
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
@@ -358,7 +360,17 @@ function ProductsTabContent({
                   <tr key={p.id} className="border-t border-[#E8D9B8] hover:bg-[#FBF6EC]/50">
                     <td className="p-3">
                       <div className="flex items-center gap-3">
-                        <img src={thumbnailImage(p.primaryImage)} alt="" className="w-10 h-10 rounded object-cover flex-shrink-0" />
+                        <button
+                          onClick={() => setLightboxImage(p.primaryImage)}
+                          className="relative w-10 h-10 rounded overflow-hidden flex-shrink-0 group cursor-zoom-in"
+                          title="Click to view full image"
+                          aria-label="View full image"
+                        >
+                          <img src={thumbnailImage(p.primaryImage)} alt={p.name} className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 flex items-center justify-center transition-all">
+                            <Maximize2 size={12} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </div>
+                        </button>
                         <div className="min-w-0">
                           <p className="font-semibold text-[#2A0A0F] truncate max-w-xs">{p.name}</p>
                           <p className="text-xs text-[#6B5544]">{p.sku}</p>
@@ -396,6 +408,39 @@ function ProductsTabContent({
           </div>
         </div>
       )}
+
+      {/* Image Lightbox — click any product thumbnail to view full size */}
+      <AnimatePresence>
+        {lightboxImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black/90 flex items-center justify-center p-4"
+            onClick={() => setLightboxImage(null)}
+          >
+            <button
+              className="absolute top-4 right-4 w-11 h-11 rounded-full bg-white/10 backdrop-blur-sm text-white flex items-center justify-center hover:bg-white/20 transition-colors z-10"
+              onClick={(e) => { e.stopPropagation(); setLightboxImage(null) }}
+              aria-label="Close"
+            >
+              <X size={24} />
+            </button>
+            <motion.img
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.2 }}
+              src={lightboxImage}
+              alt="Product preview"
+              className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            />
+            <p className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/60 text-xs">
+              Click anywhere to close • ESC to close
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
