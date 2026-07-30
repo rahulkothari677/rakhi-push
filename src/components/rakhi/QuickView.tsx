@@ -5,7 +5,7 @@ import { useStore } from "@/lib/store"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, ShoppingBag, MessageCircle, Heart, Check, ChevronLeft, ChevronRight, Star, Maximize2 } from "lucide-react"
 import { cn, formatINR } from "@/lib/utils"
-import { productImage, thumbnailImage } from "@/lib/images"
+import { productImageLarge, thumbnailImage } from "@/lib/images"
 import { buildWhatsAppUrl, buildSingleProductMessage } from "@/lib/whatsapp"
 import { showAddedToCart, showAddedToWishlist, showRemovedFromWishlist } from "@/lib/toast-helpers"
 
@@ -150,42 +150,43 @@ export function QuickView({ product, onClose }: { product: Product | null; onClo
             </button>
 
             <div className="grid md:grid-cols-2 gap-0">
-              {/* Image section */}
-              <div className="relative bg-white">
-                <div className="aspect-square overflow-hidden cursor-zoom-in flex items-center justify-center" onClick={() => setLightboxOpen(true)}>
+              {/* Image section — uses productImageLarge (no crop) so full image is visible.
+                  Container fills available space; image uses object-contain to fit without cropping. */}
+              <div className="relative bg-white flex items-center justify-center min-h-[300px] md:min-h-[500px]">
+                <div className="w-full cursor-zoom-in flex items-center justify-center p-2" onClick={() => setLightboxOpen(true)}>
                   <img
-                    src={productImage(allImages[activeImage])}
+                    src={productImageLarge(allImages[activeImage])}
                     alt={product.name}
-                    className="w-full h-full object-contain"
+                    className="max-w-full max-h-[60vh] md:max-h-[500px] object-contain"
                   />
-                  {/* Maximize button — indicates image is clickable to zoom */}
-                  <div className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-[var(--primary)] shadow-sm pointer-events-none">
-                    <Maximize2 size={16} />
-                  </div>
+                </div>
+                {/* Maximize button — indicates image is clickable to zoom */}
+                <div className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-[var(--primary)] shadow-sm pointer-events-none z-10">
+                  <Maximize2 size={16} />
                 </div>
 
                 {/* Image navigation */}
                 {allImages.length > 1 && (
                   <>
                     <button
-                      onClick={() => navigateImage(-1)}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors shadow-md"
+                      onClick={(e) => { e.stopPropagation(); navigateImage(-1) }}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors shadow-md z-10"
                     >
                       <ChevronLeft size={18} className="text-[var(--primary)]" />
                     </button>
                     <button
-                      onClick={() => navigateImage(1)}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors shadow-md"
+                      onClick={(e) => { e.stopPropagation(); navigateImage(1) }}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors shadow-md z-10"
                     >
                       <ChevronRight size={18} className="text-[var(--primary)]" />
                     </button>
 
                     {/* Thumbnails */}
-                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
                       {allImages.map((img, i) => (
                         <button
                           key={i}
-                          onClick={() => setActiveImage(i)}
+                          onClick={(e) => { e.stopPropagation(); setActiveImage(i) }}
                           className={cn(
                             "w-12 h-12 rounded-md overflow-hidden border-2 transition-all",
                             i === activeImage ? "border-[var(--primary)] scale-110" : "border-white/50 opacity-60"
@@ -199,7 +200,7 @@ export function QuickView({ product, onClose }: { product: Product | null; onClo
                 )}
 
                 {/* Badges */}
-                <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+                <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
                   {product.badge && (
                     <span className="px-2.5 py-1 bg-[var(--primary)] text-white text-[9px] tracking-wide uppercase font-semibold rounded-full shadow-sm">
                       {product.badge}
@@ -359,7 +360,7 @@ export function QuickView({ product, onClose }: { product: Product | null; onClo
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.2 }}
-            src={productImage(allImages[activeImage])}
+            src={productImageLarge(allImages[activeImage])}
             alt={product.name}
             className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl"
             onClick={(e) => e.stopPropagation()}

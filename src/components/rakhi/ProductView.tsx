@@ -150,11 +150,11 @@ export function ProductView() {
             className="lg:sticky lg:top-28 lg:self-start"
           >
             <div className="bg-white rounded-lg overflow-hidden border border-[var(--border)] shadow-luxe">
-              <div className="aspect-square bg-white relative cursor-zoom-in flex items-center justify-center" onClick={() => setLightboxOpen(true)}>
+              <div className="relative cursor-zoom-in flex items-center justify-center bg-white" style={{ minHeight: "400px" }} onClick={() => setLightboxOpen(true)}>
                 <img
                   src={productImageLarge(images[activeImage] || product.primaryImage)}
                   alt={product.name}
-                  className="w-full h-full object-contain"
+                  className="w-full max-h-[600px] object-contain"
                 />
                 <div className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-[var(--primary)] shadow-sm">
                   <Maximize2 size={16} />
@@ -477,7 +477,7 @@ function ImageLightbox({ images, activeIndex, onClose, onNavigate }: {
         onClick={(e) => { e.stopPropagation(); setZoomed(!zoomed) }}
       >
         <img
-          src={images[current]}
+          src={productImageLarge(images[current])}
           alt=""
           className="max-w-full max-h-[85vh] object-contain cursor-zoom-in"
         />

@@ -56,12 +56,13 @@ export function productImage(url: string | undefined | null): string {
   })
 }
 
+// Product image — large version for detail page & lightbox.
+// Uses c_limit (NO cropping) so the full original image is returned with
+// its native aspect ratio. object-contain in CSS handles the display fit.
 export function productImageLarge(url: string | undefined | null): string {
   return transformImage(url, {
-    width: 1000,
-    height: 1000,
-    crop: "fill",
-    gravity: "auto",
+    width: 1200,
+    crop: "limit",
     quality: "auto",
     format: "auto",
     dpr: "auto",
