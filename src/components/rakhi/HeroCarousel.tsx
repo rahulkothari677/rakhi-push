@@ -104,8 +104,9 @@ export function HeroCarousel() {
               alt={slide.title}
               className="w-full h-full object-cover animate-kenburns"
             />
-            {/* Subtle light overlay for text contrast — minimal, keeps image vibrant */}
-            <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-transparent" />
+            {/* Premium overlay — bottom-up dark gradient for text readability + depth */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/15 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-transparent" />
           </div>
 
           {/* Content */}
@@ -116,37 +117,37 @@ export function HeroCarousel() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="max-w-2xl text-center sm:text-left"
             >
-              <div className="hidden sm:inline-block bg-[var(--primary)]/90 backdrop-blur-sm px-4 py-1.5 rounded-full mb-4">
+              <div className="hidden sm:inline-block bg-[var(--primary)]/90 backdrop-blur-sm px-4 py-1.5 rounded-full mb-4 border border-[var(--accent)]/40">
                 <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-white font-medium">
                   {slide.subtitle}
                 </p>
               </div>
 
-              {/* Hero title — Great Vibes font, burgundy on all devices */}
-              <h1 className="font-hero text-5xl sm:text-7xl lg:text-8xl leading-[1.1] mb-4 drop-shadow-lg text-[var(--primary)]" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>
+              {/* Hero title — Great Vibes font, ivory white for premium contrast on dark overlay */}
+              <h1 className="font-hero text-5xl sm:text-7xl lg:text-8xl leading-[1.1] mb-4 text-white" style={{ textShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>
                 {slide.title}
               </h1>
 
-              {/* Description — hidden on mobile, shown on sm+ — plain text, lighter color */}
-              <p className="hidden sm:block font-body text-base sm:text-lg text-[var(--foreground)]/80 leading-relaxed mb-8 max-w-xl font-medium drop-shadow-sm">
+              {/* Description — hidden on mobile, shown on sm+ — white text for readability */}
+              <p className="hidden sm:block font-body text-base sm:text-lg text-white/90 leading-relaxed mb-8 max-w-xl font-medium" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
                 {slide.description}
               </p>
 
-              {/* Buttons — hidden on mobile, shown on sm+ */}
+              {/* Buttons — premium pill CTAs, hidden on mobile, shown on sm+ */}
               <div className="hidden sm:flex flex-wrap gap-4">
                 {slide.ctaLabel && (
                   <button
                     onClick={onCta}
-                    className="btn-luxe px-8 py-4 bg-[var(--primary)] text-white text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors shadow-luxe-hover"
+                    className="btn-premium px-8 py-4 bg-[var(--primary)] text-white text-sm tracking-elegant uppercase font-semibold hover:bg-[var(--primary-dark)] shadow-luxe-hover"
                   >
-                    {slide.ctaLabel}
+                    <span>{slide.ctaLabel}</span>
                   </button>
                 )}
                 <button
                   onClick={() => setView("shop")}
-                  className="btn-luxe px-8 py-4 bg-white text-[var(--primary)] border-2 border-[var(--primary)] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary)] hover:text-white transition-colors"
+                  className="btn-premium px-8 py-4 bg-white/10 backdrop-blur-md text-white border-2 border-white/60 text-sm tracking-elegant uppercase font-semibold hover:bg-white hover:text-[var(--primary)] transition-colors"
                 >
-                  Browse Collection
+                  <span>Browse Collection</span>
                 </button>
               </div>
             </motion.div>

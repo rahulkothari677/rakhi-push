@@ -205,14 +205,15 @@ export function Header() {
 
   return (
     <>
-      {/* Announcement bar */}
+      {/* Announcement bar — static, elegant (no scrolling marquee) */}
       {announcement?.enabled && (
-        <div className="bg-gradient-to-r from-[var(--primary-dark)] via-[var(--primary)] to-[var(--primary-dark)] text-[var(--background)] text-xs sm:text-sm py-2 overflow-hidden border-b border-[var(--accent)]/30">
-          <div className="animate-marquee whitespace-nowrap flex">
-            <span className="mx-8 flex items-center gap-2">✨ {announcement.text} ✨</span>
-            <span className="mx-8 flex items-center gap-2">✨ {announcement.text} ✨</span>
-            <span className="mx-8 flex items-center gap-2">✨ {announcement.text} ✨</span>
-            <span className="mx-8 flex items-center gap-2">✨ {announcement.text} ✨</span>
+        <div className="bg-[var(--primary-dark)] text-[var(--background)] text-xs sm:text-sm py-2.5 border-b border-[var(--accent)]/30">
+          <div className="max-w-7xl mx-auto px-4 text-center">
+            <span className="flex items-center justify-center gap-2">
+              <span className="text-[var(--accent)]">✦</span>
+              <span className="tracking-wide">{announcement.text}</span>
+              <span className="text-[var(--accent)]">✦</span>
+            </span>
           </div>
         </div>
       )}
@@ -221,7 +222,7 @@ export function Header() {
         className={cn(
           "sticky top-0 z-50 transition-all duration-500 relative",
           scrolled
-            ? "bg-white/95 backdrop-blur-md shadow-[0_4px_30px_rgba(139,30,62,0.08)] border-b border-[var(--border)]"
+            ? "header-glass shadow-[0_4px_30px_rgba(139,30,62,0.06)]"
             : "bg-gradient-to-b from-[var(--background)] to-[var(--background)]/95 border-b border-[var(--border)]/50"
         )}
       >

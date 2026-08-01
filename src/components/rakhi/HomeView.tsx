@@ -159,15 +159,15 @@ export function HomeView() {
         <div className="text-center mt-12">
           <button
             onClick={() => setView("shop")}
-            className="btn-luxe inline-flex items-center gap-2 px-8 py-3.5 border-2 border-primary text-primary text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-primary hover:text-primary-foreground transition-colors"
+            className="btn-premium inline-flex items-center gap-2 px-8 py-3.5 border-2 border-[var(--primary)] text-[var(--primary)] text-sm tracking-elegant uppercase font-semibold hover:bg-[var(--primary)] hover:text-white"
           >
             View All Collections <ArrowRight size={16} />
           </button>
         </div>
       </section>
 
-      {/* Featured Rakhis — VIBRANT light gradient with dot pattern */}
-      <section className="py-20 bg-gradient-to-b from-[#FFF8DC] via-[var(--background)] to-[#FFF8DC] relative overflow-hidden">
+      {/* Featured Rakhis — soft warm gradient with subtle dot pattern */}
+      <section className="section-premium bg-gradient-to-b from-[var(--cream)] via-[var(--background)] to-[var(--cream)] relative overflow-hidden">
         {/* Dot grid pattern — subtle */}
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{
           backgroundImage: `radial-gradient(circle, var(--primary) 1.5px, transparent 1.5px)`,
@@ -198,8 +198,8 @@ export function HomeView() {
         </div>
       </section>
 
-      {/* New Arrivals — VIBRANT with diagonal lines pattern (moved here, right after Featured) */}
-      <section className="py-20 bg-gradient-to-b from-[var(--background)] via-[#FFF8DC] to-[var(--background)] relative overflow-hidden">
+      {/* New Arrivals — soft warm gradient (moved here, right after Featured) */}
+      <section className="section-premium bg-gradient-to-b from-[var(--background)] via-[var(--cream)] to-[var(--background)] relative overflow-hidden">
         {/* Diagonal lines pattern */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
           backgroundImage: `repeating-linear-gradient(45deg, var(--accent) 0, var(--accent) 1px, transparent 1px, transparent 20px)`,
@@ -230,7 +230,7 @@ export function HomeView() {
         <div className="text-center mt-12">
           <button
             onClick={() => setView("shop")}
-            className="btn-luxe inline-flex items-center gap-2 px-8 py-3.5 bg-[var(--primary)] text-[var(--background)] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors shadow-luxe"
+            className="btn-premium inline-flex items-center gap-2 px-8 py-3.5 bg-[var(--primary)] text-white text-sm tracking-elegant uppercase font-semibold hover:bg-[var(--primary-dark)] shadow-luxe-hover"
           >
             View All Rakhis <ArrowRight size={16} />
           </button>
@@ -238,14 +238,14 @@ export function HomeView() {
         </div>
       </section>
 
-      {/* Quote / Story section — VIBRANT festive gradient (not dark/moody) */}
-      <section className="py-28 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700] via-[#FFA500] to-[#FF8C00]" />
+      {/* Quote / Story section — premium champagne gold gradient (harmonizes with brand palette) */}
+      <section className="py-28 relative overflow-hidden texture-grain">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#C9A24B] via-[#B5862D] to-[#8B1E3E]" />
         {/* Decorative mandala pattern */}
-        <div className="absolute inset-0 opacity-[0.08]" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='120' height='120' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='60' cy='60' r='50' fill='none' stroke='%238B1E3E' stroke-width='1'/%3E%3Ccircle cx='60' cy='60' r='30' fill='none' stroke='%238B1E3E' stroke-width='1'/%3E%3Cpath d='M60 10 L60 110 M10 60 L110 60' stroke='%238B1E3E' stroke-width='1'/%3E%3C/svg%3E")`,
+        <div className="absolute inset-0 opacity-[0.06]" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='120' height='120' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='60' cy='60' r='50' fill='none' stroke='%23FBF6EC' stroke-width='1'/%3E%3Ccircle cx='60' cy='60' r='30' fill='none' stroke='%23FBF6EC' stroke-width='1'/%3E%3Cpath d='M60 10 L60 110 M10 60 L110 60' stroke='%23FBF6EC' stroke-width='1'/%3E%3C/svg%3E")`,
         }} />
-        <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0 opacity-15">
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
@@ -256,32 +256,32 @@ export function HomeView() {
                 animationDelay: `${i * 0.4}s`,
               }}
             >
-              <Sparkles size={24} className="text-[var(--primary)]" />
+              <Sparkles size={24} className="text-[var(--background)]" />
             </div>
           ))}
         </div>
 
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <div className="flex items-center justify-center gap-4 mb-6">
-            <span className="text-[var(--primary)] text-2xl">❖</span>
-            <span className="text-[var(--primary)] text-3xl font-serif">&ldquo;</span>
-            <span className="text-[var(--primary)] text-2xl">❖</span>
+            <span className="text-[var(--background)] text-2xl">❖</span>
+            <span className="text-[var(--background)] text-3xl font-serif">&ldquo;</span>
+            <span className="text-[var(--background)] text-2xl">❖</span>
           </div>
-          <p className="font-serif text-2xl sm:text-4xl lg:text-5xl text-[var(--primary-dark)] italic leading-relaxed mb-8">
+          <p className="font-serif text-2xl sm:text-4xl lg:text-5xl text-[var(--background)] italic leading-relaxed mb-8">
             A brother may not be a friend, but a friend will always be a brother. The sacred thread of Rakhi binds not just wrists, but hearts across lifetimes.
           </p>
           <div className="flex items-center justify-center gap-4">
-            <div className="h-px w-12 bg-[var(--primary)]" />
-            <p className="text-sm tracking-[0.3em] uppercase text-[var(--primary)] font-bold">
+            <div className="h-px w-12 bg-[var(--background)]/60" />
+            <p className="text-sm tracking-[0.3em] uppercase text-[var(--background)] font-bold">
               House of Neelam
             </p>
-            <div className="h-px w-12 bg-[var(--primary)]" />
+            <div className="h-px w-12 bg-[var(--background)]/60" />
           </div>
         </div>
       </section>
 
-      {/* Testimonials / Social Proof — VIBRANT gradient background */}
-      <section className="py-20 bg-gradient-to-br from-[#FFF8DC] via-[var(--background)] to-[#FFE4B5] relative overflow-hidden">
+      {/* Testimonials / Social Proof — soft cream gradient */}
+      <section className="section-premium bg-gradient-to-br from-[var(--cream)] via-[var(--background)] to-[var(--cream)] relative overflow-hidden">
         {/* Wave pattern background */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10 Q25 0 50 10 T100 10' fill='none' stroke='%238B1E3E' stroke-width='1'/%3E%3C/svg%3E")`,
@@ -395,11 +395,11 @@ export function HomeView() {
         </section>
       )}
 
-      {/* Festive / Gift box CTA — VIBRANT (not dark) */}
-      <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-gradient-to-br from-[#FFF8DC] via-[#FFE4B5] to-[#FFD700] rounded-2xl p-8 sm:p-12 lg:p-16 border-2 border-[var(--accent)] relative overflow-hidden shadow-luxe">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#FF8C00]/15 rounded-full -translate-y-1/3 translate-x-1/3" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-[var(--primary)]/10 rounded-full translate-y-1/3 -translate-x-1/3" />
+      {/* Festive / Gift box CTA — premium warm tones */}
+      <section className="section-premium max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-gradient-to-br from-[var(--cream)] via-[#F0E0C0] to-[var(--gold)]/30 rounded-2xl p-8 sm:p-12 lg:p-16 border-2 border-[var(--accent)]/40 relative overflow-hidden shadow-luxe">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--gold)]/15 rounded-full -translate-y-1/3 translate-x-1/3" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-[var(--primary)]/8 rounded-full translate-y-1/3 -translate-x-1/3" />
           {/* Festive star pattern */}
           <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 5 L60 35 L90 35 L65 55 L75 85 L50 65 L25 85 L35 55 L10 35 L40 35 Z' fill='%238B1E3E'/%3E%3C/svg%3E")`,
@@ -425,7 +425,7 @@ export function HomeView() {
               </p>
               <button
                 onClick={() => setCategory(ctaContent?.ctaCategory || "Roli-Chawal & Thali")}
-                className="btn-luxe inline-flex items-center gap-2 px-7 py-3.5 bg-[var(--primary)] text-[var(--background)] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors"
+                className="btn-premium inline-flex items-center gap-2 px-7 py-3.5 bg-[var(--primary)] text-white text-sm tracking-elegant uppercase font-semibold hover:bg-[var(--primary-dark)]"
               >
                 {ctaContent?.ctaLabel || "Shop Thali Sets"} <ArrowRight size={16} />
               </button>
