@@ -73,9 +73,11 @@ export function QuickView({ product, onClose }: { product: Product | null; onClo
     : 0
 
   const wishlisted = isWishlisted(product.id)
+  const outOfStock = (product as any).inStock !== undefined && (product as any).inStock === 0
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation()
+    if (outOfStock) return
     addToCart({
       productId: product.id,
       slug: product.slug,
@@ -280,23 +282,30 @@ export function QuickView({ product, onClose }: { product: Product | null; onClo
 
                 {/* Actions */}
                 <div className="mt-auto space-y-2.5">
-                  <div className="grid grid-cols-2 gap-2.5">
-                    <button
-                      onClick={handleAddToCart}
-                      className={cn(
-                        "flex items-center justify-center gap-2 py-3 text-sm tracking-wide uppercase font-semibold rounded-md transition-all",
-                        added ? "bg-[#5C8C3E] text-white" : "bg-[var(--primary)] text-white hover:bg-[var(--primary-dark)]"
-                      )}
-                    >
-                      {added ? <><Check size={16} /> Added!</> : <><ShoppingBag size={16} /> Add to Cart</>}
-                    </button>
-                    <button
-                      onClick={handleBuyNow}
-                      className="flex items-center justify-center gap-2 py-3 bg-[#25D366] text-white text-sm tracking-wide uppercase font-semibold rounded-md hover:bg-[#1FAE54] transition-colors"
-                    >
-                      <MessageCircle size={16} /> Buy Now
-                    </button>
-                  </div>
+                  {outOfStock ? (
+                    <div className="text-center py-3 px-4 bg-[var(--cream)] border border-[var(--border)] rounded-md">
+                      <p className="text-sm font-semibold text-[var(--foreground)] mb-0.5">Sold Out</p>
+                      <p className="text-xs text-[var(--muted-foreground)]">Restocking soon — check back shortly</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-2.5">
+                      <button
+                        onClick={handleAddToCart}
+                        className={cn(
+                          "flex items-center justify-center gap-2 py-3 text-sm tracking-wide uppercase font-semibold rounded-md transition-all",
+                          added ? "bg-[#5C8C3E] text-white" : "bg-[var(--primary)] text-white hover:bg-[var(--primary-dark)]"
+                        )}
+                      >
+                        {added ? <><Check size={16} /> Added!</> : <><ShoppingBag size={16} /> Add to Cart</>}
+                      </button>
+                      <button
+                        onClick={handleBuyNow}
+                        className="flex items-center justify-center gap-2 py-3 bg-[#25D366] text-white text-sm tracking-wide uppercase font-semibold rounded-md hover:bg-[#1FAE54] transition-colors"
+                      >
+                        <MessageCircle size={16} /> Buy Now
+                      </button>
+                    </div>
+                  )}
                   <button
                     onClick={() => { onClose(); openProduct(product.slug) }}
                     className="w-full py-2.5 text-sm text-[var(--primary)] hover:underline font-medium"

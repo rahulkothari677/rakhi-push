@@ -24,6 +24,7 @@ export type Product = {
   shortDescription: string
   badge?: string | null
   isFeatured: boolean
+  inStock?: number
   rating: number
   reviewCount: number
   sku: string
@@ -38,6 +39,8 @@ export function ProductCard({ product, index = 0 }: Props) {
   const { openProduct, addToCart, toggleWishlist, isWishlisted, setQuickView } = useStore()
   const [added, setAdded] = useState(false)
   const [whatsappConfig, setWhatsappConfig] = useState<any>(null)
+
+  const outOfStock = (product as any).inStock !== undefined && (product as any).inStock === 0
 
   useEffect(() => {
     if (!whatsappConfig) {
@@ -57,6 +60,7 @@ export function ProductCard({ product, index = 0 }: Props) {
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation()
+    if (outOfStock) return
     addToCart({
       productId: product.id,
       slug: product.slug,
@@ -141,12 +145,21 @@ export function ProductCard({ product, index = 0 }: Props) {
               {product.badge}
             </span>
           )}
-          {discount > 0 && (
+          {discount > 0 && !outOfStock && (
             <span className="px-2.5 py-1 bg-accent text-accent-foreground text-[9px] tracking-elegant uppercase font-bold rounded-full shadow-sm">
               {discount}% OFF
             </span>
           )}
         </div>
+
+        {/* Out of Stock badge — elegant, bottom-left (Tanishq/Nykaa style) */}
+        {outOfStock && (
+          <div className="absolute bottom-2.5 left-2.5">
+            <span className="px-3 py-1 bg-[var(--foreground)]/85 backdrop-blur-sm text-[var(--background)] text-[9px] tracking-[0.15em] uppercase font-bold rounded-full shadow-md">
+              Sold Out
+            </span>
+          </div>
+        )}
 
         {/* Action icons — top right (wishlist + add to cart ONLY, no buy) */}
         <div className="absolute top-2.5 right-2.5 flex flex-col gap-1.5">
@@ -164,16 +177,20 @@ export function ProductCard({ product, index = 0 }: Props) {
             <Heart size={14} className={wishlisted ? "fill-current" : ""} />
           </button>
 
-          {/* Add to cart icon */}
+          {/* Add to cart icon — disabled when out of stock */}
           <button
             onClick={handleAddToCart}
+            disabled={outOfStock}
             className={cn(
               "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm",
-              added
+              outOfStock
+                ? "bg-muted/60 text-muted-foreground/50 cursor-not-allowed"
+                : added
                 ? "bg-[#5C8C3E] text-white scale-110"
                 : "bg-card/95 backdrop-blur-sm text-primary hover:bg-primary hover:text-primary-foreground hover:scale-110"
             )}
-            aria-label="Add to cart"
+            aria-label={outOfStock ? "Out of stock" : "Add to cart"}
+            title={outOfStock ? "Out of stock" : "Add to cart"}
           >
             {added ? <Check size={14} /> : <ShoppingBag size={14} />}
           </button>
@@ -219,26 +236,32 @@ export function ProductCard({ product, index = 0 }: Props) {
         {/* Price + Buy button — compact row */}
         <div className="flex items-center justify-between mt-auto gap-2">
           <div className="flex items-baseline gap-1.5">
-            <span className="text-sm font-bold text-primary">
+            <span className={cn("text-sm font-bold", outOfStock ? "text-muted-foreground" : "text-primary")}>
               {formatINR(product.price)}
             </span>
-            {product.compareAtPrice && product.compareAtPrice > product.price && (
+            {product.compareAtPrice && product.compareAtPrice > product.price && !outOfStock && (
               <span className="text-[11px] text-muted-foreground line-through">
                 {formatINR(product.compareAtPrice)}
               </span>
             )}
-            {discount > 0 && (
+            {discount > 0 && !outOfStock && (
               <span className="text-[10px] text-accent font-semibold">
                 {discount}% off
               </span>
             )}
           </div>
-          {/* Buy on WhatsApp — small icon button near price */}
+          {/* Buy on WhatsApp — disabled when out of stock */}
           <button
             onClick={handleBuyNow}
-            className="w-7 h-7 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:bg-[#1FAE54] hover:scale-110 transition-all duration-300 shadow-sm flex-shrink-0"
-            aria-label="Buy on WhatsApp"
-            title="Buy on WhatsApp"
+            disabled={outOfStock}
+            className={cn(
+              "w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm flex-shrink-0",
+              outOfStock
+                ? "bg-muted/60 text-muted-foreground/50 cursor-not-allowed"
+                : "bg-[#25D366] text-white hover:bg-[#1FAE54] hover:scale-110"
+            )}
+            aria-label={outOfStock ? "Out of stock" : "Buy on WhatsApp"}
+            title={outOfStock ? "Out of stock" : "Buy on WhatsApp"}
           >
             <MessageCircle size={13} className="fill-current" />
           </button>

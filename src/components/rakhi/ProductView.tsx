@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useStore } from "@/lib/store"
 import { motion } from "framer-motion"
-import { Heart, ShoppingBag, MessageCircle, ChevronRight, Truck, Shield, Crown, Star, Check, Maximize2, X, ChevronLeft, ChevronRight as ChevronRightIcon } from "lucide-react"
+import { Heart, ShoppingBag, MessageCircle, ChevronRight, Truck, Shield, Crown, Star, Check, Maximize2, X, ChevronLeft, ChevronRight as ChevronRightIcon, Bell } from "lucide-react"
 import { cn, formatINR, parseJSON } from "@/lib/utils"
 import { buildWhatsAppUrl, buildSingleProductMessage, normalizeWhatsAppNumber } from "@/lib/whatsapp"
 import { ProductCard, type Product } from "./ProductCard"
@@ -95,8 +95,11 @@ export function ProductView() {
       : 0
 
   const wishlisted = isWishlisted(product.id)
+  const outOfStock = product.inStock !== undefined && product.inStock === 0
+  const [notifyClicked, setNotifyClicked] = useState(false)
 
   const handleAddToCart = () => {
+    if (outOfStock) return
     addToCart({
       productId: product.id,
       slug: product.slug,
@@ -108,6 +111,18 @@ export function ProductView() {
     })
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)
+  }
+
+  const handleNotifyMe = () => {
+    // Open WhatsApp with a "notify me when back in stock" message
+    if (!whatsappConfig?.primaryNumber) {
+      alert("WhatsApp not configured. Please contact us to be notified when this product is back in stock.")
+      return
+    }
+    const message = `Hi! I'd like to be notified when "${product.name}" (SKU: ${product.sku}) is back in stock. Thank you!`
+    const url = buildWhatsAppUrl(whatsappConfig.primaryNumber, message)
+    window.open(url, "_blank")
+    setNotifyClicked(true)
   }
 
   const handleBuyOnWhatsApp = () => {
@@ -294,29 +309,54 @@ export function ProductView() {
 
             {/* Actions */}
             <div className="space-y-3">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <button
-                  onClick={handleAddToCart}
-                  className={cn(
-                    "btn-luxe flex items-center justify-center gap-2 px-6 py-4 text-sm tracking-elegant uppercase font-semibold rounded-md transition-colors",
-                    added
-                      ? "bg-[#5C8C3E] text-[var(--background)]"
-                      : "bg-[var(--primary)] text-[var(--background)] hover:bg-[var(--primary-dark)]"
-                  )}
-                >
-                  {added ? (
-                    <><Check size={16} /> Added to Cart!</>
-                  ) : (
-                    <><ShoppingBag size={16} /> Add to Cart</>
-                  )}
-                </button>
-                <button
-                  onClick={handleBuyOnWhatsApp}
-                  className="btn-luxe flex items-center justify-center gap-2 px-6 py-4 bg-[#25D366] text-white text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[#1FAE54] transition-colors"
-                >
-                  <MessageCircle size={16} /> Buy on WhatsApp
-                </button>
-              </div>
+              {outOfStock ? (
+                <>
+                  {/* Out of Stock — status + Notify Me button */}
+                  <div className="flex items-center gap-2 px-4 py-3 bg-[var(--cream)] border border-[var(--border)] rounded-md">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#B3324A] flex-shrink-0" />
+                    <p className="text-sm text-[var(--foreground)] font-semibold">
+                      Currently Sold Out
+                    </p>
+                    <span className="text-xs text-[var(--muted-foreground)] ml-auto">
+                      Restocking soon
+                    </span>
+                  </div>
+                  <button
+                    onClick={handleNotifyMe}
+                    className="btn-luxe w-full flex items-center justify-center gap-2 px-6 py-4 bg-[var(--primary)] text-[var(--background)] text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[var(--primary-dark)] transition-colors"
+                  >
+                    <Bell size={16} />
+                    {notifyClicked ? "Notification Sent!" : "Notify Me When Available"}
+                  </button>
+                  <p className="text-xs text-[var(--muted-foreground)] text-center">
+                    We'll message you on WhatsApp the moment it's back in stock
+                  </p>
+                </>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <button
+                    onClick={handleAddToCart}
+                    className={cn(
+                      "btn-luxe flex items-center justify-center gap-2 px-6 py-4 text-sm tracking-elegant uppercase font-semibold rounded-md transition-colors",
+                      added
+                        ? "bg-[#5C8C3E] text-[var(--background)]"
+                        : "bg-[var(--primary)] text-[var(--background)] hover:bg-[var(--primary-dark)]"
+                    )}
+                  >
+                    {added ? (
+                      <><Check size={16} /> Added to Cart!</>
+                    ) : (
+                      <><ShoppingBag size={16} /> Add to Cart</>
+                    )}
+                  </button>
+                  <button
+                    onClick={handleBuyOnWhatsApp}
+                    className="btn-luxe flex items-center justify-center gap-2 px-6 py-4 bg-[#25D366] text-white text-sm tracking-elegant uppercase font-semibold rounded-md hover:bg-[#1FAE54] transition-colors"
+                  >
+                    <MessageCircle size={16} /> Buy on WhatsApp
+                  </button>
+                </div>
+              )}
 
               <button
                 onClick={() =>

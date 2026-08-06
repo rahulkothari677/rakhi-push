@@ -380,9 +380,19 @@ function ProductsTabContent({
                     <td className="p-3 text-[#6B5544] hidden sm:table-cell">{p.category}</td>
                     <td className="p-3 font-semibold text-[#8B1E3E]">{formatINR(p.price)}</td>
                     <td className="p-3 hidden md:table-cell">
-                      <span className={cn("px-2 py-0.5 rounded-full text-xs", p.inStock < 5 ? "bg-[#B3324A]/10 text-[#B3324A]" : "bg-[#5C8C3E]/10 text-[#5C8C3E]")}>
-                        {p.inStock}
-                      </span>
+                      {p.inStock === 0 ? (
+                        <span className="px-2 py-0.5 bg-[#B3324A]/15 text-[#B3324A] rounded-full text-xs font-semibold">
+                          Out of Stock
+                        </span>
+                      ) : p.inStock < 5 ? (
+                        <span className="px-2 py-0.5 bg-[#E8A93D]/15 text-[#E8A93D] rounded-full text-xs font-semibold">
+                          Low ({p.inStock})
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 bg-[#5C8C3E]/10 text-[#5C8C3E] rounded-full text-xs font-semibold">
+                          {p.inStock}
+                        </span>
+                      )}
                     </td>
                     <td className="p-3 hidden md:table-cell">
                       {p.isActive ? (
@@ -772,7 +782,7 @@ function ProductForm({ product, categories, onClose, onSaved }: {
           </div>
           <div>
             <label className="text-xs tracking-elegant uppercase text-[#C9A24B] font-semibold mb-1.5 block">
-              Stock
+              Stock Quantity
             </label>
             <input
               type="number"
@@ -780,6 +790,21 @@ function ProductForm({ product, categories, onClose, onSaved }: {
               onChange={(e) => setForm({ ...form, inStock: e.target.value })}
               className="w-full px-3 py-2 border border-[#E8D9B8] rounded-md text-sm bg-[#FBF6EC] outline-none focus:border-[#C9A24B]"
             />
+            <button
+              type="button"
+              onClick={() => setForm({ ...form, inStock: "0" })}
+              className={cn(
+                "mt-1.5 px-3 py-1 text-xs font-semibold rounded-md transition-colors",
+                Number(form.inStock) === 0
+                  ? "bg-[#B3324A] text-white"
+                  : "bg-[#B3324A]/10 text-[#B3324A] hover:bg-[#B3324A]/20"
+              )}
+            >
+              {Number(form.inStock) === 0 ? "✓ Marked Out of Stock" : "Mark as Out of Stock"}
+            </button>
+            <p className="text-[10px] text-[#6B5544] mt-1">
+              When 0, product shows "Out of Stock" to customers but stays visible
+            </p>
           </div>
         </div>
 
