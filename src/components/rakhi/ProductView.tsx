@@ -27,6 +27,7 @@ export function ProductView() {
   const [whatsappConfig, setWhatsappConfig] = useState<any>(null)
   const [added, setAdded] = useState(false)
   const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [notifyClicked, setNotifyClicked] = useState(false)
 
   useEffect(() => {
     fetch("/api/settings")
@@ -96,7 +97,6 @@ export function ProductView() {
 
   const wishlisted = isWishlisted(product.id)
   const outOfStock = product.inStock !== undefined && product.inStock === 0
-  const [notifyClicked, setNotifyClicked] = useState(false)
 
   const handleAddToCart = () => {
     if (outOfStock) return
